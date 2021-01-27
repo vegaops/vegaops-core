@@ -1,7 +1,7 @@
 #!/bin/bash
 
-baseurl=http://192.168.31.252/vegaops/release
 version=v0.1-rc
+baseurl=https://github.com/vegaops/vegaops-core/releases/download/$version
 vegahome=/opt
 au=`uname  -a`
 
