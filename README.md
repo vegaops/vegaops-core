@@ -41,16 +41,16 @@ VegaOps是基于API的高效调度编排工具。
 
 
 #### Provider list
-* [阿里云](https://github.com/vegaops/vegaops-aliyun-provider)
-* [腾讯云](https://github.com/vegaops/vegaops-tencentcloud-provider)
-* [AWS](https://github.com/vegaops/vegaops-aws-provider)
-* [天翼云](https://github.com/vegaops/vegaops-ctyun-provider)
+* [阿里云](./vegaops-provider/vegaops-provider-aliyun)
+* [腾讯云](./vegaops-provider/vegaops-provider-tencent)
+* [AWS](./vegaops-provider/vegaops-provider-aws)
+* [天翼云](./vegaops-provider/vegaops-provider-ctyun)
 
 #### Example list
-* [云资源编排](https://github.com/vegaops/vegaops-examples-cloudorch)
-* [多云资源采集](https://github.com/vegaops/vegaops-examples-cloudresource)
-* [多云监控采集](https://github.com/vegaops/vegaops-aws-cloudmetric)
-
+* [阿里云样例](https://github.com/vegaops/vegaops-example-aliyun)
+* [云资源编排]
+* [多云资源采集]
+* [多云监控采集]
 
 
 ### Contribution
