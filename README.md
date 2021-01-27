@@ -57,7 +57,7 @@ curl https://raw.githubusercontent.com/vegaops/vegaops-core/master/quick_install
 
 #### Example list
 
-* [阿里云样例](!https://github.com/vegaops/vegaops-example-aliyun)
+* [阿里云样例](https://github.com/vegaops/vegaops-example-aliyun)
 * 云资源编排
 * 多云资源采集
 * 多云监控采集
