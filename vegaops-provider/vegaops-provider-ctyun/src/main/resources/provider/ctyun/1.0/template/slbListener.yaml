@@ -1,0 +1,24 @@
+vendor: ctyun
+nodeType: slbListener
+componentId: '#componentId'
+actions:
+- list
+ctyunAccount:
+  accessKey: '#accessKey'
+  secret: '#secret'
+  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
+list:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.GetListenersv4Request
+  output:
+    success: '#result.statusCode.equals(800)'
+    '[listeners]:[#result.returnObj.listeners]': {}
+  request:
+    loadBalancerId: '#load_balancer_id'
+    regionId: '#regionId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient

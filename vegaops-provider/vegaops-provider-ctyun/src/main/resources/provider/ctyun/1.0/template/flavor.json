@@ -1,0 +1,50 @@
+{
+  "vendor": "ctyun",
+  "nodeType": "flavor",
+  "componentId": "#componentId",
+  "actions": [
+    "list"
+  ],
+  "ctyunAccount": {
+    "class": "org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount",
+    "accessKey": "#accessKey",
+    "secret": "#secret"
+  },
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunFlavorClient",
+    "method": "getAllFlavors",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.GetFlavorsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "cpuNum": "#cpuNum",
+      "memSize": "#memSize",
+      "zoneId": "#zoneId",
+      "flavorType": "#flavorType",
+      "version": "#version"
+    },
+    "output": {
+      "success": "true",
+      "log": "false",
+      "[flavorList]:[#result]": {
+        "id": "#id",
+        "cpuNum": "#cpuNum",
+        "memSize": "#memSize",
+        "zoneType": "#zoneType",
+        "status": "#status",
+        "az": "#az",
+        "flavorType":"#flavorType",
+        "flavorName":"#flavorName",
+        "gpuNum": "#gpuNum",
+        "regionId":"#regionId"
+      }
+    }
+  }
+}

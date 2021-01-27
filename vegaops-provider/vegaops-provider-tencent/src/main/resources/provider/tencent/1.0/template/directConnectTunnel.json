@@ -1,0 +1,156 @@
+{
+  "vendor": "tencent",
+  "nodeType": "directConnectTunnel",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query"
+  ],
+  "credential":"new com.tencentcloudapi.common.Credential(#accessKey,#secret)",
+  "httpProfile": {
+    "class": "com.tencentcloudapi.common.profile.HttpProfile",
+    "endpoint": "dc.tencentcloudapi.com"
+  },
+  "clientProfile": {
+    "class": "com.tencentcloudapi.common.profile.ClientProfile",
+    "httpProfile": "#httpProfile"
+  },
+  "install": {
+    "client": "new com.tencentcloudapi.dc.v20180410.DcClient(#credential,#regionId,#clientProfile)",
+    "method": "CreateDirectConnectTunnel",
+    "argTypes": [
+      "com.tencentcloudapi.dc.v20180410.models.CreateDirectConnectTunnelRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "directConnectId": "#directConnectId",
+      "directConnectTunnelName": "#name",
+      "directConnectOwnerAccount":"#directConnectOwnerAccount",
+      "networkType": "#networkType",
+      "networkRegion": "#networkRegion",
+      "vpcId":"#vpcId",
+      "directConnectGatewayId": "#directConnectGatewayId",
+      "bandwidth":"#bandwidth",
+      "routeType": "#routeType",
+      "vlan": "#vlan",
+      "tencentAddress":"#tencentAddress",
+      "customerAddress": "#customerAddress",
+      "tencentBackupAddress": "#tencentBackupAddress"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "directConnectTunnelId": "#result.DirectConnectTunnelIdSet[0]",
+      "after": {
+        "action": "query",
+        "input": {
+          "directConnectTunnelId": "#directConnectTunnelId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#throwable eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "client": "new com.tencentcloudapi.dc.v20180410.DcClient(#credential,#regionId,#clientProfile)",
+    "method": "DeleteDirectConnectTunnel",
+    "argTypes": [
+      "com.tencentcloudapi.dc.v20180410.models.DeleteDirectConnectTunnelRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "directConnectTunnelId ": "#directConnectTunnelId "
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#directConnectTunnelId"
+    }
+  },
+  "list": {
+    "client": "new com.tencentcloudapi.dc.v20180410.DcClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeDirectConnectTunnels",
+    "argTypes": [
+      "com.tencentcloudapi.dc.v20180410.models.DescribeDirectConnectTunnelsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "class": "com.tencentcloudapi.dc.v20180410.models.DescribeDirectConnectTunnelsRequest",
+      "limit": "100",
+      "offset": "0"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "loop": {
+        "condition": "#result.getDirectConnectTunnelSet().length != 0",
+        "appendList": [
+          "directConnectTunnelsList"
+        ],
+        "1": "#request.setOffset(#request.getOffset()+#request.getLimit())"
+      },
+      "[directConnectTunnelsList]:[#result.DirectConnectTunnelSet]": {
+        "providerId": "#DirectConnectTunnelId",
+        "directConnectId": "#DirectConnectId",
+        "status": "#State",
+        "directConnectOwnerAccount": "#DirectConnectOwnerAccount",
+        "ownerAccount": "#OwnerAccount",
+        "networkType": "#NetworkType",
+        "networkRegion": "#NetworkRegion",
+        "vpcId": "#VpcId",
+        "directConnectGatewayId": "#DirectConnectGatewayId",
+        "routeType": "#RouteType",
+        "bgpPeer": "#BgpPeer",
+        "vlan": "#Vlan",
+        "regionId": "#regionId",
+        "tencentAddress": "#TencentAddress",
+        "customerAddress": "#CustomerAddress",
+        "createdTime": "#CreatedTime",
+        "bandwidth": "#Bandwidth",
+        "name": "#DirectConnectTunnelName"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.tencentcloudapi.dc.v20180410.DcClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeDirectConnectTunnels",
+    "argTypes": [
+      "com.tencentcloudapi.dc.v20180410.models.DescribeDirectConnectTunnelsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "directConnectTunnelIds": "new String('[\"'+#directConnectTunnelId+'\"]')"
+    },
+    "output": {
+      "success": "#throwable eq null&&#result.totalCount eq 1",
+      "providerId": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getDirectConnectId()",
+      "directConnectId": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getDirectConnectId()",
+      "status": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getState()",
+      "directConnectOwnerAccount": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getDirectConnectOwnerAccount()",
+      "ownerAccount": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getOwnerAccount()",
+      "networkType": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getNetworkType()",
+      "networkRegion": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getNetworkRegion()",
+      "vpcId": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getVpcId()",
+      "directConnectGatewayId": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getDirectConnectGatewayId()",
+      "routeType": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getRouteType()",
+      "bgpPeer": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getBgpPeer()",
+      "vlan": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getVlan()",
+      "tencentAddress": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getTencentAddress()",
+      "customerAddress": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getCustomerAddress()",
+      "createdTime": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getCreatedTime()",
+      "bandwidth": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getBandwidth()",
+      "name": "#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getDirectConnectTunnelName()"
+    }
+  }
+}

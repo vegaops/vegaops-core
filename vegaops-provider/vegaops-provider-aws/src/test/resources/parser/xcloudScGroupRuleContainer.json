@@ -1,0 +1,21 @@
+{
+  "vendor": "aws",
+  "accessKey": "xxxxx",
+  "secret": "xxxxx",
+  "regionId": "cn-north-1",
+  "zoneId": "cnn1-az1",
+  "nodes": [
+    {
+      "componentId": "securityGroupRule-1",
+      "nodeType": "securityGroupRule",
+      "vars": {
+        "securityGroupId": "sg-0a46ea5d0001db50a",
+        "protocol": "tcp",
+        "ethertype": "IPv4",
+        "direction": "ingress",
+        "portStart": "2",
+        "portEnd": "65535"
+      }
+    }
+  ]
+}

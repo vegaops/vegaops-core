@@ -1,0 +1,96 @@
+vendor: ctyun
+nodeType: slb
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+- query
+ctyunAccount:
+  accessKey: '#accessKey'
+  secret: '#secret'
+  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
+install:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.CreateELBv4Request
+  output:
+    vswitchId: '#result.returnObj.loadbalancer.vip_subnet_id'
+    success: '#result.statusCode.equals(800)'
+    providerId: '#result.returnObj.loadbalancer.id'
+    ipAddress: '#result.returnObj.loadbalancer.vip_address'
+    name: '#result.returnObj.loadbalancer.name'
+    description: '#result.returnObj.loadbalancer.description'
+    projectId: '#result.returnObj.loadbalancer.project_id'
+    createAt: '#result.returnObj.loadbalancer.created_at'
+    status: '#result.returnObj.loadbalancer.provisioning_status'
+  request:
+    vip_address: '#ipAddress'
+    regionId: '#regionId'
+    name: '#name'
+    description: '#description'
+    vip_subnet_id: '#vswitchId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+uninstall:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.DeleteELBv4Request
+  output:
+    deleteProviderId: '#slbId'
+    success: '#result.statusCode.equals(800)||#result.message?.contains(''could not
+      be found'')'
+  request:
+    regionId: '#regionId'
+    elbId: '#slbId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+list:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.GetELBsv4Request
+  output:
+    success: '#result.statusCode.equals(800)'
+    '[loadbalancers]:[#result.returnObj.loadbalancers]':
+      vswitchId: '#vip_subnet_id'
+      providerId: '#id'
+      ipAddress: '#vip_address'
+      name: '#name'
+      description: '#description'
+      projectId: '#project_id'
+      createAt: '#created_at'
+      status: '#provisioning_status'
+  request:
+    regionId: '#regionId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+query:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.QueryELBv4DetailRequest
+  output:
+    vswitchId: '#result.returnObj.loadbalancer.vip_subnet_id'
+    success: '#result.statusCode.equals(800)'
+    providerId: '#result.returnObj.loadbalancer.id'
+    ipAddress: '#result.returnObj.loadbalancer.vip_address'
+    name: '#result.returnObj.loadbalancer.name'
+    description: '#result.returnObj.loadbalancer.description'
+    projectId: '#result.returnObj.loadbalancer.project_id'
+    createAt: '#result.returnObj.loadbalancer.created_at'
+    status: '#result.returnObj.loadbalancer.provisioning_status'
+  request:
+    regionId: '#regionId'
+    elbId: '#slbId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient

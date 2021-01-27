@@ -1,0 +1,34 @@
+{
+  "vendor": "ctyun",
+  "ctyunAccount": {
+    "accessKey": "xxxxx",
+    "secret": "xxxxx"
+  },
+  "regionId": "cn-gzT",
+  "nodes": [
+    {
+      "componentId": "securityGroup-1",
+      "nodeType": "securityGroup",
+      "vars": {
+        "regionId": "#regionId",
+        "name": "vegaopssgTest-011",
+        "vpcId": "3819d846-20bc-4159-bb7b-b434334707bd"
+      }
+    },
+    {
+      "componentId": "securityGroupRule-1",
+      "nodeType": "securityGroupRule",
+      "vars": {
+        "regionId": "#regionId",
+        "securityGroupId": "&securityGroup-1.securityGroupId",
+        "direction": "egress",
+        "ethertype": "IPv4",
+        "protocol": "",
+        "portRangeMin": "",
+        "portRangeMax": "",
+        "remoteIpPrefix": "",
+        "remoteGroupId": ""
+      }
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "vendor": "aws",
+  "nodeType": "slb",
+  "componentId": "#componentId",
+  "actions": [
+    "query",
+    "list",
+    "install-uninstall"
+  ],
+  "awsRegion": "T(software.amazon.awssdk.regions.Region).of(#regionId)",
+  "credentials": "T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)",
+  "awsCredentialsProvider": "T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)",
+  "elasticLoadBalancingClient": "T(software.amazon.awssdk.services.elasticloadbalancing.ElasticLoadBalancingClient).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()",
+  "list": {
+    "client": "#elasticLoadBalancingClient",
+    "method": "describeLoadBalancers",
+    "argTypes": [
+      "software.amazon.awssdk.services.elasticloadbalancing.model.DescribeLoadBalancersRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.elasticloadbalancing.model.DescribeLoadBalancersRequest).builder().build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#elasticLoadBalancingClient.close()",
+      "[slbList]:[#result.loadBalancerDescriptions()]": {
+        "availabilityZones": "#me.availabilityZones()?.get(0)",
+        "backendServerDescriptions": "#me.backendServerDescriptions()",
+        "canonicalHostedZoneName": "#me.canonicalHostedZoneName()",
+        "canonicalHostedZoneNameID": "#me.canonicalHostedZoneNameID()",
+        "createdTime": "#me.createdTime()",
+        "dnsName": "#me.dnsName()",
+        "healthCheck": "#me.healthCheck()",
+        "instances": "#me.instances()",
+        "listenerDescriptions": "#me.listenerDescriptions()",
+        "loadBalancerName": "#me.loadBalancerName()",
+        "policies": "#me.policies()",
+        "scheme": "#me.scheme()",
+        "securityGroups": "#me.securityGroups()",
+        "sourceSecurityGroup": "#me.sourceSecurityGroup()",
+        "subnets": "#me.subnets()?.get(0)",
+        "vpcId": "#me.vpcId()"
+      }
+    }
+  },
+  "query": {
+    "client": "#elasticLoadBalancingClient",
+    "method": "describeLoadBalancers",
+    "argTypes": [
+      "software.amazon.awssdk.services.elasticloadbalancing.model.DescribeLoadBalancersRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.elasticloadbalancing.model.DescribeLoadBalancersRequest).builder().loadBalancerNames(#loadBalancerName).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#elasticLoadBalancingClient.close()",
+      "availabilityZones": "#result.loadBalancerDescriptions().get(0).availabilityZones()?.get(0)",
+      "backendServerDescriptions": "#result.loadBalancerDescriptions().get(0).backendServerDescriptions()",
+      "canonicalHostedZoneName": "#result.loadBalancerDescriptions().get(0).canonicalHostedZoneName()",
+      "canonicalHostedZoneNameID": "#result.loadBalancerDescriptions().get(0).canonicalHostedZoneNameID()",
+      "createdTime": "#result.loadBalancerDescriptions().get(0).createdTime()",
+      "dnsName": "#result.loadBalancerDescriptions().get(0).dnsName()",
+      "healthCheck": "#result.loadBalancerDescriptions().get(0).healthCheck()",
+      "instances": "#result.loadBalancerDescriptions().get(0).instances()",
+      "listenerDescriptions": "#result.loadBalancerDescriptions().get(0).listenerDescriptions()",
+      "loadBalancerName": "#result.loadBalancerDescriptions().get(0).loadBalancerName()",
+      "policies": "#result.loadBalancerDescriptions().get(0).policies()",
+      "scheme": "#result.loadBalancerDescriptions().get(0).scheme()",
+      "securityGroups": "#result.loadBalancerDescriptions().get(0).securityGroups()",
+      "sourceSecurityGroup": "#result.loadBalancerDescriptions().get(0).sourceSecurityGroup()",
+      "subnets": "#result.loadBalancerDescriptions().get(0).subnets()?.get(0)",
+      "vpcId": "#result.loadBalancerDescriptions().get(0).vpcId()"
+    }
+  },
+  "install": {
+    "client": "#elasticLoadBalancingClient",
+    "method": "createLoadBalancer",
+    "argTypes": [
+      "software.amazon.awssdk.services.elasticloadbalancing.model.CreateLoadBalancerRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.elasticloadbalancing.model.CreateLoadBalancerRequest).builder().availabilityZones(#zoneId).listeners(T(software.amazon.awssdk.services.elasticloadbalancing.model.Listener).builder().instancePort(#instancePort).instanceProtocol(#instanceProtocol).loadBalancerPort(#loadBalancerPort).protocol(#protocol).build()).loadBalancerName(#name).scheme(#scheme).securityGroups(#securityGroups).subnets(#vswitchId).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#elasticLoadBalancingClient.close()",
+      "after": {
+        "action": "query",
+        "input": {
+          "elasticLoadBalancingClient": "#elasticLoadBalancingClient",
+          "loadBalancerName": "#name"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "1",
+        "output": {
+          "success": "#success eq true",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "client": "#elasticLoadBalancingClient",
+    "method": "deleteLoadBalancer",
+    "argTypes": [
+      "software.amazon.awssdk.services.elasticloadbalancing.model.DeleteLoadBalancerRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.elasticloadbalancing.model.DeleteLoadBalancerRequest).builder().loadBalancerName(#name).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#elasticLoadBalancingClient.close()",
+      "deleteProviderId": "#name"
+    }
+  }
+}

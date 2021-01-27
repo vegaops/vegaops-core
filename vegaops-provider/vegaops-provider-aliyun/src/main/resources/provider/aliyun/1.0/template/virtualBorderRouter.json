@@ -1,0 +1,188 @@
+{
+  "vendor": "aliyun",
+  "nodeType": "virtualBorderRouter",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query",
+    "modify"
+  ],
+  "profile":"T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
+  "install": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.vpc.model.v20160428.CreateVirtualBorderRouterRequest",
+      "physicalConnectionId": "#physicalConnectionId",
+      "vlanId": "#vlanId",
+      "vbrOwnerId": "#vbrOwnerId",
+      "circuitCode": "#circuitCode",
+      "localGatewayIp": "#localGatewayIp",
+      "peerGatewayIp": "#peerGatewayIp",
+      "peeringSubnetMask": "#peeringSubnetMask",
+      "description": "#description",
+      "name": "#name",
+      "localIpv6GatewayIp": "#localIpv6GatewayIp",
+      "peerIpv6GatewayIp": "#peerIpv6GatewayIp",
+      "enableIpv6": "#enableIpv6"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "regionId": "#regionId",
+      "vbrId": "#result.VbrId",
+      "after": {
+        "action": "query",
+        "input": {
+          "vbrId": "#vbrId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#throwable eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.vpc.model.v20160428.DeleteVirtualBorderRouterRequest",
+      "vbrId": "#vbrId"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#vbrId"
+    }
+  },
+  "list": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.vpc.model.v20160428.DescribeVirtualBorderRoutersRequest",
+      "pageSize": "10",
+      "pageNumber": "1"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "loop": {
+        "condition": "#result.getVirtualBorderRouterSet().size() != 0",
+        "appendList": [
+          "vbrList"
+        ],
+        "1": "#request.setPageNumber(#request.getPageNumber()+1)"
+      },
+      "[vbrList]:[#result.VirtualBorderRouterSet]": {
+        "localGatewayIp": "#LocalGatewayIp",
+        "peerGatewayIp": "#PeerGatewayIp",
+        "physicalConnectionOwnerUid": "#PhysicalConnectionOwnerUid",
+        "vlanId": "#VlanId",
+        "physicalConnectionStatus": "#PhysicalConnectionStatus",
+        "physicalConnectionId": "#PhysicalConnectionId",
+        "routeTableId": "#RouteTableId",
+        "peeringSubnetMask": "#PeeringSubnetMask",
+        "creationTime": "#CreationTime",
+        "activationTime": "#ActivationTime",
+        "ipv6CidrBlock": "#Ipv6CidrBlock",
+        "status": "#Status",
+        "physicalConnectionBusinessStatus": "#PhysicalConnectionBusinessStatus",
+        "vlanInterfaceId": "#VlanInterfaceId",
+        "accessPointId": "#AccessPointId",
+        "vbrId": "#VbrId",
+        "providerId": "#VbrId"
+      }
+    }
+  },
+  "query": {
+    "client": "org.prophetech.hyperone.vegaops.alicloud.client.AliyunVbrClient",
+    "method": "getVbr",
+    "argNames": [
+      "param"
+    ],
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.alicloud.model.DescribeVbrRequest"
+    ],
+    "param": {
+      "regionId": "#regionId",
+      "accessKey": "#accessKey",
+      "secret":"#secret",
+      "vbrId": "#vbrId"
+    },
+    "argValues":{
+      "param": "#param"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "localGatewayIp": "#result ?.LocalGatewayIp",
+      "peerGatewayIp": "#result ?.PeerGatewayIp",
+      "physicalConnectionOwnerUid": "#result ?.PhysicalConnectionOwnerUid",
+      "vlanId": "#result ?.VlanId",
+      "physicalConnectionStatus": "#result ?.PhysicalConnectionStatus",
+      "physicalConnectionId": "#result ?.PhysicalConnectionId",
+      "routeTableId": "#result ?.RouteTableId",
+      "peeringSubnetMask": "#result ?.PeeringSubnetMask",
+      "creationTime": "#result ?.CreationTime",
+      "activationTime": "#result ?.ActivationTime",
+      "ipv6CidrBlock": "#result ?.Ipv6CidrBlock",
+      "status": "#result ?.Status",
+      "physicalConnectionBusinessStatus": "#result ?.PhysicalConnectionBusinessStatus",
+      "vlanInterfaceId": "#result ?.VlanInterfaceId",
+      "accessPointId": "#result ?.AccessPointId",
+      "vbrId": "#result ?.VbrId",
+      "providerId": "#result ?.VbrId"
+    }},
+  "modify": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.vpc.model.v20160428.ModifyVirtualBorderRouterAttributeRequest",
+      "vbrId": "#vbrId",
+      "vlanId": "#vlanId",
+      "circuitCode": "#circuitCode",
+      "localGatewayIp": "#localGatewayIp",
+      "peerGatewayIp": "#peerGatewayIp",
+      "peeringSubnetMask": "#peeringSubnetMask",
+      "minTxInterval": "#minTxInterval",
+      "minRxInterval": "#minRxInterval",
+      "detectMultiplier": "#detectMultiplier",
+      "description": "#description",
+      "name": "#name",
+      "peeringIpv6SubnetMask": "#peeringIpv6SubnetMask",
+      "localIpv6GatewayIp": "#localIpv6GatewayIp",
+      "peerIpv6GatewayIp": "#peerIpv6GatewayIp",
+      "enableIpv6": "#enableIpv6",
+      "associatedPhysicalConnections": "#associatedPhysicalConnections"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "vpcId": "#vpcId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#throwable eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  }
+}
+

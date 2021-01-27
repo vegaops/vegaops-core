@@ -1,0 +1,52 @@
+{
+  "componentId": "container_scGroupRule1234567",
+  "containerType": "tencent",
+  "nodes": [
+    {
+      "componentId": "securityGroup_123456",
+      "leafNode": false,
+      "relations": [],
+      "nodeType": "securityGroup",
+      "properties": [
+        {
+          "key": "name",
+          "value": "vegaopsTest1"
+        },
+        {
+          "key": "description",
+          "value": "vegaopsTest"
+        }
+      ]
+    },
+    {
+      "componentId": "securityGroupRule_123456",
+      "leafNode": false,
+      "relations": [],
+      "nodeType": "securityGroupRule",
+      "properties": [
+        {
+          "key": "securityGroupId",
+          "value": ""
+        },
+        {
+          "key": "action",
+          "value": "accept"
+        },
+        {
+          "key": "type",
+          "value": "egress"
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "relationType": "child",
+      "componentId": "relation_1111",
+      "targetId": "securityGroupRule_123456",
+      "principalId": "securityGroup_123456"
+    }
+  ],
+  "regionId": "ap-beijing",
+  "cloudAccountId": "1249274415906578432"
+}

@@ -1,0 +1,152 @@
+{
+  "vendor": "tencent",
+  "nodeType": "slb",
+  "componentId": "#componentId",
+  "actions": [
+    "list",
+    "query",
+    "install-uninstall"
+  ],
+  "credential": "new com.tencentcloudapi.common.Credential(#accessKey,#secret)",
+  "httpProfile": {
+    "class": "com.tencentcloudapi.common.profile.HttpProfile",
+    "endpoint": "clb.tencentcloudapi.com"
+  },
+  "clientProfile": {
+    "class": "com.tencentcloudapi.common.profile.ClientProfile",
+    "httpProfile": "#httpProfile"
+  },
+  "list": {
+    "client": "new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeLoadBalancers",
+    "argTypes": [
+      "com.tencentcloudapi.clb.v20180317.models.DescribeLoadBalancersRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "class": "com.tencentcloudapi.clb.v20180317.models.DescribeLoadBalancersRequest",
+      "limit": "100",
+      "offset": "0"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "loop": {
+        "condition": "#result.getLoadBalancerSet().length != 0",
+        "appendList": [
+          "loadBalancerList"
+        ],
+        "1": "#request.setOffset(#request.getOffset()+#request.getLimit())"
+      },
+      "[loadBalancerList]:[#result.LoadBalancerSet]": {
+        "providerId": "#LoadBalancerId",
+        "ipAddress": "#LoadBalancerVips",
+        "name": "#LoadBalancerName",
+        "forward": "#Forward",
+        "vpcId": "#VpcId",
+        "projectId": "#ProjectId",
+        "addressIpVersion": "#AddressIPVersion",
+        "status": "#Status",
+        "vswitchId": "#SubnetId",
+        "createAt": "#CreateTime",
+        "internetType": "#LoadBalancerType",
+        "payType": "#ChargeType",
+        "internetChargeType": "#NetworkAttributes?.InternetChargeType"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeLoadBalancers",
+    "argTypes": [
+      "com.tencentcloudapi.clb.v20180317.models.DescribeLoadBalancersRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "loadBalancerIds": [
+        "#slbId"
+      ]
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "providerId": "#result.LoadBalancerSet[0].LoadBalancerId",
+      "ipAddress": "#result.LoadBalancerSet[0].LoadBalancerVips",
+      "name": "#result.LoadBalancerSet[0].LoadBalancerName",
+      "forward": "#result.LoadBalancerSet[0].Forward",
+      "vpcId": "#result.LoadBalancerSet[0].VpcId",
+      "projectId": "#result.LoadBalancerSet[0].ProjectId",
+      "addressIpVersion": "#result.LoadBalancerSet[0].AddressIPVersion",
+      "status": "#result.LoadBalancerSet[0].Status",
+      "vswitchId": "#result.LoadBalancerSet[0].SubnetId",
+      "createAt": "#result.LoadBalancerSet[0].CreateTime",
+      "internetType": "#result.LoadBalancerSet[0].LoadBalancerType",
+      "payType": "#result.LoadBalancerSet[0].ChargeType",
+      "internetChargeType": "#result.LoadBalancerSet[0].NetworkAttributes?.InternetChargeType"
+    }
+  },
+  "install": {
+    "client": "new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)",
+    "method": "CreateLoadBalancer",
+    "argTypes": [
+      "com.tencentcloudapi.clb.v20180317.models.CreateLoadBalancerRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "internetAccessible": {
+      "class": "com.tencentcloudapi.clb.v20180317.models.InternetAccessible",
+      "bandwidthpkgSubType": "#bandwidthpkgSubType",
+      "internetChargeType": "#internetChargeType",
+      "internetMaxBandwidthOut": "#internetMaxBandwidthOut"
+    },
+    "request": {
+      "addressIPVersion": "#ipVersion",
+      "forward": "1",
+      "internetAccessible": "#internetAccessible",
+      "loadBalancerName": "#name",
+      "loadBalancerType": "#type",
+      "number": "#goodsNum",
+      "projectId": "#projectId",
+      "subnetId": "#vswitchId",
+      "vipIsp": "#vipIsp",
+      "vpcId": "#vpcId",
+      "zoneId": "#zoneId"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "slbId": "#result.LoadBalancerIds[0]",
+      "after": {
+        "action": "query",
+        "input": {
+          "slbId": "#slbId"
+        },
+        "output": {
+          "success": "#status eq 1",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "client": "new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)",
+    "method": "DeleteLoadBalancer",
+    "argTypes": [
+      "com.tencentcloudapi.clb.v20180317.models.DeleteLoadBalancerRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "loadBalancerIds": [
+        "#slbId"
+      ]
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#slbId"
+    }
+  }
+}

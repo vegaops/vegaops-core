@@ -1,0 +1,18 @@
+{
+  "vendor": "aws",
+  "accessKey": "xxxxx",
+  "secret": "xxxxx",
+  "regionId": "cn-north-1",
+  "zoneId": "cnn1-az1",
+  "nodes": [
+    {
+      "componentId": "image-1",
+      "nodeType": "image",
+      "vars": {
+        "description": "vegaopsTets",
+        "instanceId": "i-03fda4760fcd07b8b",
+        "name": "xjh-test"
+      }
+    }
+  ]
+}

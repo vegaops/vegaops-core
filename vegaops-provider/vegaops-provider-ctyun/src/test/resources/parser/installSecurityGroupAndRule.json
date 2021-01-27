@@ -1,0 +1,80 @@
+{
+  "componentId": "component-sg",
+  "nodes": [
+    {
+      "componentId": "sg",
+      "leafNode": false,
+      "nodeType": "securityGroup",
+      "relations": [],
+      "properties": [
+        {
+          "value": "cn-gzT",
+          "key": "regionId"
+        },
+        {
+          "value": "3819d846-20bc-4159-bb7b-b434334707bd",
+          "key": "vpcId"
+        },
+        {
+          "value": "sg-01-123456666",
+          "key": "name"
+        }
+      ]
+    },
+    {
+      "componentId": "sgr",
+      "leafNode": true,
+      "nodeType": "securityGroupRule",
+      "properties": [
+        {
+          "value": "cn-gzT",
+          "key": "regionId"
+        },
+        {
+          "value": "",
+          "key": "securityGroupId"
+        },
+        {
+          "value": "egress",
+          "key": "direction"
+        },
+        {
+          "value": "IPv4",
+          "key": "ethertype"
+        },
+        {
+          "value": "tcp",
+          "key": "protocol"
+        },
+        {
+          "value": "",
+          "key": "portRangeMin"
+        },
+        {
+          "value": "",
+          "key": "portRangeMax"
+        },
+        {
+          "value": "",
+          "key": "remoteIpPrefix"
+        },
+        {
+          "value": "",
+          "key": "remoteGroupId"
+        }
+      ]
+    }
+  ],
+  "regionId": "cn-gzT",
+  "containerType": "ctyun",
+  "cloudAccountId": "1245215824219570177",
+  "zoneId": "cn-gzTa",
+  "relations": [
+    {
+      "relationType": "child",
+      "componentId": "relation_1111",
+      "targetId": "sgr",
+      "principalId": "sg"
+    }
+  ]
+}

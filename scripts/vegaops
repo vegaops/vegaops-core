@@ -1,0 +1,171 @@
+#!/bin/bash
+
+VERSION=0.1
+VEGAOPS=/opt/vegaops
+PROVIDERs=http://192.168.31.252/vegas/provider
+
+P1=$1
+P2=$2
+P3=$3
+
+
+###
+# Print string
+#
+function println() {
+    str=$1
+    level=$2
+    red=31
+    green=32
+    yellow=33
+    blue=34
+    if [ "$level" = "debug" ]; then
+        echo -e " DEBUG: $str"
+    fi
+    if [ "$level" = "info" ]; then
+        echo -e "\033[${blue}m $str \033[0m"
+    fi
+    if [ "$level" = "warn" ]; then
+        echo -e "\033[${yellow}m $str \033[0m"
+    fi
+    if [ "$level" = "error" ]; then
+        echo -e "\033[${red}m $str \033[0m"
+    fi
+    if [ "$level" = "success" ]; then
+        echo -e "\033[${green}m $str \033[0m"
+    fi
+    if [ "$level" = "" ]; then
+        echo -e "\033[${blue}m $str \033[0m"
+    fi
+}
+
+
+function print_help() {
+    println "Welcom to VegaOps(version: $VERSION)"
+    println "Useage: "
+    println "[1] Execute VegaOps task: "
+    println "    ./vegaops <input> [<output>] [<format>]"
+    println "             input:  File path which used to"
+    println "                     define vegaops task."
+    println "             output: File dir which used to"
+    println "                     store task result(nodes info)."
+    println "             format: Task file format, support yaml"
+    println "                     and json format, default is yaml."
+    println "[2] Show local providers: "
+    println "    ./vegaops providers"
+    println "[3] Show help usage of VegaOps cli: "
+    println "    ./vegaops help|h"
+    println "[4] Show version of VegaOps: "
+    println "    ./vegaops version|v"
+}
+
+
+if [ "$P1" = "providers" ]; then
+    println "All VegaOps local providers: "
+    for i in $(ls "$VEGAOPS/provider"); do
+        println "[-] Vendor: $i"
+        for j in $(ls "$VEGAOPS/provider/$i"); do
+            println "  $i v$j"
+        done
+    done 
+    exit 0
+fi
+
+
+if [ "$P1" = "help" ] || [ "$P1" = "h" ]; then
+    print_help
+    exit 0
+fi
+
+if [ "$P1" = "version" ] || [ "$P1" = "v" ]; then
+    println "VegaOps version: $VERSION"
+    println "Copyright © 2019-2021 onepro All rights reserved."
+    exit 0
+fi
+
+if [ "$P1" = "" ]; then
+    print_help
+    exit 0
+fi
+
+
+INPUT_FILE="$P1"
+
+if [ ! -f "$INPUT_FILE" ]; then
+    println "Bad input file path: $INPUT_FILE" "error"
+    exit 1
+fi
+
+FORMAT="$P3"
+OUTPUT_FILE=""
+
+if [ ! -d "$P2" ]; then
+    if [ "$P2" = "json" ] || [ "$P2" = "yaml" ]; then
+        FORMAT=$P2
+        OUTPUT_FILE=$(pwd)
+    else
+        println "Bad output file dir: $OUTPUT_FILE" "warn"
+        OUTPUT_FILE=$(pwd)
+        println "Use $OUTPUT_FILE instead" "warn"
+    fi
+fi
+
+if [ "$FORMAT" = "" ]; then
+    FORMAT=yaml
+fi
+
+OUTPUT_FILE=$OUTPUT_FILE/out.${FORMAT}
+
+JAVA_HOME=$VEGAOPS/jre1.8
+export CLASSPATH=$JAVA_HOME/lib/
+
+
+println "Checking input file ..."
+vendor=`$JAVA_HOME/bin/java -cp "$VEGAOPS/lib/*" Tools parse $INPUT_FILE vendor`
+venver=`$JAVA_HOME/bin/java -cp "$VEGAOPS/lib/*" Tools parse $INPUT_FILE version`
+
+
+if [ "$vendor" = "" ] || [ "$vendor" = "null" ]; then
+    println "Vender should be specified!" "error"
+    exit 1
+fi
+
+if [ "$venver" = "" ] || [ "$venver" = "null" ] ; then
+    println "Version of $venver should be specified!" "error"
+    exit 1
+fi
+
+provider_dir="$VEGAOPS/provider/$vendor/$venver"
+
+println "Current vendor: $vendor, version: $venver"
+if [ ! -d "$provider_dir" ]; then
+    target="vegasops-${vendor}-provider.${venver}.tar.gz"
+    url="$PROVIDERs/$vendor/$target"
+    if [ ! -d $VEGAOPS/provider/$vendor ]; then
+        mkdir -p $VEGAOPS/provider/$vendor
+    fi
+    stat=`$JAVA_HOME/bin/java -cp "$VEGAOPS/lib/*" Tools download $url $VEGAOPS/provider/$vendor`
+    echo "Try to download $target ..."
+    if [ "$stat" = "404" ]; then
+        println "Could not find vendor $vendor with version $venver"
+        exit 1
+    fi
+fi
+
+println "Begin to run VegaOps task: "
+println "Input file path: $INPUT_FILE"
+println "Output file path: $OUTPUT_FILE"
+
+$JAVA_HOME/bin/java -jar $VEGAOPS/vegaops-starter.jar \
+                    -p $VEGAOPS/provider \
+                    -l $VEGAOPS/lib \
+                    -c $VEGAOPS/config \
+		    -i "$INPUT_FILE" -o "$OUTPUT_FILE" -f "$FORMAT"
+
+println "Task executed successful!" "success"
+
+if [ -f "$OUTPUT_FILE" ]; then
+    println "End of VegaOps task, output: "
+    sleep 1
+    cat "$OUTPUT_FILE"
+fi

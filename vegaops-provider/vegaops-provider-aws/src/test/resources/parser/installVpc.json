@@ -1,0 +1,22 @@
+{
+  "componentId": "container_vpc1234567",
+  "containerType": "aws",
+  "nodes": [
+    {
+      "componentId": "vpc_123456",
+      "leafNode": false,
+      "relations": [],
+      "nodeType": "vpc",
+      "properties": [
+        {
+          "key": "cidrBlock",
+          "value": "172.167.0.0/26"
+        }
+      ]
+    }
+  ],
+  "relations": [],
+  "zoneId": "cnn1-az1",
+  "regionId": "cn-north-1",
+  "cloudAccountId": "1249274415906578433"
+}

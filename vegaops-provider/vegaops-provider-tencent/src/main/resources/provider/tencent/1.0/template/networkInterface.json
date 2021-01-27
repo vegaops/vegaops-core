@@ -1,0 +1,202 @@
+{
+  "vendor": "tencent",
+  "nodeType": "networkInterface",
+  "componentId": "#componentId",
+  "actions": [
+    "list",
+    "query",
+    "install-uninstall",
+    "bind-unbind"
+  ],
+  "credential":"new com.tencentcloudapi.common.Credential(#accessKey,#secret)",
+  "httpProfile": {
+    "class": "com.tencentcloudapi.common.profile.HttpProfile",
+    "endpoint": "vpc.tencentcloudapi.com"
+  },
+  "clientProfile": {
+    "class": "com.tencentcloudapi.common.profile.ClientProfile",
+    "httpProfile": "#httpProfile"
+  },
+  "list": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeNetworkInterfaces",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.DescribeNetworkInterfacesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "class": "com.tencentcloudapi.vpc.v20170312.models.DescribeNetworkInterfacesRequest",
+      "limit": "100",
+      "offset": "0"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "loop": {
+        "condition": "#result.getNetworkInterfaceSet().length != 0",
+        "appendList": [
+          "networkInterfaceList"
+        ],
+        "1": "#request.setOffset(#request.getOffset()+#request.getLimit())"
+      },
+      "[networkInterfaceList]:[#result.NetworkInterfaceSet]": {
+        "networkInterfaceId": "#NetworkInterfaceId",
+        "providerId": "#NetworkInterfaceId",
+        "name": "#NetworkInterfaceName",
+        "description": "#NetworkInterfaceDescription",
+        "vswitchId": "#SubnetId",
+        "vpcId": "#VpcId",
+        "type": "#Primary",
+        "macAddress": "#MacAddress",
+        "privateIpAddressSet": "#PrivateIpAddressSet",
+        "instanceId": "#Attachment?.instanceId",
+        "zone": "#Zone",
+        "status": "#State",
+        "createdTime": "#CreatedTime",
+        "regionId": "#regionId",
+        "groupSet": "#GroupSet"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeNetworkInterfaces",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.DescribeNetworkInterfacesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "networkInterfaceIds": ["#networkInterfaceId"]
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "networkInterfaceId": "#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getNetworkInterfaceId()",
+      "providerId": "#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getNetworkInterfaceId()",
+      "name": "#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getNetworkInterfaceName()",
+      "description": "#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getNetworkInterfaceDescription()",
+      "vswitchId": "#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getSubnetId()",
+      "vpcId": "#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getVpcId()",
+      "type": "#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getPrimary()",
+      "macAddress": "#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getMacAddress()",
+      "privateIpAddressSet": "#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getPrivateIpAddressSet()",
+      "instanceId": "#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getAttachment()?.getInstanceId()",
+      "zone": "#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getZone()",
+      "groupSet": "#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getGroupSet()",
+      "createdTime": "#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getCreatedTime()",
+      "status": "#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getState()"
+    }
+  },
+  "install": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "CreateNetworkInterface",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.CreateNetworkInterfaceRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "vpcId": "#vpcId",
+      "networkInterfaceName": "#name",
+      "subnetId": "#vswitchId"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "networkInterfaceId": "#result.NetworkInterface.NetworkInterfaceId",
+      "after": {
+        "action": "query",
+        "input": {
+          "networkInterfaceId": "#networkInterfaceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#throwable eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "DeleteNetworkInterface",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.DeleteNetworkInterfaceRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "networkInterfaceId": "#networkInterfaceId"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#networkInterfaceId"
+    }
+  },
+  "bind": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "AttachNetworkInterface",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.AttachNetworkInterfaceRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "networkInterfaceId": "#networkInterfaceId",
+      "instanceId": "#instanceId"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "networkInterfaceId": "#networkInterfaceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#instanceId ne null",
+          "instanceId": "#instanceId",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "unbind": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "DetachNetworkInterface",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.DetachNetworkInterfaceRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "networkInterfaceId": "#networkInterfaceId",
+      "instanceId": "#instanceId"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "networkInterfaceId": "#networkInterfaceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#instanceId eq null",
+          "instanceId": "#instanceId",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  }
+
+}

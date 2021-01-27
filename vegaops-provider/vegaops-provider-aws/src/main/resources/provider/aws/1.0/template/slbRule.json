@@ -1,0 +1,28 @@
+{
+  "vendor": "aws",
+  "nodeType": "slbRule",
+  "componentId": "#componentId",
+  "actions": [
+    "list"
+  ],
+  "awsRegion": "T(software.amazon.awssdk.regions.Region).of(#regionId)",
+  "credentials": "T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)",
+  "awsCredentialsProvider": "T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)",
+  "elasticLoadBalancingClient": "T(software.amazon.awssdk.services.elasticloadbalancing.ElasticLoadBalancingClient).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()",
+  "list": {
+    "client": "#elasticLoadBalancingClient",
+    "method": "describeLoadBalancers",
+    "argTypes": [
+      "software.amazon.awssdk.services.elasticloadbalancing.model.DescribeLoadBalancersRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.elasticloadbalancing.model.DescribeLoadBalancersRequest).builder().build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "[slbList]:[#result.loadBalancerDescriptions()]": {
+      }
+    }
+  }
+}

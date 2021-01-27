@@ -1,0 +1,47 @@
+{
+  "vendor": "tencent",
+  "nodeType": "slbListener",
+  "componentId": "#componentId",
+  "actions": [
+    "list"
+  ],
+  "credential": "new com.tencentcloudapi.common.Credential(#accessKey,#secret)",
+  "httpProfile": {
+    "class": "com.tencentcloudapi.common.profile.HttpProfile",
+    "endpoint": "clb.tencentcloudapi.com"
+  },
+  "clientProfile": {
+    "class": "com.tencentcloudapi.common.profile.ClientProfile",
+    "httpProfile": "#httpProfile"
+  },
+  "list": {
+    "client": "new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeListeners",
+    "argTypes": [
+      "com.tencentcloudapi.clb.v20180317.models.DescribeListenersRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "class": "com.tencentcloudapi.clb.v20180317.models.DescribeListenersRequest",
+      "loadBalancerId": "#load_balancer_id"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "[listenerList]:[#result.Listeners]": {
+        "providerId": "#ListenerId",
+        "lbId": "#loadBalancerId",
+        "listenerPort": "#Port",
+        "protocol": "#Protocol",
+        "establishedTimeout": "#SessionExpireTime",
+        "healthCheckDomain": "#HealthCheck.HttpCheckDomain",
+        "healthCheckHttpCode": "#HealthCheck.HttpCode",
+        "healthCheckInterval": "#HealthCheck.IntervalTime",
+        "healthCheckUri": "#HealthCheck.HttpCheckPath",
+        "scheduler": "#Scheduler",
+        "sslCertificateId": "#Certificate"
+      }
+    }
+  }
+}

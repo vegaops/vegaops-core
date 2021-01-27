@@ -1,0 +1,30 @@
+{
+  "componentId": "container_scGroup1234567",
+  "containerType": "aws",
+  "nodes": [
+    {
+      "componentId": "securityGroup_123456",
+      "leafNode": false,
+      "relations": [],
+      "nodeType": "securityGroup",
+      "properties": [
+        {
+          "key": "name",
+          "value": "vegaopsTest2"
+        },
+        {
+          "key": "description",
+          "value": "xjh_test"
+        },
+        {
+          "key": "vpcId",
+          "value": "vpc-0fa36d6f17a396b13"
+        }
+      ]
+    }
+  ],
+  "relations": [],
+  "zoneId": "cnn1-az1",
+  "regionId": "cn-north-1",
+  "cloudAccountId": "1249274415906578433"
+}

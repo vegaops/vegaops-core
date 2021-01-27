@@ -1,0 +1,25 @@
+vendor: aws
+nodeType: region
+componentId: '#componentId'
+actions:
+- list
+awsRegion: T(software.amazon.awssdk.regions.Region).of('cn-north-1')
+credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)
+awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
+ec2Client: T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
+list:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DescribeRegionsRequest
+  output:
+    log: 'false'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    '[regionList]:[#result.regions()]':
+      endpoint: '#me.endpoint()'
+      regionName: '#me.regionName()'
+      optInStatus: '#me.optInStatus()'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeRegionsRequest).builder().build()
+  method: describeRegions
+  argNames:
+  - request
+  client: '#ec2Client'

@@ -1,0 +1,51 @@
+{
+  "vendor": "aliyun",
+  "nodeType": "image",
+  "componentId": "#componentId",
+  "actions": [
+    "list"
+  ],
+  "profile":"T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
+  "list": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DescribeImagesRequest",
+      "imageOwnerAlias": "#self",
+      "pageSize": "100",
+      "pageNumber": "1"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "loop": {
+        "condition": "#result.getImages().size() != 0",
+        "appendList": [
+          "imagesList"
+        ],
+        "1": "#request.setPageNumber(#request.getPageNumber()+1)"
+      },
+      "log": "false",
+      "[imagesList]:[#result.Images]": {
+        "regionId": "#regionId",
+        "zoneId": "#zoneId",
+        "imageId": "#ImageId",
+        "providerId": "#ImageId",
+        "oSName": "#OSNameEn",
+        "oSType": "#OSType",
+        "architecture": "#Architecture",
+        "description": "#Description",
+        "imageOwnerAlias": "#ImageOwnerAlias",
+        "progress": "#Progress",
+        "creationTime": "#CreationTime",
+        "imageVersion": "#ImageVersion",
+        "status": "#Status",
+        "name": "#ImageName",
+        "platform": "#Platform",
+        "size": "#Size"
+      }
+    }
+  }
+}

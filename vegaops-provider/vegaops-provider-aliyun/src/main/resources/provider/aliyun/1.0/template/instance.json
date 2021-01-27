@@ -1,0 +1,343 @@
+{
+  "vendor": "aliyun",
+  "nodeType": "instance",
+  "componentId": "#componentId",
+  "actions": [
+    "list",
+    "query",
+    "install-uninstall",
+    "start-stop",
+    "reboot",
+    "update",
+    "renew"
+  ],
+  "profile": "T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
+  "list": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DescribeInstancesRequest",
+      "pageSize": "100",
+      "pageNumber": "1"
+    },
+    "argValues": {
+      "request": "#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "loop": {
+        "condition": "#result.getInstances().size() != 0",
+        "appendList": [
+          "instanceList"
+        ],
+        "1": "#request.setPageNumber(#request.getPageNumber()+1)"
+      },
+      "[instanceList]:[#result.instances]": {
+        "providerId": "#instanceId",
+        "name": "#instanceName",
+        "imageId": "#imageId",
+        "instanceChargeType": "#instanceChargeType",
+        "flavorId": "#instanceType",
+        "status": "#status",
+        "securityGroups": "#securityGroupIds",
+        "internetMaxBandwidthOut": "#internetMaxBandwidthOut",
+        "internetMaxBandwidthIn": "#internetMaxBandwidthIn",
+        "internetChargeType": "#internetChargeType",
+        "createdAt": "#creationTime",
+        "keyPairName": "#keyPairName",
+        "vpcId": "#vpcAttributes.vpcId",
+        "vSwitchId": "#vpcAttributes.vSwitchId",
+        "floatingIp": "#publicIpAddress",
+        "eipAddress": "#eipAddress.ipAddress",
+        "primaryIp": "#vpcAttributes.privateIpAddress",
+        "expiredAt": "#instanceChargeType eq 'PostPaid' ? null : #expiredTime",
+        "stoppedMode": "#stoppedMode",
+        "osName": "#oSName",
+        "osType": "#oSType",
+        "cpu": "#cpu",
+        "memory": "#memory",
+        "zoneId": "#zoneId",
+        "regionId": "#regionId"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DescribeInstancesRequest",
+      "instanceIdArray": ["#instanceId"],
+      "instanceIds": "T(com.alibaba.fastjson.JSON).toJSONString(#instanceIdArray)"
+    },
+    "argValues": {
+      "request": "#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "providerId": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceId()",
+      "name": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceName()",
+      "imageId": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getImageId()",
+      "instanceChargeType": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceChargeType()",
+      "flavorId": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceType()",
+      "status": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getStatus()",
+      "securityGroups": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getSecurityGroupIds()",
+      "internetMaxBandwidthOut": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInternetMaxBandwidthOut()",
+      "internetMaxBandwidthIn": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInternetMaxBandwidthIn()",
+      "internetChargeType": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInternetChargeType()",
+      "createdAt": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getCreationTime()",
+      "keyPairName": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getKeyPairName()",
+      "vpcId": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getVpcAttributes().getVpcId()",
+      "vSwitchId": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getVpcAttributes().getVSwitchId()",
+      "floatingIp": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getPublicIpAddress()",
+      "eipAddress": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getEipAddress().getIpAddress()",
+      "primaryIp": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getVpcAttributes().getPrivateIpAddress()",
+      "expiredAt": "#result.getInstances().size() eq 0 or #result.getInstances().get(0).getInstanceChargeType() eq 'PostPaid' ? null : #result.getInstances().get(0).getExpiredTime()",
+      "stoppedMode": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getStoppedMode()",
+      "osName": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getOSName()",
+      "osType": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getOSType()",
+      "cpu": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getCpu()",
+      "memory": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getMemory()",
+      "zoneId": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getZoneId()"
+    }
+  },
+  "install": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.RunInstancesRequest",
+      "instanceType": "#flavorId",
+      "imageId": "#imageId",
+      "securityGroupId": "#securityGroups",
+      "instanceName": "#name",
+      "internetChargeType": "#internetChargeType",
+      "autoRenew": "#autoRenew",
+      "autoRenewPeriod": "#autoRenewPeriod",
+      "internetMaxBandwidthOut": "#internetMaxBandwidthOut",
+      "internetMaxBandwidthIn": "#internetMaxBandwidthIn",
+      "hostName": "#hostName",
+      "password": "#password",
+      "zoneId": "#zoneId",
+      "vlanId": "#vlanId",
+      "systemDiskSize": "#systemDiskSize",
+      "systemDiskCategory": "#systemDiskCategory",
+      "systemDiskDiskName": "#systemDiskDiskName",
+      "systemDiskDescription": "#systemDiskDescription",
+      "systemDiskPerformanceLevel": "#systemDiskPerformanceLevel",
+      "description": "#description",
+      "VSwitchId": "#VSwitchId",
+      "privateIpAddress": "#privateIp",
+      "instanceChargeType": "#instanceChargeType",
+      "period": "#period",
+      "periodUnit": "#periodUnit",
+      "userData": "#userData",
+      "keyPairName": "#keyPairName"
+    },
+    "argValues": {
+      "request": "#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "instanceId": "#result.InstanceIdSets[0]",
+      "regionId": "#regionId",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "50",
+        "output": {
+          "success": "#status eq 'Running'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "before": {
+      "action": "stop",
+      "input": {
+        "instanceId": "#instanceId"
+      },
+      "output": {
+        "success": "true"
+      }
+    },
+    "client": "org.prophetech.hyperone.vegaops.alicloud.client.AliyunInstanceClient",
+    "method": "deleteInstance",
+    "argNames": [
+      "param"
+    ],
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.alicloud.model.DeleteAliyunInstancesRequest"
+    ],
+    "param": {
+      "instanceId": "#instanceId",
+      "regionId": "#regionId",
+      "accessKey": "#accessKey",
+      "secret": "#secret"
+    },
+    "argValues":{
+      "param": "#param"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#instanceId"
+    }
+  },
+  "stop": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.StopInstanceRequest",
+      "instanceId": "#instanceId",
+      "confirmStop": "true",
+      "forceStop": "#forceStop"
+    },
+    "argValues": {
+      "request": "#request"
+    },
+    "output": {
+      "log": "false",
+      "success": "#throwable eq null || #throwable.toString().contains('Status of the specified instance is Stopped')",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#status  eq 'Stopped'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "start": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.StartInstanceRequest",
+      "instanceId": "#instanceId"
+    },
+    "argValues": {
+      "request": "#request"
+    },
+    "output": {
+      "log": "false",
+      "success": "#throwable eq null || #throwable.toString().contains('Status of the specified instance is Running')",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#status  eq 'Running'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "reboot": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.RebootInstanceRequest",
+      "forceStop": "#forceStop",
+      "instanceId": "#instanceId"
+    },
+    "argValues": {
+      "request": "#request"
+    },
+    "output": {
+      "log": "false",
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#status  eq 'Running'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "update": {
+    "client": "org.prophetech.hyperone.vegaops.alicloud.client.AliyunInstanceClient",
+    "method": "updateInstance",
+    "argNames": [
+      "param"
+    ],
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.alicloud.model.UpdateInstanceRequest"
+    ],
+    "param": {
+      "payType": "#payType",
+      "instanceType": "#instanceType",
+      "instanceId": "#instanceId",
+      "operatorType": "#operatorType",
+      "regionId": "#regionId",
+      "autoPay": "#autoPay",
+      "accessKey": "#accessKey",
+      "secret": "#secret",
+      "allowMigrateAcrossZone": "#allowMigrateAcrossZone",
+      "internetMaxBandwidthOut": "#internetMaxBandwidthOut",
+      "internetMaxBandwidthIn": "#internetMaxBandwidthIn"
+    },
+    "argValues":{
+      "param": "#param"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#status eq 'Stopped'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "renew": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.RenewInstanceRequest",
+      "periodUnit": "#periodUnit",
+      "period": "#period",
+      "instanceId": "#instanceId"
+    },
+    "argValues": {
+      "request": "#request"
+    },
+    "output": {
+      "log": "false",
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#throwable eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  }
+}

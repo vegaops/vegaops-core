@@ -1,0 +1,30 @@
+vendor: tencent
+nodeType: zone
+componentId: '#componentId'
+actions:
+- list
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: cvm.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+list:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.DescribeZonesRequest
+  output:
+    log: 'false'
+    success: '#throwable eq null'
+    '[zoneList]:[#result.ZoneSet]':
+      regionId: '#regionId'
+      providerId: '#zone'
+      vendor: tencent
+      name: '#zoneName'
+      id: '#zoneId'
+      zoneState: '#zoneState'
+  request: {}
+  method: DescribeZones
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)

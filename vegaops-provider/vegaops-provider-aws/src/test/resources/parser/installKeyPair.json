@@ -1,0 +1,22 @@
+{
+  "componentId": "container_keyPair1234567",
+  "containerType": "aws",
+  "nodes": [
+    {
+      "componentId": "keyPair-1",
+      "leafNode": false,
+      "relations": [],
+      "nodeType": "keyPair",
+      "properties": [
+        {
+          "key": "name",
+          "value": "xjh-test"
+        }
+      ]
+    }
+  ],
+  "relations": [],
+  "zoneId": "cnn1-az1",
+  "regionId": "cn-north-1",
+  "cloudAccountId": "1249274415906578433"
+}

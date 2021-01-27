@@ -1,0 +1,211 @@
+vendor: tencent
+nodeType: eip
+componentId: '#componentId'
+actions:
+- list
+- query
+- install-uninstall
+- bind-unbind
+- update
+- modify
+- task
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: vpc.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+list:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DescribeAddressesRequest
+  output:
+    '[eipList]:[#result.AddressSet]':
+      networkInterfaceId: '#networkInterfaceId'
+      instanceId: '#instanceId'
+      regionId: '#regionId'
+      providerId: '#addressId'
+      privateAddressIp: '#privateAddressIp'
+      name: '#addressName'
+      ipAddress: '#addressIp'
+      allocationTime: '#createdTime'
+      status: '#addressStatus'
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
+      condition: '#result.getAddressSet().length != 0'
+      appendList:
+      - eipList
+  request:
+    offset: '0'
+    limit: '100'
+    class: com.tencentcloudapi.vpc.v20170312.models.DescribeAddressesRequest
+  method: DescribeAddresses
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+query:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DescribeAddressesRequest
+  output:
+    networkInterfaceId: '#result.totalCount eq 0  ? null: #result.getAddressSet()[0].networkInterfaceId'
+    instanceId: '#result.totalCount eq 0  ? null: #result.getAddressSet()[0].instanceId'
+    success: '#throwable eq null'
+    providerId: '#result.totalCount eq 0  ? null: #result.getAddressSet()[0].addressId'
+    privateAddressIp: '#result.totalCount eq 0  ? null: #result.getAddressSet()[0].privateAddressIp'
+    name: '#result.totalCount eq 0 ? null: #result.getAddressSet()[0].getAddressName()'
+    ipAddress: '#result.totalCount eq 0  ? null: #result.getAddressSet()[0].addressIp'
+    allocationTime: '#result.totalCount eq 0  ? null: #result.getAddressSet()[0].createdTime'
+    status: '#result.totalCount eq 0 ? null: #result.getAddressSet()[0].addressStatus'
+  request: T(org.prophetech.hyperone.vegaops.tencent.util.RequestBuilder).build().put("AddressIds",
+    new String[]{#addressId}).build(T(Class).forName("com.tencentcloudapi.vpc.v20170312.models.DescribeAddressesRequest"))
+  method: DescribeAddresses
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+install:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.AllocateAddressesRequest
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#status eq ''UNBIND'''
+        mergeKeys: '*'
+      input:
+        name: '#name'
+        addressId: '#addressId'
+      action: modify
+      waitInterval: '3000'
+    addressId: '#result.AddressSet[0]'
+  request:
+    InternetMaxBandwidthOut: '#internetMaxBandwidthOut'
+    AnycastZone: '#anycastZone'
+    name: '#name'
+    InternetChargeType: '#internetChargeType'
+  method: AllocateAddresses
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+uninstall:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.ReleaseAddressesRequest
+  output:
+    deleteProviderId: '#addressId'
+    success: '#throwable eq null'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#throwable eq null'
+        mergeKeys: '*'
+      input:
+        taskId: '#taskId'
+      action: task
+      waitInterval: '3000'
+    taskId: '#result.TaskId'
+  request: T(org.prophetech.hyperone.vegaops.tencent.util.RequestBuilder).build().put("AddressIds",
+    new String[]{#addressId}).build(T(Class).forName("com.tencentcloudapi.vpc.v20170312.models.ReleaseAddressesRequest"))
+  method: ReleaseAddresses
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+bind:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.AssociateAddressRequest
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#status eq ''BIND'''
+        mergeKeys: '*'
+      input:
+        addressId: '#addressId'
+      action: query
+      waitInterval: '5000'
+  request:
+    networkInterfaceId: '#networkInterfaceId'
+    instanceId: '#instanceId'
+    privateIpAddress: '#privateIpAddress'
+    addressId: '#addressId'
+  method: AssociateAddress
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+update:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.ModifyAddressesBandwidthRequest
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#throwable eq null'
+        mergeKeys: '*'
+      input:
+        addressId: '#addressId'
+      action: query
+      waitInterval: '5000'
+  request:
+    internetMaxBandwidthOut: '#internetMaxBandwidthOut'
+    addressIds:
+    - '#addressId'
+  method: ModifyAddressesBandwidth
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+modify:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.ModifyAddressAttributeRequest
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#throwable eq null'
+        mergeKeys: '*'
+      input:
+        addressId: '#addressId'
+      action: query
+      waitInterval: '5000'
+  request:
+    addressName: '#name'
+    addressId: '#addressId'
+  method: ModifyAddressAttribute
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+unbind:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DisassociateAddressRequest
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#status eq ''UNBIND'''
+        mergeKeys: '*'
+      input:
+        addressId: '#addressId'
+      action: query
+      waitInterval: '5000'
+  request:
+    reallocateNormalPublicIp: '#reallocateNormalPublicIp'
+    addressId: '#addressId'
+  method: DisassociateAddress
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+task:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DescribeTaskResultRequest
+  output:
+    success: '#result?.Result eq ''SUCCESS'''
+  request: 'T(org.prophetech.hyperone.vegaops.tencent.util.RequestBuilder).build().put("TaskId",
+    #taskId).build(T(Class).forName("com.tencentcloudapi.vpc.v20170312.models.DescribeTaskResultRequest"))'
+  method: DescribeTaskResult
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)

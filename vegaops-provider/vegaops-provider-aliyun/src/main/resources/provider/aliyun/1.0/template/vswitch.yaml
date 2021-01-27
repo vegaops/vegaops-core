@@ -1,0 +1,94 @@
+vendor: aliyun
+nodeType: vswitch
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+- query
+profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
+install:
+  output:
+    vswitchId: '#result.VSwitchId'
+    regionId: '#RegionId'
+    success: '#throwable eq null'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#status eq ''Available'''
+        mergeKeys: '*'
+      input:
+        VSwitchId: '#vswitchId'
+      action: query
+      waitInterval: '3000'
+  request:
+    cidrBlock: '#cidrBlock'
+    vpcId: '#vpcId'
+    zoneId: '#zoneId'
+    description: '#description'
+    VSwitchName: '#name'
+    class: com.aliyuncs.ecs.model.v20140526.CreateVSwitchRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+uninstall:
+  output:
+    deleteProviderId: '#vswitchId'
+    success: '#throwable eq null'
+  request:
+    VSwitchId: '#vswitchId'
+    class: com.aliyuncs.ecs.model.v20140526.DeleteVSwitchRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+list:
+  output:
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
+      condition: '#result.getVSwitches().size() != 0'
+      appendList:
+      - vswitchList
+    '[vswitchList]:[#result.vSwitches]':
+      vswitchId: '#vSwitchId'
+      creationTime: '#creationTime'
+      regionId: '#regionId'
+      providerId: '#vSwitchId'
+      vpcId: '#vpcId'
+      cidrBlock: '#cidrBlock'
+      name: '#vSwitchName'
+      zoneId: '#zoneId'
+      description: '#description'
+      status: '#status'
+  request:
+    pageNumber: '1'
+    pageSize: '10'
+    class: com.aliyuncs.ecs.model.v20140526.DescribeVSwitchesRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+query:
+  output:
+    vswitchId: '#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getVSwitchId()'
+    creationTime: '#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getCreationTime()'
+    success: '#throwable eq null'
+    providerId: '#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getVSwitchId()'
+    vpcId: '#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().size()
+      eq 0 ? null : #result.getVSwitches().get(0).getVpcId()'
+    cidrBlock: '#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getCidrBlock()'
+    name: '#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getVSwitchName()'
+    zoneId: '#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getZoneId()'
+    description: '#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getDescription()'
+    status: '#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getStatus()'
+  request:
+    vSwitchName: '#name'
+    VSwitchId: '#vswitchId'
+    vpcId: '#vpcId'
+    class: com.aliyuncs.ecs.model.v20140526.DescribeVSwitchesRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)

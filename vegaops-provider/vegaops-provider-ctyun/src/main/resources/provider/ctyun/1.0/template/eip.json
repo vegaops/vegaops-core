@@ -1,0 +1,395 @@
+{
+  "vendor": "ctyun",
+  "nodeType": "eip",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query",
+    "queryBind",
+    "queryUnBind",
+    "bind-unbind",
+    "update"
+  ],
+  "ctyunAccount": {
+    "class": "org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount",
+    "accessKey": "#accessKey",
+    "secret": "#secret"
+  },
+  "install": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount",
+      "timeout": 30
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.CreateIPRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "zoneId": "#zoneId",
+      "name": "#name",
+      "type": "#type",
+      "size": "#size",
+      "ipVersion": "#ipVersion",
+      "shareType": "#shareType",
+      "chargeMode": "#chargeMode"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "bandwidthId": "#result.returnObj.bandwidthId",
+      "publicIpAddress": "#result.returnObj.public_ip_address",
+      "type": "#result.returnObj.type",
+      "status": "#result.returnObj.status",
+      "createTime": "#result.returnObj.create_time",
+      "id": "#result.returnObj.id",
+      "bandwidthSize": "#result.returnObj.bandwidth_size",
+      "regionId":"#regionId",
+      "providerId": "#result.returnObj.id",
+      "after": {
+        "action": "query",
+        "input": {
+          "publicIpId": "#providerId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#status eq 'DOWN'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "query": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.QueryIPsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "publicIpId": "#publicIpId",
+      "limit": "#limit",
+      "marker": "#marker"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "category": "#result.returnObj.publicips.get(0).getIp_version()",
+      "bandwidthShareType": "#result.returnObj.publicips.get(0).getBandwidth_share_type()",
+      "type": "#result.returnObj.publicips.get(0).getType()",
+      "privateIpAddress": "#result.returnObj.publicips.get(0).getPrivate_ip_address()",
+      "enterpriseProjectId": "#result.returnObj.publicips.get(0).getEnterprise_project_id()",
+      "status": "#result.returnObj.publicips.get(0).getStatus()",
+      "publicIpAddress": "#result.returnObj.publicips.get(0).getPublic_ip_address()",
+      "id": "#result.returnObj.publicips.get(0).getId()",
+      "tenantId": "#result.returnObj.publicips.get(0).getTenant_id()",
+      "bandwidthName": "#result.returnObj.publicips.get(0).getBandwidth_name()",
+      "bandwidthId": "#result.returnObj.publicips.get(0).getBandwidth_id()",
+      "portId": "#result.returnObj.publicips.get(0).getPort_id()",
+      "bandwidthSize": "#result.returnObj.publicips.get(0).getBandwidth_size()",
+      "createTime": "#result.returnObj.publicips.get(0).getCreate_time()",
+      "masterOrderId": "#result.returnObj.publicips.get(0).getMasterOrderId()",
+      "workOrderResourceId": "#result.returnObj.publicips.get(0).getWorkOrderResourceId()",
+      "expireTime": "#result.returnObj.publicips.get(0).getExpireTime()",
+      "isFreeze": "#result.returnObj.publicips.get(0).getIsFreeze()",
+      "name": "#result.returnObj.publicips.get(0).getBandwidth_name()",
+      "orderId": "#result.returnObj.publicips.get(0).getProfile()?.getOrder_id()",
+      "userId": "#result.returnObj.publicips.get(0).getProfile()?.getUser_id()",
+      "productId": "#result.returnObj.publicips.get(0).getProfile()?.getProduct_id()"
+    }
+  },
+  "queryBind": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.QueryIPsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "publicIpId": "#publicIpId",
+      "limit": "#limit",
+      "marker": "#marker"
+    },
+    "output": {
+      "success": "#result.returnObj.publicips.get(0).getPrivate_ip_address() ne null && #result.returnObj.publicips.get(0).getPrivate_ip_address() ne '[]'",
+      "category": "#result.returnObj.publicips.get(0).getIp_version()",
+      "bandwidthShareType": "#result.returnObj.publicips.get(0).getBandwidth_share_type()",
+      "type": "#result.returnObj.publicips.get(0).getType()",
+      "privateIpAddress": "#result.returnObj.publicips.get(0).getPrivate_ip_address()",
+      "enterpriseProjectId": "#result.returnObj.publicips.get(0).getEnterprise_project_id()",
+      "status": "#result.returnObj.publicips.get(0).getStatus()",
+      "publicIpAddress": "#result.returnObj.publicips.get(0).getPublic_ip_address()",
+      "id": "#result.returnObj.publicips.get(0).getId()",
+      "tenantId": "#result.returnObj.publicips.get(0).getTenant_id()",
+      "bandwidthName": "#result.returnObj.publicips.get(0).getBandwidth_name()",
+      "bandwidthId": "#result.returnObj.publicips.get(0).getBandwidth_id()",
+      "portId": "#result.returnObj.publicips.get(0).getPort_id()",
+      "bandwidthSize": "#result.returnObj.publicips.get(0).getBandwidth_size()",
+      "createTime": "#result.returnObj.publicips.get(0).getCreate_time()",
+      "masterOrderId": "#result.returnObj.publicips.get(0).getMasterOrderId()",
+      "workOrderResourceId": "#result.returnObj.publicips.get(0).getWorkOrderResourceId()",
+      "expireTime": "#result.returnObj.publicips.get(0).getExpireTime()",
+      "isFreeze": "#result.returnObj.publicips.get(0).getIsFreeze()",
+      "name": "#result.returnObj.publicips.get(0).getBandwidth_name()",
+      "orderId": "#result.returnObj.publicips.get(0).getProfile()?.getOrder_id()",
+      "userId": "#result.returnObj.publicips.get(0).getProfile()?.getUser_id()",
+      "productId": "#result.returnObj.publicips.get(0).getProfile()?.getProduct_id()",
+      "after": {
+        "action": "instance.query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#floatingIp ne null && #floatingIp ne '[]'"
+        }
+      }
+    }
+  },
+  "queryUnBind": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.QueryIPsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "publicIpId": "#publicIpId",
+      "limit": "#limit",
+      "marker": "#marker"
+    },
+    "output": {
+      "success": "#result.returnObj.publicips.get(0).getPrivate_ip_address() eq null || #result.returnObj.publicips.get(0).getPrivate_ip_address() eq '[]'",
+      "category": "#result.returnObj.publicips.get(0).getIp_version()",
+      "bandwidthShareType": "#result.returnObj.publicips.get(0).getBandwidth_share_type()",
+      "type": "#result.returnObj.publicips.get(0).getType()",
+      "privateIpAddress": "#result.returnObj.publicips.get(0).getPrivate_ip_address()",
+      "enterpriseProjectId": "#result.returnObj.publicips.get(0).getEnterprise_project_id()",
+      "status": "#result.returnObj.publicips.get(0).getStatus()",
+      "publicIpAddress": "#result.returnObj.publicips.get(0).getPublic_ip_address()",
+      "id": "#result.returnObj.publicips.get(0).getId()",
+      "tenantId": "#result.returnObj.publicips.get(0).getTenant_id()",
+      "bandwidthName": "#result.returnObj.publicips.get(0).getBandwidth_name()",
+      "bandwidthId": "#result.returnObj.publicips.get(0).getBandwidth_id()",
+      "portId": "#result.returnObj.publicips.get(0).getPort_id()",
+      "bandwidthSize": "#result.returnObj.publicips.get(0).getBandwidth_size()",
+      "createTime": "#result.returnObj.publicips.get(0).getCreate_time()",
+      "masterOrderId": "#result.returnObj.publicips.get(0).getMasterOrderId()",
+      "workOrderResourceId": "#result.returnObj.publicips.get(0).getWorkOrderResourceId()",
+      "expireTime": "#result.returnObj.publicips.get(0).getExpireTime()",
+      "isFreeze": "#result.returnObj.publicips.get(0).getIsFreeze()",
+      "name": "#result.returnObj.publicips.get(0).getBandwidth_name()",
+      "orderId": "#result.returnObj.publicips.get(0).getProfile()?.getOrder_id()",
+      "userId": "#result.returnObj.publicips.get(0).getProfile()?.getUser_id()",
+      "productId": "#result.returnObj.publicips.get(0).getProfile()?.getProduct_id()",
+      "after": {
+        "action": "instance.query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#floatingIp eq null || #floatingIp eq '[]'"
+        }
+      }
+    }
+  },
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.QueryIPsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "publicIpId": "#publicIpId",
+      "limit": "#limit",
+      "marker": "#marker"
+
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "log": "false",
+      "[publicips]:[#result.returnObj.publicips]": {
+        "ipVersion": "#ip_version",
+        "bandwidthShareType": "#bandwidth_share_type",
+        "type": "#type",
+        "privateIpAddress": "#private_ip_address",
+        "enterpriseProjectId": "#enterprise_project_id",
+        "status": "#status",
+        "publicIpAddress": "#public_ip_address",
+        "id": "#id",
+        "tenantId": "#tenant_id",
+        "bandwidthId": "#bandwidth_id",
+        "portId": "#port_id",
+        "bandwidthSize": "#bandwidth_size",
+        "createTime": "#create_time",
+        "masterOrderId": "#masterOrderId",
+        "workOrderResourceId": "#workOrderResourceId",
+        "expireTime": "#expireTime",
+        "isFreeze": "#isFreeze",
+        "name": "#bandwidth_name",
+        "orderId": "#profile?.order_id",
+        "regionId":"#regionId",
+        "userId": "#profile?.user_id",
+        "productId": "#profile?.product_id"
+      }
+    }
+  },
+  "uninstall": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.DeleteIPRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "publicIpId": "#publicIpId",
+      "regionId": "#regionId"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "deleteProviderId": "#publicIpId"
+    }
+  },
+  "update": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.UpgradeNetworkRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "publicIpId": "#publicIpId",
+      "regionId": "#regionId",
+      "name": "#name",
+      "size": "#size"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "after": {
+        "action": "query",
+        "input": {
+          "publicIpId": "#publicIpId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#bandwidthSize eq #size",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "bind": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.BindIPRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "publicIpId": "#publicIpId",
+      "regionId": "#regionId",
+      "privateIp": "#privateIp",
+      "networkCardId": "#networkCardId",
+      "payType": "#payType"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "after": {
+        "action": "queryBind",
+        "input": {
+          "publicIpId": "#publicIpId",
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#thowable eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "unbind": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.UnbindIPRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "publicIpId": "#publicIpId",
+      "regionId": "#regionId",
+      "privateIp": "#privateIp",
+      "payType": "#payType"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "after": {
+        "action": "queryUnBind",
+        "input": {
+          "publicIpId": "#publicIpId",
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#thowable eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  }
+}

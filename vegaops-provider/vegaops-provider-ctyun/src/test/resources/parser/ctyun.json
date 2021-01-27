@@ -1,0 +1,86 @@
+{
+  "vendor": "aliyun",
+  "nodeType": "instance",
+  "componentId": "#componentId",
+  "actions": ["install","query","list","uninstall"],
+  "ctyunAccount": {
+    "class": "org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount",
+    "accessKey": "#accessKey",
+    "secret": "#secret"
+  },
+  "install": {
+    "class": "com.alibaba.ecs.create.Client",
+    "method": "execute",
+    "properties": {
+      "imageId": "#imageId",
+      "regionId": "#regionId",
+      "name": "#name",
+      "vpcId": "#vpcId"
+    },
+    "output": {
+      "instanceId": ["#result.instanceId"],
+      "flow": [
+        {
+          "action": "query",
+          "input": {
+            "instanceId": "#instanceId"
+          },
+          "wait": "3000",
+          "output": {
+            "type": "array",
+            "imageId": "#imageId",
+            "regionId": "#regionId",
+            "name": "#name",
+            "vpcId": "#vpcId"
+          },
+          "success": "#result.code==00000"
+        }
+      ]
+    }
+  },
+  "query": {
+    "class": "com.alibaba.ecs.query.Client",
+    "method": "execute",
+    "properties": {
+      "instanceId": "#instanceId"
+    },
+    "output": {
+      "instanceId": "#instanceId",
+      "imageId": "#result.imageId",
+      "regionId": "#result.regionId",
+      "name": "#result.name",
+      "vpcId": "#result.vpcId"
+    }
+  },
+  "list": {
+    "class": "com.alibaba.ecs.query.Client",
+    "properties": {
+      "region": "#region"
+    },
+    "output": {
+      "instances": "#result.instances"
+    }
+  },
+  "uninstall": {
+    "class": "com.alibaba.ecs.uninstall.Client",
+    "method": "execute",
+    "properties": {
+      "instanceId": "#instanceId"
+    },
+    "output": {
+      "flow": [
+        {
+          "action": "query",
+          "type": "for",
+          "foreachValue": "output.instanceIds",
+          "foreachItem": "instanceId",
+          "input": {
+            "instanceId": "#instanceId"
+          },
+          "wait": "3000",
+          "success": "#result.code==00000"
+        }
+      ]
+    }
+  }
+}

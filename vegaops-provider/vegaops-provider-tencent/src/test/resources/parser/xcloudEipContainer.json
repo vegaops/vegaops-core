@@ -1,0 +1,17 @@
+{
+  "vendor": "tencent",
+  "accessKey": "xxxxx",
+  "secret": "xxxxx",
+  "regionId": "ap-beijing",
+  "nodes": [
+    {
+      "componentId": "eip-1",
+      "nodeType": "eip",
+      "vars": {
+        "internetChargeType": "TRAFFIC_POSTPAID_BY_HOUR",
+        "InternetMaxBandwidthOut": "1",
+        "anycastZone": "ANYCAST_ZONE_GLOBAL"
+      }
+    }
+  ]
+}

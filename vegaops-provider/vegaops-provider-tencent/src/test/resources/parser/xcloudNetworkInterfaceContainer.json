@@ -1,0 +1,17 @@
+{
+  "vendor": "tencent",
+  "accessKey": "xxxxx",
+  "secret": "xxxxx",
+  "regionId": "ap-beijing",
+  "nodes": [
+    {
+      "componentId": "networkInterface-1",
+      "nodeType": "networkInterface",
+      "vars": {
+        "vpcId": "vpc-1f0ziyua",
+        "vswitchId": "subnet-8ni0c15d",
+        "name": "vegaopsTest"
+      }
+    }
+  ]
+}

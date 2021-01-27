@@ -1,0 +1,215 @@
+{
+  "vendor": "tencent",
+  "nodeType": "volume",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query",
+    "bind-unbind"
+  ],
+  "credential": "new com.tencentcloudapi.common.Credential(#accessKey,#secret)",
+  "httpProfile": {
+    "class": "com.tencentcloudapi.common.profile.HttpProfile",
+    "endpoint": "cbs.tencentcloudapi.com"
+  },
+  "clientProfile": {
+    "class": "com.tencentcloudapi.common.profile.ClientProfile",
+    "httpProfile": "#httpProfile"
+  },
+  "bind": {
+    "client": "new com.tencentcloudapi.cbs.v20170312.CbsClient(#credential,#regionId,#clientProfile)",
+    "method": "AttachDisks",
+    "argTypes": [
+      "com.tencentcloudapi.cbs.v20170312.models.AttachDisksRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "instanceId": "#instanceId",
+      "diskIds": [
+        "#diskIds"
+      ]
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "volumeId": "#diskIds",
+          "regionId": "#regionId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#status eq 'ATTACHED'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "unbind": {
+    "client": "new com.tencentcloudapi.cbs.v20170312.CbsClient(#credential,#regionId,#clientProfile)",
+    "method": "DetachDisks",
+    "argTypes": [
+      "com.tencentcloudapi.cbs.v20170312.models.DetachDisksRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "diskIds": [
+        "#diskIds"
+      ]
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "volumeId": "#diskIds",
+          "regionId": "#regionId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "30",
+        "output": {
+          "success": "#status eq 'UNATTACHED'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "list": {
+    "client": "new com.tencentcloudapi.cbs.v20170312.CbsClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeDisks",
+    "argTypes": [
+      "com.tencentcloudapi.cbs.v20170312.models.DescribeDisksRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "class": "com.tencentcloudapi.cbs.v20170312.models.DescribeDisksRequest",
+      "limit": "100",
+      "offset": "0"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "loop": {
+        "condition": "#result.getDiskSet().length != 0",
+        "appendList": [
+          "volumeList"
+        ],
+        "1": "#request.setOffset(#request.getOffset()+#request.getLimit())"
+      },
+      "[volumeList]:[#result.DiskSet]": {
+        "regionId": "#regionId",
+        "providerId": "#DiskId",
+        "type": "#DiskUsage",
+        "diskChargeType": "#DiskChargeType",
+        "portable": "#Portable",
+        "zoneId": "#Placement?.Zone",
+        "name": "#DiskName",
+        "size": "#DiskSize",
+        "status": "#DiskState",
+        "category": "#DiskType",
+        "instanceId": "#InstanceId",
+        "createdAt": "#CreateTime",
+        "expiredAt": "#DeadlineTime"
+      }
+    }
+  },
+  "query": {
+    "client": "org.prophetech.hyperone.vegaops.tencent.client.TencentVolumeClient",
+    "method": "queryVolumes",
+    "classProperties": {
+      "key": "#accessKey",
+      "secret": "#secret"
+    },
+    "argValues": {
+      "region": "#regionId",
+      "volumeId": "#volumeId"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "regionId": "#result.size() eq 0 ? null: #regionId",
+      "providerId": "#result.size() eq 0 ? null: #result[0]?.DiskId",
+      "type": "#result.size() eq 0 ? null: #result[0]?.DiskUsage",
+      "diskChargeType": "#result.size() eq 0 ? null: #result[0]?.DiskChargeType",
+      "portable": "#result.size() eq 0 ? null: #result[0]?.Portable",
+      "zoneId": "#result.size() eq 0 ? null: #result[0]?.Placement?.Zone",
+      "name": "#result.size() eq 0 ? null: #result[0]?.DiskName",
+      "size": "#result.size() eq 0 ? null: #result[0]?.DiskSize",
+      "status": "#result.size() eq 0 ? null: #result[0]?.DiskState",
+      "category": "#result.size() eq 0 ? null: #result[0]?.DiskType",
+      "instanceId": "#result.size() eq 0 ? null: #result[0]?.InstanceId",
+      "createdAt": "#result.size() eq 0 ? null: #result[0]?.CreateTime",
+      "expiredAt": "#result.size() eq 0 ? null: #result[0]?.DeadlineTime"
+    }
+  },
+  "install": {
+    "client": "org.prophetech.hyperone.vegaops.tencent.client.TencentVolumeClient",
+    "method": "createVolume",
+    "classProperties": {
+      "key": "#accessKey",
+      "secret": "#secret"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.tencent.model.CreateVolumeParam"
+    ],
+    "argNames": [
+      "param"
+    ],
+    "param": {
+      "regionId": "#regionId",
+      "period": "#period",
+      "clientToken": "#clientToken",
+      "diskChargeType": "#chargeType",
+      "diskCount": "#count",
+      "diskName": "#name",
+      "diskSize": "#size",
+      "encrypt": "#encrypt",
+      "shareable": "#shareable",
+      "zone": "#zoneId",
+      "snapshotId": "#snapshotId",
+      "diskType": "#category"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "regionId": "#regionId",
+      "providerId": "#result?.DiskId",
+      "type": "#result?.DiskUsage",
+      "diskChargeType": "#result?.DiskChargeType",
+      "portable": "#result?.Portable",
+      "zoneId": "#result?.Placement?.Zone",
+      "name": "#result?.DiskName",
+      "size": "#result?.DiskSize",
+      "status": "#result?.DiskState",
+      "category": "#result?.DiskType",
+      "instanceId": "#result?.InstanceId",
+      "createdAt": "#result?.CreateTime",
+      "expiredAt": "#result?.DeadlineTime"
+    }
+  },
+  "uninstall": {
+    "client": "new com.tencentcloudapi.cbs.v20170312.CbsClient(#credential,#regionId,#clientProfile)",
+    "method": "TerminateDisks",
+    "argTypes": [
+      "com.tencentcloudapi.cbs.v20170312.models.TerminateDisksRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "diskIds": [
+        "#diskIds"
+      ]
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#diskIds"
+    }
+  }
+}

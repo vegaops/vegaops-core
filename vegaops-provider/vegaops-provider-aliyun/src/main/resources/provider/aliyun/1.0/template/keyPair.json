@@ -1,0 +1,121 @@
+{
+  "vendor": "aliyun",
+  "nodeType": "keyPair",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query",
+    "bind-unbind"
+  ],
+  "maskKeys": [
+    "privateKey"
+  ],
+  "profile":"T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
+  "install": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.CreateKeyPairRequest",
+      "keyPairName": "#name"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "regionId": "#RegionId",
+      "name": "#result.KeyPairName",
+      "keyPairId": "#result.KeyPairName",
+      "fingerPrint": "#result.KeyPairFingerPrint",
+      "privateKey": "#result.privateKeyBody"
+    }
+  },
+  "uninstall": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DeleteKeyPairsRequest",
+      "keyPairNames": "new String('[\"'+#name+'\"]')"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#name"
+    }
+  },
+  "list": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DescribeKeyPairsRequest",
+      "PageSize": "10",
+      "PageNumber": "1"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "[keyPairList]:[#result.KeyPairs]": {
+        "name": "#KeyPairName",
+        "keyPairId": "#KeyPairName",
+        "providerId": "#KeyPairName",
+        "creationTime": "#CreationTime",
+        "fingerPrint": "#KeyPairFingerPrint"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DescribeKeyPairsRequest",
+      "keyPairName": "#name"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "name": "#result.getKeyPairs().size() eq 0 ? null : #result.getKeyPairs().get(0).getKeyPairName()",
+      "keyPairId": "#result.getKeyPairs().size() eq 0 ? null : #result.getKeyPairs().get(0).getKeyPairName()",
+      "fingerPrint": "#result.getKeyPairs().size() eq 0 ? null : #result.getKeyPairs().get(0).getKeyPairFingerPrint()"
+    }},
+  "bind": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.AttachKeyPairRequest",
+      "instanceIds": "new String('[\"'+#instanceId+'\"]')",
+      "keyPairName": "#name"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#result.getResults().get(0).getSuccess() eq 'true'",
+      "instanceId": "#result.getResults().get(0).getInstanceId()"
+    }},
+  "unbind": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DetachKeyPairRequest",
+      "instanceIds": "new String('[\"'+#instanceId+'\"]')",
+      "keyPairName": "#name"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#result.getResults().get(0).getSuccess() eq 'true'",
+      "instanceId": "#result.getResults().get(0).getInstanceId()"
+    }}
+}
+
+
+

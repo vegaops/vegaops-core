@@ -1,0 +1,16 @@
+{
+  "vendor": "aws",
+  "accessKey": "xxxxx",
+  "secret": "xxxxx",
+  "regionId": "cn-north-1",
+  "zoneId": "cnn1-az1",
+  "nodes": [
+    {
+      "componentId": "keyPair-1",
+      "nodeType": "keyPair",
+      "vars": {
+        "keyName": "xjh-test"
+      }
+    }
+  ]
+}

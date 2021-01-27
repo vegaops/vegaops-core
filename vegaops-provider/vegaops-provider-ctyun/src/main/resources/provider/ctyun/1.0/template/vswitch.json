@@ -1,0 +1,142 @@
+{
+  "vendor": "ctyun",
+  "nodeType": "vswitch",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "query",
+    "list"
+  ],
+  "ctyunAccount": {
+    "class": "org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount",
+    "accessKey": "#accessKey",
+    "secret": "#secret"
+  },
+  "install": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.CreateSubnetRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "zoneId": "#zoneId",
+      "name": "#name",
+      "cidr": "#cidr",
+      "gatewayIp": "#gatewayIp",
+      "dhcpEnable": "#dhcpEnable",
+      "vpcId": "#vpcId",
+      "primaryDns": "#primaryDns",
+      "secondaryDns": "#secondaryDns"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "resVlanId": "#result.returnObj.id",
+      "name": "#result.returnObj.name",
+      "cidr": "#result.returnObj.cidr",
+      "gateway": "#result.returnObj.gateway_ip",
+      "availabilityZone": "#result.returnObj.availability_zone",
+      "vpcId": "#result.returnObj.vpc_id",
+      "status": "#result.returnObj.status",
+      "primaryDns": "#result.returnObj.primary_dns",
+      "secondaryDns": "#result.returnObj.secondary_dns"
+    }
+  },
+  "query": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.QuerySubnetDetailRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "subnetId": "#vswitchId"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "resVlanId": "#result.returnObj.resVlanId",
+      "name": "#result.returnObj.name",
+      "regionId": "#result.returnObj.regionId",
+      "vpcId": "#result.returnObj.vpcId",
+      "zoneId": "#result.returnObj.zoneId",
+      "zoneName": "#result.returnObj.zoneName",
+      "gateway": "#result.returnObj.gateway",
+      "status": "#result.returnObj.vlanStatus",
+      "cidr": "#result.returnObj.cidr",
+      "firstDcn": "#result.returnObj.firstDcn",
+      "secondDcn": "#result.returnObj.secondDcn"
+    }
+  },
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.GetSubnetsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "vpcId": "#vpcId"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "log": "false",
+      "[subnetList]:[#result.returnObj]": {
+        "resVlanId": "#resVlanId",
+        "name": "#name",
+        "regionId": "#regionId",
+        "vpcId": "#vpcId",
+        "zoneId": "#zoneId",
+        "zoneName": "#zoneName",
+        "gateway": "#gateway",
+        "status": "#vlanStatus",
+        "cidr": "#cidr",
+        "firstDcn": "#firstDcn",
+        "secondDcn": "#secondDcn",
+        "neutronSubnetId": "#neutronSubnetId"
+      }
+    }
+  },
+  "uninstall": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.DeleteSubnetRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "waitInterval": "3000",
+    "retryTimes": "3",
+    "request": {
+      "regionId": "#regionId",
+      "vpcId": "#vpcId",
+      "subnetId": "#vswitchId"
+    },
+    "output": {
+      "success": "#result?.message?.contains('VPC.0202')",
+      "retry": "#success ne true",
+      "deleteProviderId": "#vswitchId"
+    }
+  }
+}

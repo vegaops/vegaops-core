@@ -1,0 +1,26 @@
+{
+  "componentId": "container_networkInterface1234567",
+  "containerType": "aws",
+  "nodes": [
+    {
+      "componentId": "networkInterface",
+      "leafNode": false,
+      "relations": [],
+      "nodeType": "networkInterface",
+      "properties": [
+        {
+          "key": "vswitchId",
+          "value": "subnet-0b93b4c853b63c1db"
+        },
+        {
+          "key": "description",
+          "value": "vegaopsTest"
+        }
+      ]
+    }
+  ],
+  "relations": [],
+  "zoneId": "cnn1-az1",
+  "regionId": "cn-north-1",
+  "cloudAccountId": "1249274415906578433"
+}

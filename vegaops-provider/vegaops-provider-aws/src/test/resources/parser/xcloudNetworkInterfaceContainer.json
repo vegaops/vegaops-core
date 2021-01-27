@@ -1,0 +1,17 @@
+{
+  "vendor": "aws",
+  "accessKey": "xxxxx",
+  "secret": "xxxxx",
+  "regionId": "cn-north-1",
+  "zoneId": "cnn1-az1",
+  "nodes": [
+    {
+      "componentId": "networkInterface-1",
+      "nodeType": "networkInterface",
+      "vars": {
+        "description": "vegaopsTest",
+        "subnetId": "subnet-0b93b4c853b63c1db"
+      }
+    }
+  ]
+}

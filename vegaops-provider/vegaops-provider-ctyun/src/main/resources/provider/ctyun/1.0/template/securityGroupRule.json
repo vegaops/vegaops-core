@@ -1,0 +1,114 @@
+{
+  "vendor": "ctyun",
+  "nodeType": "securityGroupRule",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list"
+  ],
+  "ctyunAccount": {
+    "class": "org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount",
+    "accessKey": "#accessKey",
+    "secret": "#secret"
+  },
+  "install": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.CreateSecurityGroupRuleRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "securityGroupId": "#securityGroupId",
+      "direction": "#direction",
+      "ethertype": "#ethertype",
+      "protocol": "#protocol",
+      "portRangeMin": "#portStart",
+      "portRangeMax": "#portEnd",
+      "remoteIpPrefix": "#cidrBlock",
+      "remoteGroupId": "#remoteGroupId"
+    },
+    "output": {
+      "success": "#result.statusCode?.equals(800)",
+      "securityGroupRuleId": "#result.returnObj?.security_group_rule?.id",
+      "id": "#result.returnObj?.security_group_rule?.id",
+      "description": "#result.returnObj?.security_group_rule?.description",
+      "securityGroupId": "#result.returnObj?.security_group_rule?.security_group_id",
+      "ethertype": "#result.returnObj?.security_group_rule?.ethertype",
+      "remoteIpPrefix": "#result.returnObj?.security_group_rule?.remote_ip_prefix",
+      "tenantId": "#result.returnObj?.security_group_rule?.tenant_id",
+      "direction": "#result.returnObj?.security_group_rule?.direction",
+      "protocol": "#result.returnObj?.security_group_rule?.protocol",
+      "portRangeMin": "#result.returnObj?.security_group_rule?.port_range_min",
+      "portRangeMax": "#result.returnObj?.security_group_rule?.port_range_max",
+      "createdAt": "#result.returnObj?.security_group_rule?.created_at",
+      "updatedAt": "#result.returnObj?.security_group_rule?.updated_at",
+      "regionId":"#regionId"
+    }
+  },
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunSecurityGroupRuleClient",
+    "method": "getSecurityGroupRules",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.QueryGroupRuleRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request":{
+      "regionId":"#regionId",
+      "securityGroupId": "#securityGroupId"
+    },
+    "output": {
+      "success": "true",
+      "log": "false",
+      "[securityGroupRuleList]:[#result]": {
+        "description": "#description",
+        "securityGroupRuleId": "#id",
+        "securityGroupId": "#security_group_id",
+        "ethertype": "#ethertype",
+        "remoteGroupId": "#remote_group_id",
+        "tenantId": "#tenant_id",
+        "direction": "#direction",
+        "protocol": "#protocol",
+        "portRangeMin": "#port_range_min",
+        "portRangeMax": "#port_range_max",
+        "remoteIpPrefix": "#remote_ip_prefix",
+        "ipv6Cidr": "#ipv6Cidr",
+        "createdAt": "#created_at",
+        "updatedAt": "#updated_at",
+        "regionId":"#regionId"
+      }
+    }
+  },
+  "uninstall": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.DeleteSecurityGroupRuleRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "securityGroupRuleId": "#securityGroupRuleId"
+    },
+    "output": {
+      "success": "#result.statusCode?.equals(800)||#result.message?.contains('does not exist')",
+      "deleteProviderId": "#securityGroupRuleId"
+    }
+  }
+}

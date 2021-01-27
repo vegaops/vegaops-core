@@ -1,0 +1,39 @@
+vendor: ctyun
+nodeType: flavor
+componentId: '#componentId'
+actions:
+- list
+ctyunAccount:
+  accessKey: '#accessKey'
+  secret: '#secret'
+  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
+list:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.GetFlavorsRequest
+  output:
+    log: 'false'
+    '[flavorList]:[#result]':
+      flavorName: '#flavorName'
+      flavorType: '#flavorType'
+      regionId: '#regionId'
+      zoneType: '#zoneType'
+      az: '#az'
+      gpuNum: '#gpuNum'
+      id: '#id'
+      cpuNum: '#cpuNum'
+      memSize: '#memSize'
+      status: '#status'
+    success: 'true'
+  request:
+    flavorType: '#flavorType'
+    regionId: '#regionId'
+    zoneId: '#zoneId'
+    version: '#version'
+    cpuNum: '#cpuNum'
+    memSize: '#memSize'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getAllFlavors
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunFlavorClient

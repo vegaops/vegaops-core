@@ -1,0 +1,124 @@
+{
+  "vendor": "ctyun",
+  "nodeType": "slb",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query"
+  ],
+  "ctyunAccount": {
+    "class": "org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount",
+    "accessKey": "#accessKey",
+    "secret": "#secret"
+  },
+  "install": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.CreateELBv4Request"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "name": "#name",
+      "description": "#description",
+      "vip_subnet_id": "#vswitchId",
+      "vip_address": "#ipAddress"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "status": "#result.returnObj.loadbalancer.provisioning_status",
+      "providerId": "#result.returnObj.loadbalancer.id",
+      "ipAddress": "#result.returnObj.loadbalancer.vip_address",
+      "name": "#result.returnObj.loadbalancer.name",
+      "createAt": "#result.returnObj.loadbalancer.created_at",
+      "vswitchId": "#result.returnObj.loadbalancer.vip_subnet_id",
+      "description": "#result.returnObj.loadbalancer.description",
+      "projectId": "#result.returnObj.loadbalancer.project_id"
+    }
+  },
+  "uninstall": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.DeleteELBv4Request"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "elbId": "#slbId"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)||#result.message?.contains('could not be found')",
+      "deleteProviderId": "#slbId"
+    }
+  },
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.GetELBsv4Request"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "[loadbalancers]:[#result.returnObj.loadbalancers]": {
+        "status": "#provisioning_status",
+        "providerId": "#id",
+        "ipAddress": "#vip_address",
+        "name": "#name",
+        "createAt": "#created_at",
+        "vswitchId": "#vip_subnet_id",
+        "description": "#description",
+        "projectId": "#project_id"
+      }
+    }
+  },
+  "query": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.QueryELBv4DetailRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "elbId": "#slbId"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "status": "#result.returnObj.loadbalancer.provisioning_status",
+      "providerId": "#result.returnObj.loadbalancer.id",
+      "ipAddress": "#result.returnObj.loadbalancer.vip_address",
+      "name": "#result.returnObj.loadbalancer.name",
+      "createAt": "#result.returnObj.loadbalancer.created_at",
+      "vswitchId": "#result.returnObj.loadbalancer.vip_subnet_id",
+      "description": "#result.returnObj.loadbalancer.description",
+      "projectId": "#result.returnObj.loadbalancer.project_id"
+    }
+  }
+}

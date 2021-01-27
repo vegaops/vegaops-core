@@ -1,0 +1,36 @@
+{
+  "componentId": "container_1n6c8zzjrihs0",
+  "nodes": [
+    {
+      "leafNode": false,
+      "nodeType": "volume",
+      "properties": [
+        {
+          "value": "5",
+          "key": "size"
+        },
+        {
+          "value": "1",
+          "key": "count"
+        },
+        {
+          "value": "",
+          "key": "backupId"
+        },
+
+        {
+          "value": "test-volume",
+          "key": "name"
+        },
+        {
+          "value": "tester",
+          "key": "description"
+        }
+      ]
+    }
+  ],
+  "regionId": "cn-gzT",
+  "containerType": "ctyun",
+  "cloudAccountId": "1245215824219570177",
+  "zoneId": "cn-gzTa"
+}

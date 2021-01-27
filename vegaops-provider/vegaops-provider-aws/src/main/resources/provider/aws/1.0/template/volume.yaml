@@ -1,0 +1,146 @@
+vendor: aws
+nodeType: volume
+componentId: '#componentId'
+actions:
+- install-uninstall
+- query
+- list
+- bind-unbind
+awsRegion: T(software.amazon.awssdk.regions.Region).of(#regionId)
+credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)
+awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
+ec2Client: T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
+install:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.CreateVolumeRequest
+  output:
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    providerId: '#result.volumeId()'
+    volumeId: '#result.volumeId()'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#state eq ''available'''
+        mergeKeys: '*'
+      input:
+        volumeId: '#volumeId'
+      action: query
+      waitInterval: '3000'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.CreateVolumeRequest).builder().availabilityZone(#availabilityZone).encrypted(#encrypted).iops(#iops).kmsKeyId(#kmsKeyId).outpostArn(#outpostArn).size(#size).snapshotId(#snapshotId).volumeType(#volumeType).multiAttachEnabled(#multiAttachEnabled).tagSpecifications(T(software.amazon.awssdk.services.ec2.model.TagSpecification).builder().resourceType('volume').tags(T(software.amazon.awssdk.services.ec2.model.Tag).builder().key('Name').value(#name).build()).build()).build()
+  method: createVolume
+  argNames:
+  - request
+  client: '#ec2Client'
+query:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DescribeVolumesRequest
+  output:
+    volumeType: '#result.volumes()[0]?.volumeTypeAsString()'
+    snapshotId: '#result.volumes()[0]?.snapshotId()'
+    fastRestored: '#result.volumes()[0]?.fastRestored()'
+    availabilityZone: '#result.volumes()[0]?.availabilityZone()'
+    tags: '#result.volumes()[0]?.tags()'
+    instanceId: '#result.volumes()[0]?.attachments().size() eq 0 ? null: #result.volumes()[0]?.attachments()[0]?.instanceId()'
+    encrypted: '#result.volumes()[0]?.encrypted()'
+    size: '#result.volumes()[0]?.size()'
+    createTime: '#result.volumes()[0]?.createTime()'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    providerId: '#result.volumes()[0]?.volumeId()'
+    volumeId: '#result.volumes()[0]?.volumeId()'
+    iops: '#result.volumes()[0]?.iops()'
+    outpostArn: '#result.volumes()[0]?.outpostArn()'
+    kmsKeyId: '#result.volumes()[0]?.kmsKeyId()'
+    state: '#result.volumes()[0]?.stateAsString()'
+    close: '#ec2Client.close()'
+    multiAttachEnabled: '#result.volumes()[0]?.multiAttachEnabled()'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeVolumesRequest).builder().volumeIds(#volumeId).build()
+  method: describeVolumes
+  argNames:
+  - request
+  client: '#ec2Client'
+list:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DescribeVolumesRequest
+  output:
+    log: 'false'
+    '[volumeList]:[#result.volumes()]':
+      volumeType: '#me.volumeTypeAsString()'
+      snapshotId: '#me.snapshotId()'
+      fastRestored: '#me.fastRestored()'
+      availabilityZone: '#me.availabilityZone()'
+      tags: '#me.tags()'
+      instanceId: '#me.attachments().size() eq 0 ? null :#me.attachments()[0]?.instanceId()'
+      encrypted: '#me.encrypted()'
+      size: '#me.size()'
+      createTime: '#me.createTime()'
+      regionId: '#regionId'
+      providerId: '#me.volumeId()'
+      volumeId: '#me.volumeId()'
+      iops: '#me.iops()'
+      zoneId: '#me.availabilityZone()'
+      outpostArn: '#me.outpostArn()'
+      kmsKeyId: '#me.kmsKeyId()'
+      state: '#me.stateAsString()'
+      multiAttachEnabled: '#me.multiAttachEnabled()'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeVolumesRequest).builder().build()
+  method: describeVolumes
+  argNames:
+  - request
+  client: '#ec2Client'
+uninstall:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DeleteVolumeRequest
+  output:
+    deleteProviderId: '#volumeId'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200||#throwable.getMessage().contains(''not
+      exist'')'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.DeleteVolumeRequest).builder().volumeId(#volumeId).build()
+  method: deleteVolume
+  argNames:
+  - request
+  client: '#ec2Client'
+bind:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.AttachVolumeRequest
+  output:
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200 || #throwable.toString().contains(''is
+      already attached to an instance'')'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#instanceId ne null'
+        mergeKeys: '*'
+      input:
+        volumeId: '#volumeId'
+      action: query
+      waitInterval: '3000'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.AttachVolumeRequest).builder().device(#device).instanceId(#instanceId).volumeId(#volumeId).build()
+  method: attachVolume
+  argNames:
+  - request
+  client: '#ec2Client'
+unbind:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DetachVolumeRequest
+  output:
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#instanceId eq null'
+        mergeKeys: '*'
+      input:
+        volumeId: '#volumeId'
+      action: query
+      waitInterval: '3000'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.DetachVolumeRequest).builder().device(#device).instanceId(#instanceId).volumeId(#volumeId).force(#force).build()
+  method: detachVolume
+  argNames:
+  - request
+  client: '#ec2Client'

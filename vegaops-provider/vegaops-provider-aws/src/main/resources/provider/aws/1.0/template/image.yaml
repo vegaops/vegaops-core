@@ -1,0 +1,85 @@
+vendor: aws
+nodeType: image
+componentId: '#componentId'
+actions:
+- install-uninstall
+- query
+- list
+awsRegion: T(software.amazon.awssdk.regions.Region).of(#regionId)
+credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)
+awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
+ec2Client: T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
+install:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.CreateImageRequest
+  output:
+    imageId: '#result.imageId()'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+  request: T(software.amazon.awssdk.services.ec2.model.CreateImageRequest).builder().description(#description).instanceId(#instanceId).name(#name).noReboot(#noReboot).build()
+  method: createImage
+  argNames:
+  - request
+  client: '#ec2Client'
+list:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DescribeImagesRequest
+  output:
+    log: 'false'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    close: '#ec2Client.close()'
+    '[imageList]:[#result.images()]':
+      virtualizationType: '#me.virtualizationType()'
+      imageId: '#me.imageId()'
+      enaSupport: '#me.enaSupport()'
+      description: '#me.description()'
+      ownerId: '#me.ownerId()'
+      platform: '#me.platform()'
+      imageLocation: '#me.imageLocation()'
+      size: '#me.blockDeviceMappings().size() eq 0 ? null : #me.blockDeviceMappings()[0]?.ebs()?.volumeSize()'
+      regionId: '#regionId'
+      name: '#me.name()'
+      zoneId: '#zoneId'
+      platformDetails: '#me.platformDetails()'
+      state: '#me.state()'
+      imageType: '#me.imageType()'
+      imageOwnerAlias: '#me.imageOwnerAlias()'
+      architecture: '#me.architecture()'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeImagesRequest).builder().imageIds(#imageIds).owners('amazon').build()
+  method: describeImages
+  argNames:
+  - request
+  client: '#ec2Client'
+query:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DescribeImagesRequest
+  output:
+    provideId: '#result.images()[0]?.imageId()'
+    imageId: '#result.images()[0]?.imageId()'
+    description: '#result.images()[0]?.description()'
+    ownerId: '#result.images()[0]?.ownerId()'
+    platform: '#result.images()[0]?.platform()'
+    imageLocation: '#result.images()[0]?.imageLocation()'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    name: '#result.images()[0]?.name()'
+    platformDetails: '#result.images()[0]?.platformDetails()'
+    state: '#result.images()[0]?.state()'
+    close: '#ec2Client.close()'
+    imageType: '#result.images()[0]?.imageType()'
+    imageOwnerAlias: '#result.images()[0]?.imageOwnerAlias()'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeImagesRequest).builder().imageIds(#imageId).build()
+  method: describeImages
+  argNames:
+  - request
+  client: '#ec2Client'
+uninstall:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DeleteFpgaImageRequest
+  output:
+    deleteProviderId: '#fpgaImageId'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200||#throwable.getMessage().contains(''not
+      exist'')'
+  request: T(software.amazon.awssdk.services.ec2.model.DeleteFpgaImageRequest).builder().fpgaImageId(#fpgaImageId).build()
+  method: deleteFpgaImage
+  argNames:
+  - request
+  client: '#ec2Client'

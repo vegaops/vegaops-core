@@ -1,0 +1,93 @@
+vendor: ctyun
+nodeType: vpc
+componentId: '#componentId'
+maskKeys:
+- secret
+actions:
+- install-uninstall
+- query
+- list
+ctyunAccount:
+  accessKey: '#accessKey'
+  secret: '#secret'
+  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
+install:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.CreateVpcRequest
+  output:
+    success: '#result.statusCode.equals(800)'
+    vpcId: '#result.returnObj.id'
+    name: '#result.returnObj.name'
+    cidr: '#result.returnObj.cidr'
+    status: '#result.returnObj.status'
+  request:
+    regionId: '#regionId'
+    name: '#name'
+    cidr: '#cidr'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+query:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.QueryVPCDetailRequest
+  output:
+    regionId: '#result.returnObj.regionId'
+    success: '#result.statusCode.equals(800)'
+    vpcId: '#result.returnObj.resVpcId'
+    name: '#result.returnObj.name'
+    zoneId: '#result.returnObj.zoneId'
+    cidr: '#result.returnObj.cidr'
+    zoneName: '#result.returnObj.zoneName'
+    status: '#result.returnObj.vpcStatus'
+    createDate: '#result.returnObj.createDate'
+  request:
+    regionId: '#regionId'
+    vpcId: '#vpcId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+list:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.GetVpcsRequest
+  output:
+    log: 'false'
+    success: '#result.statusCode.equals(800)'
+    '[vpcList]:[#result.returnObj]':
+      regionId: '#regionId'
+      vpcId: '#resVpcId'
+      name: '#name'
+      zoneId: '#zoneId'
+      cidr: '#cidr'
+      zoneName: '#zoneName'
+      status: '#vpcStatus'
+      createDate: '#createDate'
+  request:
+    regionId: '#regionId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+uninstall:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.DeleteVPCRequest
+  output:
+    deleteProviderId: '#vpcId'
+    success: '#result.statusCode?.equals(800)||#result.message?.contains(''does not
+      exist'')'
+  request:
+    regionId: '#regionId'
+    vpcId: '#vpcId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient

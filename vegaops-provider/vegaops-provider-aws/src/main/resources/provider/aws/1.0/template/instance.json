@@ -1,0 +1,268 @@
+{
+  "vendor": "aws",
+  "nodeType": "instance",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query",
+    "start-stop",
+    "reboot",
+    "update"
+  ],
+  "awsRegion": "T(software.amazon.awssdk.regions.Region).of(#regionId)",
+  "credentials": "T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)",
+  "awsCredentialsProvider": "T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)",
+  "ec2Client": "T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()",
+  "install": {
+    "client": "org.prophetech.hyperone.vegaops.aws.client.AwsInstanceClient",
+    "method": "createInstance",
+    "param": {
+      "class": "org.prophetech.hyperone.vegaops.aws.model.CreateInstanceParam",
+      "cpuNum": "#cpuNum",
+      "associatePublicIpAddress": "#associatePublicIpAddress",
+      "imageId": "#imageId",
+      "flavorId":"#flavorId",
+      "kernelId":"#kernelId",
+      "keypairName":"#keypairName",
+      "maxCount":"#count",
+      "zoneId":"#zoneId",
+      "privateIpAddress":"#privateIpAddress",
+      "ramDiskId":"#ramDiskId",
+      "securityGroups":"#securityGroups",
+      "subnetId":"#VSwitchId",
+      "name": "#name"
+    },
+    "argValues":{
+      "ec2Client": "#ec2Client",
+      "param": "#param"
+    },
+    "output": {
+      "success": "#result.statusCode eq 200",
+      "id": "#result.instances[0]?.id",
+      "image": "#result.instances[0]?.image",
+      "flavor": "#result.instances[0]?.flavor",
+      "vpcId": "#result.instances[0]?.vpcId",
+      "privateIp": "#result.instances[0]?.privateIp",
+      "securityGroups": "#result.instances[0]?.securityGroups",
+      "zoneId": "#result.instances[0]?.zoneId",
+      "floatingIp": "#result.instances[0]?.floatingIp",
+      "payType": "#result.instances[0]?.payType",
+      "regionId": "#regionId",
+      "osType": "#result.instances[0]?.osType",
+      "vswithId": "#result.instances[0]?.vswithId",
+      "memory": "#result.instances[0]?.memory",
+      "cpu": "#result.instances[0]?.cpu",
+      "name": "#result.instances[0]?.name",
+      "status": "#result.instances[0]?.status",
+      "created": "#result.instances[0]?.created",
+      "expireTime": "#result.instances[0]?.expireTime",
+      "bandwidthSize": "#result.instances[0]?.bandwidthSize",
+      "keyPairName": "#result.instances[0]?.keyPairName",
+    }
+  },
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.aws.client.AwsInstanceClient",
+    "method": "getInstances",
+    "argValues":{
+      "ec2Client": "#ec2Client"
+    },
+    "output": {
+      "success": "#result.statusCode eq 200",
+      "close": "#ec2Client.close()",
+      "log": "false",
+      "[regionList]:[#result.instances]": {
+        "id": "#me.id",
+        "image": "#me.image",
+        "name": "#me.name",
+        "flavor": "#me.flavor",
+        "vpcId": "#me.vpcId",
+        "privateIp": "#me.privateIp",
+        "securityGroups": "#me.securityGroups",
+        "zoneId": "#zoneId",
+        "floatingIp": "#me.floatingIp",
+        "payType": "#me.payType",
+        "regionId": "#regionId",
+        "osType": "#me.osType",
+        "vswithId": "#me.vswithId",
+        "memory": "#me.memory",
+        "cpu": "#me.cpu",
+        "status": "#me.status",
+        "created": "#me.created",
+        "expireTime": "#me.expireTime",
+        "bandwidthSize": "#me.bandwidthSize",
+        "keyPairName": "#me.keyPairName"
+      }
+    }
+  },
+  "query": {
+    "client": "org.prophetech.hyperone.vegaops.aws.client.AwsInstanceClient",
+    "method": "getInstanceDetail",
+    "argValues":{
+      "ec2Client": "#ec2Client",
+      "instanceId": "#instanceId"
+    },
+    "output": {
+      "success": "#result.statusCode eq 200",
+      "zoneId": "#result.instances.get(0).getZoneId()",
+      "id": "#result.instances.get(0).getId()",
+      "name": "#result.instances.get(0).getName()",
+      "image": "#result.instances.get(0).getImage()",
+      "flavor": "#result.instances.get(0).getFlavor()",
+      "vpcId": "#result.instances.get(0).getVpcId()",
+      "privateIp": "#result.instances.get(0).getPrivateIp()",
+      "securityGroups": "#result.instances.get(0).getSecurityGroups()",
+      "floatingIp": "#result.instances.get(0).getFloatingIp()",
+      "payType": "#result.instances.get(0).getPayType()",
+      "osType": "#result.instances.get(0).getOsType()",
+      "vswithId": "#result.instances.get(0).getVswithId()",
+      "memory": "#result.instances.get(0).getMemory()",
+      "cpu": "#result.instances.get(0).getCpu()",
+      "status": "#result.instances.get(0).getStatus()",
+      "created": "#result.instances.get(0).getCreated()",
+      "expireTime": "#result.instances.get(0).getExpireTime()",
+      "bandwidthSize": "#result.instances.get(0).getBandwidthSize()",
+      "keyPairName": "#result.instances.get(0).getKeyPairName()"
+    }
+  },
+  "uninstall": {
+    "client": "#ec2Client",
+    "method": "terminateInstances",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.TerminateInstancesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.TerminateInstancesRequest).builder().instanceIds(#instanceId).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200||#throwable.getMessage().contains('not exist')",
+      "after": {
+        "action": "query",
+        "input": {
+          "ec2Client": "#ec2Client",
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#status  eq 'terminated'",
+          "mergeKeys": "*"
+        }
+      },
+      "deleteProviderId": "#instanceId"
+    }
+  },
+  "start": {
+    "client": "#ec2Client",
+    "method": "startInstances",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.StartInstancesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.StartInstancesRequest).builder().instanceIds(#instanceId).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "after": {
+        "action": "query",
+        "input": {
+          "ec2Client": "#ec2Client",
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#status  eq 'running'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "stop": {
+    "client": "#ec2Client",
+    "method": "stopInstances",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.StopInstancesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.StopInstancesRequest).builder().instanceIds(#instanceId).force(#forceStop).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "after": {
+        "action": "query",
+        "input": {
+          "ec2Client": "#ec2Client",
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#status  eq 'stopped'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "update": {
+    "client": "#ec2Client",
+    "method": "modifyInstanceAttribute",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.ModifyInstanceAttributeRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.ModifyInstanceAttributeRequest).builder().instanceId(#instanceId).instanceType(T(software.amazon.awssdk.services.ec2.model.AttributeValue).builder().value(#instanceType).build()).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "after": {
+        "action": "query",
+        "input": {
+          "ec2Client": "#ec2Client",
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#status  eq 'stopped'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "reboot": {
+    "client": "#ec2Client",
+    "method": "rebootInstances",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.RebootInstancesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.RebootInstancesRequest).builder().instanceIds(#instanceId).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "after": {
+        "action": "query",
+        "input": {
+          "ec2Client": "#ec2Client",
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#status  eq 'running'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  }
+}

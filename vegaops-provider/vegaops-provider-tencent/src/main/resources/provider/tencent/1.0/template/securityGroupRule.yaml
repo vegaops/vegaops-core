@@ -1,0 +1,93 @@
+vendor: tencent
+nodeType: securityGroupRule
+componentId: '#componentId'
+actions:
+- list
+- install-uninstall
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: vpc.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+list:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DescribeSecurityGroupPoliciesRequest
+  securityGroupId: '#group_id'
+  output:
+    '[egressScGroupRuleList]:[#result.SecurityGroupPolicySet.Egress]':
+      securityGroupId: '#securityGroupId'
+      protocol: '#Protocol'
+      port: '#Port'
+      regionId: '#regionId'
+      cidrBlock: '#CidrBlock'
+      description: '#PolicyDescription'
+      action: '#Action'
+      policyIndex: '#PolicyIndex'
+      ipv6CidrBlock: '#Ipv6CidrBlock'
+      direction: egress
+    success: '#throwable eq null'
+    '[ingresSscGroupRuleList]:[#result.SecurityGroupPolicySet.Ingress]':
+      securityGroupId: '#securityGroupId'
+      protocol: '#Protocol'
+      port: '#Port'
+      regionId: '#regionId'
+      cidrBlock: '#CidrBlock'
+      description: '#PolicyDescription'
+      action: '#Action'
+      policyIndex: '#PolicyIndex'
+      ipv6CidrBlock: '#Ipv6CidrBlock'
+      direction: ingress
+    ruleList: new java.util.ArrayList()
+    add2: '#egressScGroupRuleList eq null ? #ruleList : #ruleList.addAll(#egressScGroupRuleList)'
+    resultType: list:ruleList
+    add1: '#ingresSscGroupRuleList eq null ? #ruleList : #ruleList.addAll(#ingresSscGroupRuleList)'
+  request:
+    securityGroupId: '#securityGroupId'
+  method: DescribeSecurityGroupPolicies
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+install:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.CreateSecurityGroupPoliciesRequest
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#throwable eq null'
+        mergeKeys: '*'
+      input:
+        group_id: '#securityGroupId'
+      action: list
+      waitInterval: '3000'
+  request: 'T(org.prophetech.hyperone.vegaops.tencent.util.SecurityGroupRuleBuilder).buildCreateRequest(#protocol,
+    #portStart, #portEnd, #securityGroupId,#policy, #description,#direction,#cidrBlock)'
+  method: CreateSecurityGroupPolicies
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+uninstall:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.tencent.model.DeleteSgRuleParam
+  output:
+    deleteProviderId: '#securityGroupId'
+    success: '#throwable eq null || #throwable.toString().contains(''not exist'')'
+  method: deleteSgRule
+  param:
+    securityGroupId: '#securityGroupId'
+    protocol: '#protocol'
+    port: '#port'
+    regionId: '#regionId'
+    accessKey: '#accessKey'
+    cidrBlock: '#cidrBlock'
+    action: '#action'
+    index: '#index'
+    secret: '#secret'
+    ipv6CidrBlock: '#ipv6CidrBlock'
+    direction: '#direction'
+  argNames:
+  - param
+  client: org.prophetech.hyperone.vegaops.tencent.client.TencentSgRuleClient

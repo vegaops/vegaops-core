@@ -1,0 +1,175 @@
+{
+  "vendor": "tencent",
+  "nodeType": "keyPair",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query",
+    "bind-unbind"
+  ],
+  "maskKeys": [
+    "privateKey"
+  ],
+  "credential":"new com.tencentcloudapi.common.Credential(#accessKey,#secret)",
+  "httpProfile": {
+    "class": "com.tencentcloudapi.common.profile.HttpProfile",
+    "endpoint": "cvm.tencentcloudapi.com"
+  },
+  "clientProfile": {
+    "class": "com.tencentcloudapi.common.profile.ClientProfile",
+    "httpProfile": "#httpProfile"
+  },
+  "install": {
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "CreateKeyPair",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.CreateKeyPairRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "keyName": "#name",
+      "projectId": "0"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "keyId": "#result.KeyPair.KeyId",
+      "name": "#result.KeyPair.KeyName",
+      "privateKey": "#result.KeyPair.PrivateKey"
+    }
+  },
+  "uninstall": {
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "DeleteKeyPairs",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.DeleteKeyPairsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "keyIds": ["#keyIds"]
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#keyIds"
+    }
+  },
+  "list": {
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeKeyPairs",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.DescribeKeyPairsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "class": "com.tencentcloudapi.cvm.v20170312.models.DescribeKeyPairsRequest",
+      "limit": "100",
+      "offset": "0"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "loop": {
+        "condition": "#result.getKeyPairSet().length != 0",
+        "appendList": [
+          "keyPairList"
+        ],
+        "1": "#request.setOffset(#request.getOffset()+#request.getLimit())"
+      },
+      "[keyPairList]:[#result.KeyPairSet]": {
+        "keyId": "#KeyId",
+        "providerId": "#KeyId",
+        "name": "#KeyName",
+        "description": "#Description",
+        "publicKey": "#PublicKey",
+        "createTime": "#CreateTime",
+        "regionId": "#regionId"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeKeyPairs",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.DescribeKeyPairsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "keyIds": ["#keyId"]
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "[keyPairList]:[#result.KeyPairSet]": {
+        "keyId": "#KeyId",
+        "providerId": "#KeyId",
+        "name": "#KeyName",
+        "description": "#Description",
+        "publicKey": "#PublicKey",
+        "createTime": "#CreateTime"
+      }
+    }
+  },
+  "bind": {
+    "before": {
+      "action": "instance.stop",
+      "input": {
+        "instanceId": "#instanceIds"
+      },
+      "output": {
+        "success": "true"
+      }
+    },
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "AssociateInstancesKeyPairs",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.AssociateInstancesKeyPairsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "waitInterval": "3000",
+    "retryTimes": "3",
+    "request": {
+      "instanceIds": ["#instanceIds"],
+      "keyIds": ["#keyIds"]
+    },
+    "output": {
+      "success": "#throwable eq null"
+    }
+  },
+  "unbind": {
+    "before": {
+      "action": "instance.stop",
+      "input": {
+        "instanceId": "#instanceIds"
+      },
+      "output": {
+        "success": "true"
+      }
+    },
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "DisassociateInstancesKeyPairs",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.DisassociateInstancesKeyPairsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "waitInterval": "3000",
+    "retryTimes": "3",
+    "request": {
+      "instanceIds": ["#instanceIds"],
+      "keyIds": ["#keyIds"]
+    },
+    "output": {
+      "success": "#throwable eq null"
+    }
+  }
+}

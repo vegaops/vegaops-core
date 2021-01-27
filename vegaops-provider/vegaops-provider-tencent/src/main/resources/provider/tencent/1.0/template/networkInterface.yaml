@@ -1,0 +1,155 @@
+vendor: tencent
+nodeType: networkInterface
+componentId: '#componentId'
+actions:
+- list
+- query
+- install-uninstall
+- bind-unbind
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: vpc.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+list:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DescribeNetworkInterfacesRequest
+  output:
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
+      condition: '#result.getNetworkInterfaceSet().length != 0'
+      appendList:
+      - networkInterfaceList
+    '[networkInterfaceList]:[#result.NetworkInterfaceSet]':
+      networkInterfaceId: '#NetworkInterfaceId'
+      description: '#NetworkInterfaceDescription'
+      type: '#Primary'
+      privateIpAddressSet: '#PrivateIpAddressSet'
+      groupSet: '#GroupSet'
+      vswitchId: '#SubnetId'
+      macAddress: '#MacAddress'
+      instanceId: '#Attachment?.instanceId'
+      zone: '#Zone'
+      regionId: '#regionId'
+      providerId: '#NetworkInterfaceId'
+      vpcId: '#VpcId'
+      name: '#NetworkInterfaceName'
+      createdTime: '#CreatedTime'
+      status: '#State'
+  request:
+    offset: '0'
+    limit: '100'
+    class: com.tencentcloudapi.vpc.v20170312.models.DescribeNetworkInterfacesRequest
+  method: DescribeNetworkInterfaces
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+query:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DescribeNetworkInterfacesRequest
+  output:
+    networkInterfaceId: '#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getNetworkInterfaceId()'
+    description: '#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getNetworkInterfaceDescription()'
+    type: '#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getPrimary()'
+    privateIpAddressSet: '#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getPrivateIpAddressSet()'
+    groupSet: '#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getGroupSet()'
+    vswitchId: '#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getSubnetId()'
+    macAddress: '#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getMacAddress()'
+    instanceId: '#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getAttachment()?.getInstanceId()'
+    zone: '#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getZone()'
+    success: '#throwable eq null'
+    providerId: '#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getNetworkInterfaceId()'
+    vpcId: '#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getVpcId()'
+    name: '#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getNetworkInterfaceName()'
+    createdTime: '#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getCreatedTime()'
+    status: '#result.getNetworkInterfaceSet().length eq 0 ? null:#result.getNetworkInterfaceSet()[0]?.getState()'
+  request:
+    networkInterfaceIds:
+    - '#networkInterfaceId'
+  method: DescribeNetworkInterfaces
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+install:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.CreateNetworkInterfaceRequest
+  output:
+    networkInterfaceId: '#result.NetworkInterface.NetworkInterfaceId'
+    success: '#throwable eq null'
+    after:
+      retryTimes: '25'
+      output:
+        success: '#throwable eq null'
+        mergeKeys: '*'
+      input:
+        networkInterfaceId: '#networkInterfaceId'
+      action: query
+      waitInterval: '5000'
+  request:
+    subnetId: '#vswitchId'
+    vpcId: '#vpcId'
+    networkInterfaceName: '#name'
+  method: CreateNetworkInterface
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+uninstall:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DeleteNetworkInterfaceRequest
+  output:
+    deleteProviderId: '#networkInterfaceId'
+    success: '#throwable eq null'
+  request:
+    networkInterfaceId: '#networkInterfaceId'
+  method: DeleteNetworkInterface
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+bind:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.AttachNetworkInterfaceRequest
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '25'
+      output:
+        instanceId: '#instanceId'
+        success: '#instanceId ne null'
+        mergeKeys: '*'
+      input:
+        networkInterfaceId: '#networkInterfaceId'
+      action: query
+      waitInterval: '5000'
+  request:
+    networkInterfaceId: '#networkInterfaceId'
+    instanceId: '#instanceId'
+  method: AttachNetworkInterface
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+unbind:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DetachNetworkInterfaceRequest
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '25'
+      output:
+        instanceId: '#instanceId'
+        success: '#instanceId eq null'
+        mergeKeys: '*'
+      input:
+        networkInterfaceId: '#networkInterfaceId'
+      action: query
+      waitInterval: '5000'
+  request:
+    networkInterfaceId: '#networkInterfaceId'
+    instanceId: '#instanceId'
+  method: DetachNetworkInterface
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)

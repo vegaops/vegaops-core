@@ -1,0 +1,34 @@
+vendor: tencent
+nodeType: slbServerGroup
+componentId: '#componentId'
+actions:
+- list
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: clb.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+list:
+  argTypes:
+  - com.tencentcloudapi.clb.v20180317.models.DescribeTargetGroupListRequest
+  output:
+    '[serverGroupList]:[#result.TargetGroupSet]':
+      providerId: '#getTargetGroupId'
+      name: '#getTargetGroupName'
+      loadBalanceId: ''
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
+      condition: '#result.getTargetGroupSet().length != 0'
+      appendList:
+      - serverGroupList
+  request:
+    offset: '0'
+    limit: '100'
+    class: com.tencentcloudapi.clb.v20180317.models.DescribeTargetGroupListRequest
+  method: DescribeTargetGroupList
+  argNames:
+  - request
+  client: new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)

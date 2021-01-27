@@ -1,0 +1,25 @@
+{
+  "componentId": "container_vpc1234567",
+  "containerType": "tencent",
+  "nodes": [
+    {
+      "componentId": "vpc_123456",
+      "leafNode": false,
+      "relations": [],
+      "nodeType": "vpc",
+      "properties": [
+        {
+          "key": "cidrBlock",
+          "value": "10.0.0.0/16"
+        },
+        {
+          "key": "name",
+          "value": "vegaopsTest1"
+        }
+      ]
+    }
+  ],
+  "relations": [],
+  "regionId": "ap-beijing",
+  "cloudAccountId": "1249274415906578432"
+}

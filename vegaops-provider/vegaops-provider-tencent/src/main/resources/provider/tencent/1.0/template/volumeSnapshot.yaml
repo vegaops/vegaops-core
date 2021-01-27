@@ -1,0 +1,40 @@
+vendor: tencent
+nodeType: volumeSnapshot
+componentId: '#componentId'
+actions:
+- list
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: cbs.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+list:
+  argTypes:
+  - com.tencentcloudapi.cbs.v20170312.models.DescribeSnapshotsRequest
+  output:
+    '[volumeSnapshotList]:[#result.SnapshotSet]':
+      regionId: '#regionId'
+      providerId: '#SnapshotId'
+      name: '#SnapshotName'
+      volumeId: '#DiskId'
+      progress: '#Percent'
+      zoneId: '#Placement?.Zone'
+      createAt: '#CreateTime'
+      status: '#SnapshotState'
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
+      condition: '#result.getSnapshotSet().length != 0'
+      appendList:
+      - volumeSnapshotList
+  request:
+    offset: '0'
+    limit: '100'
+    class: com.tencentcloudapi.cbs.v20170312.models.DescribeSnapshotsRequest
+  method: DescribeSnapshots
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cbs.v20170312.CbsClient(#credential,#regionId,#clientProfile)

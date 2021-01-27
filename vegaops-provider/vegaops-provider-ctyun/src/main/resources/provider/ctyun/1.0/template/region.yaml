@@ -1,0 +1,22 @@
+vendor: ctyun
+nodeType: region
+componentId: '#componentId'
+actions:
+- list
+ctyunAccount:
+  accessKey: '#accessKey'
+  secret: '#secret'
+  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
+list:
+  output:
+    '[regionList]:[#result]':
+      displayName: '#displayName'
+      vendor: '#vendor'
+      providerId: '#providerId'
+      name: '#name'
+    log: 'false'
+    success: 'true'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getAllRegions
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunRegionZoneClient

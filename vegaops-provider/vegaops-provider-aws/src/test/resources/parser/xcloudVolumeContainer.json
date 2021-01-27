@@ -1,0 +1,18 @@
+{
+  "vendor": "aws",
+  "accessKey": "xxxxx",
+  "secret": "xxxxx",
+  "regionId": "cn-north-1",
+  "zoneId": "cnn1-az1",
+  "nodes": [
+    {
+      "componentId": "volume-1",
+      "nodeType": "volume",
+      "vars": {
+        "size": "4",
+        "volumeType": "gp2",
+        "availabilityZone": "cn-north-1b"
+      }
+    }
+  ]
+}

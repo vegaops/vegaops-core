@@ -1,0 +1,17 @@
+{
+  "vendor": "aws",
+  "accessKey": "xxxxx",
+  "secret": "xxxxx",
+  "regionId": "cn-north-1",
+  "zoneId": "cnn1-az1",
+  "nodes": [
+    {
+      "componentId": "vswitch-1",
+      "nodeType": "vswitch",
+      "vars": {
+        "cidrBlock": "172.167.0.0/26",
+        "vpcId": "vpc-0fa36d6f17a396b13"
+      }
+    }
+  ]
+}

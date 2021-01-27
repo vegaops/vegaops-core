@@ -1,0 +1,162 @@
+vendor: aliyun
+nodeType: volume
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+- query
+- bind-unbind
+profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
+install:
+  output:
+    success: '#throwable eq null'
+    diskId: '#result.DiskId'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#diskChargeType ne null'
+        mergeKeys: '*'
+      input:
+        diskId: '#diskId'
+      action: query
+      waitInterval: '3000'
+  request:
+    dnapshotId: '#dnapshotId'
+    diskName: '#name'
+    snapshotId: '#snapshotId'
+    instanceId: '#instanceId'
+    size: '#size'
+    encrypted: '#encrypted'
+    zoneId: '#zoneId'
+    description: '#description'
+    diskCategory: '#category'
+    class: com.aliyuncs.ecs.model.v20140526.CreateDiskRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+uninstall:
+  output:
+    deleteProviderId: '#diskId'
+    success: '#throwable eq null'
+  request:
+    diskId: '#diskId'
+    class: com.aliyuncs.ecs.model.v20140526.DeleteDiskRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+list:
+  output:
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
+      condition: '#result.getDisks().size()!= 0'
+      appendList:
+      - volumeList
+    '[volumeList]:[#result.Disks]':
+      creationTime: '#CreationTime'
+      description: '#Description'
+      portable: '#Portable'
+      type: '#Type'
+      expiredTime: '#ExpiredTime'
+      instanceId: '#InstanceId'
+      size: '#Size'
+      regionId: '#regionId'
+      providerId: '#DiskId'
+      diskChargeType: '#DiskChargeType'
+      name: '#DiskName'
+      zoneId: '#zoneId'
+      category: '#Category'
+      status: '#Status'
+  request:
+    pageNumber: '1'
+    pageSize: '100'
+    class: com.aliyuncs.ecs.model.v20140526.DescribeDisksRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+query:
+  output:
+    creationTime: '#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getCreationTime()'
+    bindInstanceId: '#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getInstanceId()'
+    description: '#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getDescription()'
+    portable: '#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getPortable()'
+    type: '#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getType()'
+    expiredTime: '#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getExpiredTime()'
+    instanceId: '#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getInstanceId()'
+    size: '#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getSize()'
+    regionId: '#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getRegionId()'
+    success: '#throwable eq null'
+    providerId: '#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getDiskId()'
+    diskChargeType: '#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getDiskChargeType()'
+    name: '#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getDiskName()'
+    zoneId: '#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getZoneId()'
+    category: '#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getCategory()'
+    status: '#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getStatus()'
+  request:
+    diskName: '#diskName'
+    instanceId: '#InstanceId'
+    diskChargeType: '#diskChargeType'
+    deleteWithInstance: '#deleteWithInstance'
+    diskIds: new String('["'+#diskId+'"]')
+    zoneId: '#zoneId'
+    diskType: '#diskType'
+    portable: '#portable'
+    deleteAutoSnapshot: '#deleteAutoSnapshot'
+    category: '#category'
+    class: com.aliyuncs.ecs.model.v20140526.DescribeDisksRequest
+    status: '#status'
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+bind:
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#status eq ''In_use'''
+        mergeKeys: '*'
+      input:
+        diskId: '#diskId'
+      action: query
+      waitInterval: '3000'
+  request:
+    password: '#password'
+    instanceId: '#instanceId'
+    encrypted: '#encrypted'
+    deleteWithInstance: '#deleteWithInstance'
+    diskId: '#diskId'
+    class: com.aliyuncs.ecs.model.v20140526.AttachDiskRequest
+    device: '#device'
+    bootable: '#bootable'
+    keyPairName: '#keyPairName'
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+unbind:
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#status eq ''Available'''
+        mergeKeys: '*'
+      input:
+        diskId: '#diskId'
+      action: query
+      waitInterval: '3000'
+  request:
+    instanceId: '#instanceId'
+    deleteWithInstance: '#deleteWithInstance'
+    diskId: '#diskId'
+    class: com.aliyuncs.ecs.model.v20140526.DetachDiskRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)

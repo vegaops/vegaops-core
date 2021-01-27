@@ -1,0 +1,20 @@
+vendor: aws
+nodeType: slbServerGroup
+componentId: '#componentId'
+actions:
+- list
+awsRegion: T(software.amazon.awssdk.regions.Region).of(#regionId)
+credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)
+awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
+elasticLoadBalancingClient: T(software.amazon.awssdk.services.elasticloadbalancing.ElasticLoadBalancingClient).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
+list:
+  argTypes:
+  - software.amazon.awssdk.services.elasticloadbalancing.model.DescribeLoadBalancersRequest
+  output:
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    '[slbList]:[#result.loadBalancerDescriptions()]': {}
+  request: T(software.amazon.awssdk.services.elasticloadbalancing.model.DescribeLoadBalancersRequest).builder().build()
+  method: describeLoadBalancers
+  argNames:
+  - request
+  client: '#elasticLoadBalancingClient'

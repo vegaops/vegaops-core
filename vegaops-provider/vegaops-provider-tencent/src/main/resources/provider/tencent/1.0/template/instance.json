@@ -1,0 +1,376 @@
+{
+  "vendor": "tencent",
+  "nodeType": "instance",
+  "componentId": "#componentId",
+  "actions": [
+    "list",
+    "query",
+    "install-uninstall",
+    "start-stop",
+    "queryState",
+    "reboot",
+    "update",
+    "renew"
+  ],
+  "credential": "new com.tencentcloudapi.common.Credential(#accessKey,#secret)",
+  "httpProfile": {
+    "class": "com.tencentcloudapi.common.profile.HttpProfile",
+    "endpoint": "cvm.tencentcloudapi.com"
+  },
+  "clientProfile": {
+    "class": "com.tencentcloudapi.common.profile.ClientProfile",
+    "httpProfile": "#httpProfile"
+  },
+  "list": {
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeInstances",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.DescribeInstancesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "class": "com.tencentcloudapi.cvm.v20170312.models.DescribeInstancesRequest",
+      "limit": "100",
+      "offset": "0"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "loop": {
+        "condition": "#result.getInstanceSet().length != 0",
+        "appendList": [
+          "instanceList"
+        ],
+        "1": "#request.setOffset(#request.getOffset()+#request.getLimit())"
+      },
+      "[instanceList]:[#result.InstanceSet]": {
+        "providerId": "#InstanceId",
+        "name": "#InstanceName",
+        "imageId": "#ImageId",
+        "instanceChargeType": "#InstanceChargeType",
+        "flavorId": "#InstanceType",
+        "status": "#InstanceState",
+        "securityGroups": "#SecurityGroupIds",
+        "internetMaxBandwidthOut": "#InternetAccessible?.InternetMaxBandwidthOut",
+        "internetChargeType": "#InternetAccessible?.InternetChargeType",
+        "createdAt": "#CreatedTime",
+        "keyPairName": "",
+        "vpcId": "#VirtualPrivateCloud?.VpcId",
+        "vSwitchId": "#VirtualPrivateCloud?.SubnetId",
+        "floatingIp": "#PublicIpAddresses",
+        "primaryIp": "#PrivateIpAddresses",
+        "expiredAt": "#ExpiredTime",
+        "stoppedMode": "#StopChargingMode",
+        "osName": "#OsName",
+        "osType":"#OsName",
+        "cpu": "#CPU",
+        "memory": "#Memory",
+        "zoneId": "#Placement?.Zone",
+        "regionId": "#regionId"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeInstances",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.DescribeInstancesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "instanceIds": ["#instanceId"]
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "providerId": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getInstanceId()",
+      "name": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0].getInstanceName()",
+      "imageId": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getImageId()",
+      "instanceChargeType": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getInstanceChargeType()",
+      "flavorId": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getInstanceType()",
+      "status": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getInstanceState()",
+      "securityGroups": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getSecurityGroupIds()",
+      "internetMaxBandwidthOut": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getInternetAccessible()?.getInternetMaxBandwidthOut()",
+      "internetChargeType": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getInternetAccessible()?.getInternetChargeType()",
+      "createdAt": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getCreatedTime()",
+      "keyPairName": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getLoginSettings()",
+      "vpcId": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getVirtualPrivateCloud()?.getVpcId()",
+      "vSwitchId": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getVirtualPrivateCloud()?.getSubnetId()",
+      "floatingIp": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getPublicIpAddresses()",
+      "primaryIp": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getPrivateIpAddresses()",
+      "expiredAt": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getExpiredTime()",
+      "stoppedMode": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getStopChargingMode()",
+      "osName": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getOsName()",
+      "osType":"#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getOsName()",
+      "cpu": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getCPU()",
+      "memory": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getMemory()",
+      "zoneId": "#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getPlacement()?.getZone()"
+    }
+  },
+  "install": {
+    "client": "org.prophetech.hyperone.vegaops.tencent.client.TencentInstanceClient",
+    "method": "createInstance",
+    "classProperties": {
+      "key": "#accessKey",
+      "secret": "#secret"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.tencent.model.CreateInstanceParam"
+    ],
+    "argNames": [
+      "param"
+    ],
+    "param": {
+      "hostName": "#hostName",
+      "imageId": "#imageId",
+      "period": "#period",
+      "instanceChargeType": "#instanceChargeType",
+      "instanceCount": "#count",
+      "instanceName": "#name",
+      "instanceType": "#flavorId",
+      "internetChargeType": "#internetChargeType",
+      "internetMaxBandwidthOut": "#internetMaxBandwidthOut",
+      "bandwidthPackageId": "#bandwidthPackageId",
+      "publicIpAssigned": "#publicIpAssigned",
+      "keyName": "#keyPairName",
+      "password": "#password",
+      "zone": "#zoneId",
+      "securityGroupId": "#securityGroups",
+      "diskSize": "#systemDiskSize",
+      "diskType": "#systemDiskCategory",
+      "vpcId": "#vpcId",
+      "subnetId": "#VSwitchId",
+      "regionId": "#regionId",
+      "asVpcGateway": "#asVpcGateway",
+      "ipv6AddressCount": "#ipv6AddressCount",
+      "userData": "#userData",
+      "renewFlag": "#renewalStatus",
+      "privateIpAddresses": "#privateIp"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "providerId": "#result.getInstanceId()",
+      "name": "#result.getInstanceName()",
+      "imageId": "#result.getImageId()",
+      "instanceChargeType": "#result.getInstanceChargeType()",
+      "flavorId": "#result.getInstanceType()",
+      "status": "#result.getInstanceState()",
+      "securityGroups": "#result.getSecurityGroupIds()",
+      "internetMaxBandwidthOut": "#result.getInternetAccessible()?.getInternetMaxBandwidthOut()",
+      "internetChargeType": "#result.getInternetAccessible()?.getInternetChargeType()",
+      "createdAt": "#result.getCreatedTime()",
+      "keyPairName": "",
+      "vpcId": "#result.getVirtualPrivateCloud()?.getVpcId()",
+      "vSwitchId": "#result.getVirtualPrivateCloud()?.getSubnetId()",
+      "floatingIp": "#result.getPublicIpAddresses()",
+      "primaryIp": "#result.getPrivateIpAddresses()",
+      "expiredAt": "#result.getExpiredTime()",
+      "stoppedMode": "#result.getStopChargingMode()",
+      "osName": "#result.getOsName()",
+      "osType":"#result.getOsName()",
+      "cpu": "#result.getCPU()",
+      "memory": "#result.getMemory()",
+      "zoneId": "#result.getPlacement()?.getZone()"
+    }
+  },
+  "uninstall": {
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "TerminateInstances",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.TerminateInstancesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "instanceIds": ["#instanceId"]
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#providerId eq null",
+          "mergeKeys": "*"
+        }
+      },
+      "deleteProviderId": "#instanceId"
+    }
+  },
+  "update": {
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "ResetInstancesType",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.ResetInstancesTypeRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "instanceIds": ["#instanceId"],
+      "instanceType": "#instanceType",
+      "forceStop": "#forceStop"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#flavorId  eq #instanceType",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "renew": {
+    "client": "org.prophetech.hyperone.vegaops.tencent.client.TencentInstanceClient",
+    "method": "renewInstance",
+    "classProperties": {
+      "key": "#accessKey",
+      "secret": "#secret"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.tencent.model.RenewInstanceParam"
+    ],
+    "argNames": [
+      "param"
+    ],
+    "param": {
+      "period": "#period",
+      "instanceId": "#instanceId",
+      "renewFlag": "#renewFlag",
+      "regionId": "#regionId",
+      "renewPortableDataDisk": "#renewPortableDataDisk"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#throwable eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "start": {
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "StartInstances",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.StartInstancesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "instanceIds": ["#instanceId"]
+    },
+    "output": {
+      "success": "#throwable eq null || #throwable.toString().contains('state of `RUNNING`')",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#status  eq 'RUNNING'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "stop": {
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "StopInstances",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.StopInstancesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "instanceIds": ["#instanceId"],
+      "stopType": "#type"
+    },
+    "output": {
+      "success": "#throwable eq null || #throwable.toString().contains('state of `STOPPED`')",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#status  eq 'STOPPED'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "queryState": {
+    "client": "org.prophetech.hyperone.vegaops.tencent.client.TencentInstanceClient",
+    "method": "queryStatus",
+    "classProperties": {
+      "key": "#accessKey",
+      "secret": "#secret"
+    },
+    "argValues": {
+      "instanceId": "#instanceId",
+      "regionId": "#regionId"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "status": "#result.getInstanceState()",
+      "instanceId": "#result.getInstanceId()"
+    }
+  },
+  "reboot": {
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "RebootInstances",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.RebootInstancesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "instanceIds": ["#instanceId"],
+      "stopType": "#type"
+    },
+    "output": {
+      "success": "#throwable eq null || #throwable.toString().contains('state of `STOPPED`')",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#status  eq 'RUNNING'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "vendor": "tencent",
+  "nodeType": "routeTableEntry",
+  "componentId": "#componentId",
+  "actions": [
+    "list"
+  ],
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.tencent.client.TencentRouteTableEntryClient",
+    "method": "queryRouteTbleEntry",
+    "classProperties": {
+      "key": "#accessKey",
+      "secret": "#secret"
+    },
+    "argValues": {
+      "regionId": "#regionId",
+      "routeTableId": "#route_table_id"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "[routeTableList]:[#result]": {
+        "cidrBlock": "#DestinationCidrBlock",
+        "nextHopType": "#GatewayType",
+        "instanceId": "#GatewayId",
+        "providerId": "#RouteId",
+        "RouteDescription": "#RouteDescription",
+        "status": "#Enabled",
+        "type": "#RouteType",
+        "routeTableId": "#RouteTableId",
+        "regionId": "#regionId"
+      }
+    }
+  }
+}

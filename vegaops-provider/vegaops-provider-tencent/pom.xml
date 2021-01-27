@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.vegaops</groupId>
+        <version>1.0</version>
+        <artifactId>vegaops-provider</artifactId>
+    </parent>
+    <artifactId>vegaops-provider-tencent</artifactId>
+    <properties>
+        <tencent-java-sdk.version>3.1.98</tencent-java-sdk.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.vegaops</groupId>
+            <artifactId>vegaops-engine</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.vegaops</groupId>
+            <artifactId>vegaops-dependency-tencent</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>

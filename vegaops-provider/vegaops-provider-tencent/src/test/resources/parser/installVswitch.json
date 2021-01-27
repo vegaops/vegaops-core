@@ -1,0 +1,33 @@
+{
+  "componentId": "container_vswitch1234567",
+  "containerType": "tencent",
+  "nodes": [
+    {
+      "componentId": "vswitch_123456",
+      "leafNode": false,
+      "relations": [],
+      "nodeType": "vswitch",
+      "properties": [
+        {
+          "key": "cidrBlock",
+          "value": "10.0.0.0/18"
+        },
+        {
+          "key": "name",
+          "value": "vegaopsTest1"
+        },
+        {
+          "key": "vpcId",
+          "value": "vpc-hdlbw0iq"
+        },
+        {
+          "key": "zone",
+          "value": "ap-beijing-1"
+        }
+      ]
+    }
+  ],
+  "relations": [],
+  "regionId": "ap-beijing",
+  "cloudAccountId": "1249274415906578432"
+}

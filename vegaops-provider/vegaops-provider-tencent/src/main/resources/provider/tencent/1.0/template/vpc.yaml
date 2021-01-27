@@ -1,0 +1,91 @@
+vendor: tencent
+nodeType: vpc
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+- query
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: vpc.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+install:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.CreateVpcRequest
+  output:
+    success: '#throwable eq null'
+    vpcId: '#result.Vpc.VpcId'
+    after:
+      output:
+        success: '#throwable eq null'
+        mergeKeys: '*'
+      input:
+        vpcId: '#vpcId'
+      action: query
+  request:
+    vpcName: '#vpcName'
+    cidrBlock: '#cidrBlock'
+  vpcName: '#name'
+  method: CreateVpc
+  argNames:
+  - request
+  cidrBlock: '#cidr'
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+uninstall:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DeleteVpcRequest
+  output:
+    deleteProviderId: '#vpcId'
+    success: '#throwable eq null'
+  request:
+    vpcId: '#vpcId'
+  method: DeleteVpc
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+list:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DescribeVpcsRequest
+  output:
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
+      condition: '#result.getVpcSet().length != 0'
+      appendList:
+      - vpcList
+    '[vpcList]:[#result.VpcSet]':
+      vpcName: '#VpcName'
+      zone: '#zoneId'
+      createTime: '#CreateTime'
+      regionId: '#regionId'
+      providerId: '#VpcId'
+      vpcId: '#VpcId'
+      cidrBlock: '#CidrBlock'
+  request:
+    offset: '0'
+    limit: '100'
+    class: com.tencentcloudapi.vpc.v20170312.models.DescribeVpcsRequest
+  method: DescribeVpcs
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+query:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DescribeVpcsRequest
+  output:
+    vpcName: '#result.getVpcSet().length eq 0 ? null:#result.getVpcSet()[0]?.getVpcName()'
+    success: '#throwable eq null&&#result.totalCount eq 1'
+    providerId: '#result.getVpcSet().length eq 0 ? null:#result.getVpcSet()[0]?.getVpcId()'
+    vpcId: '#result.getVpcSet().length eq 0 ? null:#result.getVpcSet()[0]?.getVpcId()'
+    cidrBlock: '#result.getVpcSet().length eq 0 ? null:#result.getVpcSet()[0]?.getCidrBlock()'
+  request:
+    vpcIds:
+    - '#vpcId'
+  method: DescribeVpcs
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)

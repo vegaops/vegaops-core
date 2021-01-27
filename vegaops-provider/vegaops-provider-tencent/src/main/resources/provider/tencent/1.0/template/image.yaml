@@ -1,0 +1,75 @@
+vendor: tencent
+nodeType: image
+componentId: '#componentId'
+actions:
+- list
+- query
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: cvm.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+list:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.tencent.model.DescribeImagesParam
+  output:
+    '[imagesList]:[#result.ImageSet]':
+      imageState: '#ImageState'
+      imageId: '#ImageId'
+      imageName: '#imageName'
+      osName: '#OsName'
+      platform: '#Platform'
+      imageSource: '#ImageSource'
+      regionId: '#regionId'
+      providerId: '#ImageId'
+      imageDescription: '#ImageDescription'
+      createdTime: '#CreatedTime'
+      imageSize: '#ImageSize'
+      imageType: '#ImageType'
+      architecture: '#Architecture'
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#param.setOffset(#param.getOffset()+#param.getLimit())'
+      condition: '#result.getImageSet().length != 0'
+      appendList:
+      - imagesList
+  classProperties:
+    secret: '#secret'
+    key: '#accessKey'
+  method: DescribeImage
+  param:
+    offset: '0'
+    regionId: '#regionId'
+    limit: '100'
+    class: org.prophetech.hyperone.vegaops.tencent.model.DescribeImagesParam
+    imageType: '#imageType'
+  argNames:
+  - param
+  client: org.prophetech.hyperone.vegaops.tencent.client.TencentImageClient
+query:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.DescribeImagesRequest
+  output:
+    '[imagesList]:[#result.ImageSet]':
+      imageState: '#ImageState'
+      imageSource: '#ImageSource'
+      imageId: '#ImageId'
+      imageName: '#imageName'
+      imageDescription: '#ImageDescription'
+      createdTime: '#CreatedTime'
+      imageSize: '#ImageSize'
+      osName: '#OsName'
+      imageType: '#ImageType'
+      platform: '#Platform'
+      architecture: '#Architecture'
+    success: '#throwable eq null'
+  request:
+    imageIds:
+    - '#imageId'
+  method: DescribeImages
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)

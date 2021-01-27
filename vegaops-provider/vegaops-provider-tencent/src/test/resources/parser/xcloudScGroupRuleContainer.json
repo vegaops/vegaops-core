@@ -1,0 +1,17 @@
+{
+  "vendor": "tencent",
+  "accessKey": "xxxxx",
+  "secret": "xxxxx",
+  "regionId": "ap-beijing",
+  "nodes": [
+    {
+      "componentId": "securityGroupRule-1",
+      "nodeType": "securityGroupRule",
+      "vars": {
+        "securityGroupId": "sg-0h86pgnv",
+        "action": "accept",
+        "type": "egress"
+      }
+    }
+  ]
+}

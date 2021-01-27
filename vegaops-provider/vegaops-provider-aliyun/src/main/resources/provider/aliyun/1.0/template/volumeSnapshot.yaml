@@ -1,0 +1,32 @@
+vendor: aliyun
+nodeType: volumeSnapshot
+componentId: '#componentId'
+actions:
+- list
+profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
+list:
+  output:
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
+      condition: '#result.getSnapshots().size()!= 0'
+      appendList:
+      - SnapshotsList
+    '[SnapshotsList]:[#result.Snapshots]':
+      creationTime: '#CreationTime'
+      regionId: '#regionId'
+      providerId: '#SnapshotId'
+      volumeId: '#SourceDiskId'
+      name: '#SnapshotName'
+      progress: '#Progress'
+      zoneId: '#zoneId'
+      status: '#Status'
+  request:
+    pageNumber: '1'
+    pageSize: '100'
+    class: com.aliyuncs.ecs.model.v20140526.DescribeSnapshotsRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)

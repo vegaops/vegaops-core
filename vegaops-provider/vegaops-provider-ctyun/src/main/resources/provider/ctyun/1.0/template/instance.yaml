@@ -1,0 +1,278 @@
+vendor: ctyun
+nodeType: instance
+componentId: '#componentId'
+actions:
+- install-uninstall
+- query
+- list
+- start-stop
+- reboot
+- update
+- renew
+ctyunAccount:
+  accessKey: '#accessKey'
+  secret: '#secret'
+  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
+install:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.CreateInstanceRequest
+  output:
+    vswitchId: '#result.subnet_id'
+    success: '#result.statusCode.equals(800)'
+    id: '#result.id'
+    after:
+      retryTimes: '50'
+      output:
+        success: '#status eq ''ACTIVE'''
+        mergeKeys: '*'
+      input:
+        instanceId: '#id'
+      action: query
+      waitInterval: '3000'
+    trigger:
+      input:
+        instanceId: '#id'
+      action: list
+      nodeType: networkInterface
+  request:
+    publicipId: '#publicIpId'
+    support_auto_recovery: '#supportAutoRecovery'
+    customerInfoType: '#customerInfoType'
+    bandwidthSize: '#bandwidthSize'
+    adminPass: '#password'
+    volumeSize: '#systemDiskSize'
+    volumetype: '#systemDiskCategory'
+    securityGroupId: '#securityGroups'
+    customerPhone: '#customerPhone'
+    payType: '#payType'
+    flavorType: '#flavorType'
+    cycleCnt: '#servicePeriodQuantity'
+    instanceServiceTag: '#instanceServiceTag'
+    customerEmail: '#customerEmail'
+    osType: '#osType'
+    dataVolumetype: '#dataVolumetype'
+    sharetype: '#shareType'
+    keyPairId: '#keyPairName'
+    customerCrmBizId: '#customerCrmBizId'
+    availability_zone: '#zoneId'
+    instanceCnt: '#count'
+    count: '#count'
+    ip_address: '#privateIp'
+    volumeServiceTag: '#volumeServiceTag'
+    iptype: '#ipType'
+    cpuNum: '#cpuNum'
+    customerName: '#customerName'
+    dataVolumeSize: '#dataVolumeSize'
+    cycleType: '#servicePeriodUnit'
+    customerAccountId: '#customerAccountId'
+    regionId: '#region'
+    vpcid: '#vpcId'
+    name: '#name'
+    flavorRef: '#flavorId'
+    subnet_id: '#VSwitchId'
+    imageRef: '#imageId'
+    memSize: '#memSize'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: createInstance
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient
+query:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.GetVMsRequest
+  output:
+    image: '#result.get(0).getImage()'
+    floatingIp: '#result.get(0).getFloatingIp()'
+    volumes_attached: '#result.get(0).getVolumes_attached()'
+    created: '#result.get(0).getCreated()'
+    privateIp: '#result.get(0).getPrivateIp()'
+    hostId: '#result.get(0).getHostId()'
+    flavor: '#result.get(0).getFlavor()'
+    expireTime: '#result.get(0).getExpireTime()'
+    payType: '#result.get(0).getPayType()'
+    success: 'true'
+    vpcId: '#result.get(0).getVpcId()'
+    name: '#result.get(0).getName()'
+    zoneId: '#result.get(0).getAvailability_zone()'
+    securityGroups: '#result.get(0).getSecurity_groups()'
+    id: '#result.get(0).getId()'
+    status: '#result.get(0).getStatus()'
+  request:
+    vmId: '#instanceId'
+    regionId: '#regionId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getInstances
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient
+list:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.GetVMsRequest
+  output:
+    '[instanceList]:[#result]':
+      image: '#image'
+      floatingIp: '#floatingIp'
+      volumes_attached: '#volumes_attached'
+      created: '#created'
+      privateIp: '#privateIp'
+      hostId: '#hostId'
+      flavor: '#flavor'
+      expireTime: '#expireTime'
+      payType: '#payType'
+      regionId: '#regionId'
+      vpcId: '#vpcId'
+      name: '#name'
+      zoneId: '#availability_zone'
+      securityGroups: '#security_groups'
+      id: '#id'
+      status: '#status'
+    success: 'true'
+  request:
+    vmId: '#instanceId'
+    regionId: '#regionId'
+    limit: '#limit'
+    lastId: '#marker'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getInstances
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient
+uninstall:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.DeleteVMRequest
+  output:
+    deleteProviderId: '#instanceChargeType eq ''PostPaid'' ? #instanceId : ''0'''
+    success: '#result.statusCode.equals(800)'
+  request:
+    payType: '#instanceChargeType'
+    regionId: '#regionId'
+    vmId: '#instanceId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: deleteInstance
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient
+update:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.UpgradeVMRequest
+  output:
+    success: '#result.statusCode.equals(800)'
+    after:
+      retryTimes: '25'
+      output:
+        success: '#status eq ''SHUTOFF'''
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+        regionId: '#regionId'
+      action: query
+      waitInterval: '5000'
+  request:
+    regionId: '#regionId'
+    vmId: '#instanceId'
+    flavorId: '#flavorId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: upgradeVm
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient
+renew:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.RenewOrderRequest
+  output:
+    success: '#result.statusCode.equals(800)'
+    id: '#result.id'
+    after:
+      retryTimes: '25'
+      output:
+        success: '#status eq ''ACTIVE'''
+        mergeKeys: '*'
+      input:
+        instanceId: '#id'
+        regionId: '#regionId'
+      action: query
+      waitInterval: '5000'
+  request:
+    cycleType: '#cycleType'
+    instanceId: '#instanceId'
+    regionId: '#regionId'
+    cycleCount: '#cycleCount'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: reNewInstance
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient
+start:
+  output:
+    success: '#result.statusCode.equals(800) || #result.message.contains(''主机当前状态（ACTIVE）'')'
+    after:
+      retryTimes: '50'
+      output:
+        success: '#status  eq ''ACTIVE'''
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+        regionId: '#regionId'
+      action: query
+      waitInterval: '5000'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: start
+  argValues:
+    instanceChargeType: '#instanceChargeType'
+    instanceId: '#instanceId'
+    regionId: '#regionId'
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient
+stop:
+  output:
+    success: '#result.statusCode.equals(800) || #result.message.contains(''主机当前状态（SHUTOFF）'')'
+    after:
+      retryTimes: '25'
+      output:
+        success: '#status  eq ''SHUTOFF'''
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+        regionId: '#regionId'
+      action: query
+      waitInterval: '5000'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: stop
+  argValues:
+    instanceChargeType: '#instanceChargeType'
+    instanceId: '#instanceId'
+    regionId: '#regionId'
+    type: '#type'
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient
+reboot:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.RestartVMRequest
+  output:
+    success: '#result.statusCode.equals(800)'
+    after:
+      retryTimes: '25'
+      output:
+        success: '#status  eq ''ACTIVE'''
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+        regionId: '#regionId'
+      action: query
+      waitInterval: '5000'
+  request:
+    regionId: '#regionId'
+    vmId: '#instanceId'
+    type: '#type'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient

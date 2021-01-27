@@ -1,0 +1,55 @@
+{
+  "vendor": "ctyun",
+  "ctyunAccount": {
+    "accessKey": "xxxxx",
+    "secret": "xxxxx"
+  },
+  "regionId": "cn-gzT",
+  "zoneId": "cn-gzTa",
+  "nodes": [
+    {
+      "componentId": "instance-postpaid-1",
+      "nodeType": "instance",
+      "vars": {
+        "payType": "PostPaid",
+        "regionId": "#regionId",
+        "name": "vegaopstestz",
+        "zoneId": "#zoneId",
+        "imageRef": "3af8a1ec-94a8-4e39-adef-7a9cedd93a44",
+        "osType": "linux",
+        "volumeType": "SATA",
+        "volumeSize": "50",
+        "flavorRef": "c2.medium",
+        "vpcId": "&vpc-1.vpcId",
+        "securityGroupId": "1ae92871-e385-4a29-9db6-05413cdeffa2",
+        "subnetId": "&vswitch-1.resVlanId",
+        "shareType": "PER",
+        "adminPass": "Fu123456",
+        "publicIpId": "784992f5-441c-4c34-a499-99a951a98e49"
+      }
+    },
+    {
+      "componentId": "vpc-1",
+      "nodeType": "vpc",
+      "vars": {
+        "regionId": "#regionId",
+        "name": "vegaopsTest123213",
+        "cidr": "192.168.0.0/24"
+      }
+    },
+    {
+      "componentId": "vswitch-1",
+      "nodeType": "vswitch",
+      "vars": {
+        "regionId": "#regionId",
+        "zoneId": "#zoneId",
+        "name": "fty-test1234",
+        "cidr": "192.168.0.0/24",
+        "gatewayIp": "192.168.0.1",
+        "dhcpEnable": "true",
+        "vpcId": "&vpc-1.vpcId"
+      }
+    }
+
+  ]
+}

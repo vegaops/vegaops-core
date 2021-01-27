@@ -1,0 +1,159 @@
+vendor: aws
+nodeType: eip
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+- query
+- bind-unbind
+- tag
+awsRegion: T(software.amazon.awssdk.regions.Region).of(#regionId)
+credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)
+awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
+ec2Client: T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
+query:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DescribeAddressesRequest
+  output:
+    networkInterfaceId: '#result.addresses()[0]?.networkInterfaceId()'
+    publicIpv4Pool: '#result.addresses()[0]?.publicIpv4Pool()'
+    networkBorderGroup: '#result.addresses()[0]?.networkBorderGroup()'
+    publicIp: '#result.addresses()[0]?.publicIp()'
+    allocationId: '#result.addresses()[0]?.allocationId()'
+    customerOwnedIpv4Pool: '#result.addresses()[0]?.customerOwnedIpv4Pool()'
+    privateIpAddress: '#result.addresses()[0]?.privateIpAddress()'
+    tags: '#result.addresses()[0]?.tags()'
+    customerOwnedIp: '#result.addresses()[0]?.customerOwnedIp()'
+    instanceId: '#result.addresses()[0]?.instanceId()'
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    domain: '#result.addresses()[0]?.domain()'
+    networkInterfaceOwnerId: '#result.addresses()[0]?.networkInterfaceOwnerId()'
+    close: '#ec2Client.close()'
+    associationId: '#result.addresses()[0]?.associationId()'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeAddressesRequest).builder().allocationIds(#allocationId).build()
+  method: describeAddresses
+  argNames:
+  - request
+  client: '#ec2Client'
+list:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DescribeAddressesRequest
+  output:
+    log: 'false'
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    '[addresses]:[#result.addresses()]':
+      networkInterfaceId: '#me.networkInterfaceId()'
+      publicIpv4Pool: '#me.publicIpv4Pool()'
+      networkBorderGroup: '#me.networkBorderGroup()'
+      publicIp: '#me.publicIp()'
+      allocationId: '#me.allocationId()'
+      customerOwnedIpv4Pool: '#me.customerOwnedIpv4Pool()'
+      privateIpAddress: '#me.privateIpAddress()'
+      customerOwnedIp: '#me.customerOwnedIp()'
+      tags: '#me.tags()'
+      instanceId: '#me.instanceId()'
+      regionId: '#regionId'
+      domain: '#me.domain()'
+      networkInterfaceOwnerId: '#me.networkInterfaceOwnerId()'
+      zoneId: '#zoneId'
+      associationId: '#me.associationId()'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeAddressesRequest).builder().build()
+  method: describeAddresses
+  argNames:
+  - request
+  client: '#ec2Client'
+install:
+  output:
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    allocationId: '#result.allocationId()'
+    publicIp: '#result.publicIp()'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#allocationId ne null'
+        mergeKeys: '*'
+      input:
+        resourceId: '#allocationId'
+        name: '#name'
+      action: tag
+      waitInterval: '3000'
+  method: createEip
+  param:
+    publicIpv4Pool: '#publicIpv4Pool'
+    networkBorderGroup: '#networkBorderGroup'
+    domainType: '#domainType'
+    name: '#name'
+    class: org.prophetech.hyperone.vegaops.aws.model.CreateEipParam
+  argValues:
+    param: '#param'
+    ec2Client: '#ec2Client'
+  client: org.prophetech.hyperone.vegaops.aws.client.AwsEipClient
+uninstall:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.ReleaseAddressRequest
+  output:
+    deleteProviderId: '#allocationId'
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+  request: T(software.amazon.awssdk.services.ec2.model.ReleaseAddressRequest).builder().allocationId(#allocationId).build()
+  method: releaseAddress
+  argNames:
+  - request
+  client: '#ec2Client'
+tag:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.CreateTagsRequest
+  output:
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#allocationId ne null'
+        mergeKeys: '*'
+      input:
+        allocationId: '#resourceId'
+      action: query
+      waitInterval: '3000'
+  request: T(software.amazon.awssdk.services.ec2.model.CreateTagsRequest).builder().resources(#resourceId).tags(T(software.amazon.awssdk.services.ec2.model.Tag).builder().key("Name").value(#name).build()).build()
+  method: createTags
+  argNames:
+  - request
+  client: '#ec2Client'
+bind:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.AssociateAddressRequest
+  output:
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#associationId ne null'
+        mergeKeys: '*'
+      input:
+        allocationId: '#allocationId'
+      action: query
+      waitInterval: '3000'
+  request: T(software.amazon.awssdk.services.ec2.model.AssociateAddressRequest).builder().instanceId(#instanceId).allocationId(#allocationId).build()
+  method: associateAddress
+  argNames:
+  - request
+  client: '#ec2Client'
+unbind:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DisassociateAddressRequest
+  output:
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#associationId eq null'
+        mergeKeys: '*'
+      input:
+        allocationId: '#allocationId'
+      action: query
+      waitInterval: '3000'
+  request: T(software.amazon.awssdk.services.ec2.model.DisassociateAddressRequest).builder().associationId(#associationId).build()
+  method: disassociateAddress
+  argNames:
+  - request
+  client: '#ec2Client'

@@ -1,0 +1,26 @@
+vendor: tencent
+nodeType: routeTableEntry
+componentId: '#componentId'
+actions:
+- list
+list:
+  output:
+    success: '#throwable eq null'
+    '[routeTableList]:[#result]':
+      instanceId: '#GatewayId'
+      regionId: '#regionId'
+      providerId: '#RouteId'
+      cidrBlock: '#DestinationCidrBlock'
+      nextHopType: '#GatewayType'
+      routeTableId: '#RouteTableId'
+      type: '#RouteType'
+      RouteDescription: '#RouteDescription'
+      status: '#Enabled'
+  classProperties:
+    secret: '#secret'
+    key: '#accessKey'
+  method: queryRouteTbleEntry
+  argValues:
+    regionId: '#regionId'
+    routeTableId: '#route_table_id'
+  client: org.prophetech.hyperone.vegaops.tencent.client.TencentRouteTableEntryClient

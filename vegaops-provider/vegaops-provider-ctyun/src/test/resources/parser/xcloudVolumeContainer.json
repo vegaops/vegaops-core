@@ -1,0 +1,24 @@
+{
+  "vendor": "ctyun",
+  "ctyunAccount": {
+    "accessKey": "xxxxx",
+    "secret": "xxxxx"
+  },
+  "regionId": "cn-gzT",
+  "zoneId": "cn-gzTa",
+  "nodes": [
+    {
+      "componentId": "volume-1",
+      "nodeType": "volume",
+      "vars": {
+        "payType": "PostPaid",
+        "regionId": "#regionId",
+        "zoneId": "#zoneId",
+        "name": "vegaopsTets-2",
+        "type": "SATA",
+        "size": "20",
+        "count": "1"
+      }
+    }
+  ]
+}

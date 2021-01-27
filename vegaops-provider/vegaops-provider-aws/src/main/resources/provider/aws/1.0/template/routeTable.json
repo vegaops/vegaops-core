@@ -1,0 +1,69 @@
+{
+  "vendor": "aws",
+  "nodeType": "routeTable",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list"
+  ],
+  "awsRegion": "T(software.amazon.awssdk.regions.Region).of(#regionId)",
+  "credentials": "T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)",
+  "awsCredentialsProvider": "T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)",
+  "ec2Client": "T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()",
+  "install": {
+    "client": "#ec2Client",
+    "method": "createRouteTable",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.CreateRouteTableRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.CreateRouteTableRequest).builder().vpcId(#vpcId).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "vpcId": "#result.routeTable().vpcId()",
+      "providerId": "#result.routeTable().routeTableId()",
+      "routeTableId": "#result.routeTable().routeTableId()"
+    }
+  },
+  "list": {
+    "client": "#ec2Client",
+    "method": "describeRouteTables",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DescribeRouteTablesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DescribeRouteTablesRequest).builder().build()",
+    "output": {
+      "success": "true",
+      "close": "#ec2Client.close()",
+      "log": "false",
+      "[routeTable]:[#result.routeTables()]": {
+        "routeTableId": "#me.routeTableId()",
+        "providerId": "#me.routeTableId()",
+        "vpcId": "#me.vpcId()",
+        "tags": "#me.tags()"
+      }
+    }
+  },
+  "uninstall": {
+    "client": "#ec2Client",
+    "method": "deleteRouteTable",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DeleteRouteTableRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DeleteRouteTableRequest).builder().routeTableId(#routeTableId).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "deleteProviderId": "#routeTableId"
+    }
+  }
+}

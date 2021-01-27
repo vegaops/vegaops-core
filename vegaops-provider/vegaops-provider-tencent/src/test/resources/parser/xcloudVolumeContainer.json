@@ -1,0 +1,20 @@
+{
+  "vendor": "tencent",
+  "accessKey": "xxxxx",
+  "secret": "xxxxx",
+  "regionId": "ap-beijing",
+  "nodes": [
+    {
+      "componentId": "volume-1",
+      "nodeType": "volume",
+      "vars": {
+        "chargeType": "POSTPAID_BY_HOUR",
+        "count": "1",
+        "name": "vegaopsTest",
+        "size": "100",
+        "zone": "ap-beijing-1",
+        "category": "CLOUD_SSD"
+      }
+    }
+  ]
+}

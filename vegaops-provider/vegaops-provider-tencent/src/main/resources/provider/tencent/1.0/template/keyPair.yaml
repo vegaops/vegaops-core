@@ -1,0 +1,135 @@
+vendor: tencent
+nodeType: keyPair
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+- query
+- bind-unbind
+maskKeys:
+- privateKey
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: cvm.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+install:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.CreateKeyPairRequest
+  output:
+    privateKey: '#result.KeyPair.PrivateKey'
+    success: '#throwable eq null'
+    name: '#result.KeyPair.KeyName'
+    keyId: '#result.KeyPair.KeyId'
+  request:
+    keyName: '#name'
+    projectId: '0'
+  method: CreateKeyPair
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+uninstall:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.DeleteKeyPairsRequest
+  output:
+    deleteProviderId: '#keyIds'
+    success: '#throwable eq null'
+  request:
+    keyIds:
+    - '#keyIds'
+  method: DeleteKeyPairs
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+list:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.DescribeKeyPairsRequest
+  output:
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
+      condition: '#result.getKeyPairSet().length != 0'
+      appendList:
+      - keyPairList
+    '[keyPairList]:[#result.KeyPairSet]':
+      createTime: '#CreateTime'
+      regionId: '#regionId'
+      providerId: '#KeyId'
+      name: '#KeyName'
+      keyId: '#KeyId'
+      description: '#Description'
+      publicKey: '#PublicKey'
+  request:
+    offset: '0'
+    limit: '100'
+    class: com.tencentcloudapi.cvm.v20170312.models.DescribeKeyPairsRequest
+  method: DescribeKeyPairs
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+query:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.DescribeKeyPairsRequest
+  output:
+    success: '#throwable eq null'
+    '[keyPairList]:[#result.KeyPairSet]':
+      createTime: '#CreateTime'
+      providerId: '#KeyId'
+      name: '#KeyName'
+      keyId: '#KeyId'
+      description: '#Description'
+      publicKey: '#PublicKey'
+  request:
+    keyIds:
+    - '#keyId'
+  method: DescribeKeyPairs
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+bind:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.AssociateInstancesKeyPairsRequest
+  retryTimes: '3'
+  output:
+    success: '#throwable eq null'
+  request:
+    keyIds:
+    - '#keyIds'
+    instanceIds:
+    - '#instanceIds'
+  method: AssociateInstancesKeyPairs
+  before:
+    output:
+      success: 'true'
+    input:
+      instanceId: '#instanceIds'
+    action: instance.stop
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+  waitInterval: '3000'
+unbind:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.DisassociateInstancesKeyPairsRequest
+  retryTimes: '3'
+  output:
+    success: '#throwable eq null'
+  request:
+    keyIds:
+    - '#keyIds'
+    instanceIds:
+    - '#instanceIds'
+  method: DisassociateInstancesKeyPairs
+  before:
+    output:
+      success: 'true'
+    input:
+      instanceId: '#instanceIds'
+    action: instance.stop
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+  waitInterval: '3000'

@@ -1,0 +1,235 @@
+{
+  "vendor": "aliyun",
+  "nodeType": "eip",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query",
+    "bind-unbind",
+    "update",
+    "updateName"
+  ],
+  "profile": "T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
+  "install": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.vpc.model.v20160428.AllocateEipAddressRequest",
+      "bandwidth": "#bandwidth",
+      "ISP": "#isp",
+      "period": "#period",
+      "pricingCycle": "#pricingCycle",
+      "name": "#name",
+      "internetChargeType": "#internetChargeType"
+    },
+    "argValues": {
+      "request": "#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "allocationId": "#result.AllocationId",
+      "after": {
+        "action": "updateName",
+        "input": {
+          "allocationId": "#allocationId",
+          "name": "#name"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#throwable eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.ReleaseEipAddressRequest",
+      "allocationId": "#allocationId"
+    },
+    "argValues": {
+      "request": "#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#allocationId"
+    }
+  },
+  "list": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.vpc.model.v20160428.DescribeEipAddressesRequest",
+      "pageSize": "10",
+      "pageNumber": "1"
+    },
+    "argValues": {
+      "request": "#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "loop": {
+        "condition": "#result.getEipAddresses().size() != 0",
+        "appendList": [
+          "eipList"
+        ],
+        "1": "#request.setPageNumber(#request.getPageNumber()+1)"
+      },
+      "[eipList]:[#result.EipAddresses]": {
+        "instanceId": "#InstanceId",
+        "internetChargeType": "#InternetChargeType",
+        "bandwidth": "#Bandwidth",
+        "chargeType": "#ChargeType",
+        "allocationTime": "#AllocationTime",
+        "ipAddress": "#IpAddress",
+        "name": "#Name",
+        "allocationId": "#AllocationId",
+        "instanceType": "#InstanceType",
+        "status": "#Status",
+        "regionId": "#RegionId",
+        "expiredTime": "#ExpiredTime"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.vpc.model.v20160428.DescribeEipAddressesRequest",
+      "allocationId": "#allocationId"
+    },
+    "argValues": {
+      "request": "#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "instanceId": "#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getInstanceId()",
+      "name": "#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getName()",
+      "internetChargeType": "#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getInternetChargeType()",
+      "bandwidth": "#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getBandwidth()",
+      "chargeType": "#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getChargeType()",
+      "allocationTime": "#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getAllocationTime()",
+      "ipAddress": "#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getIpAddress()",
+      "allocationId": "#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getAllocationId()",
+      "instanceType": "#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getInstanceType()",
+      "status": "#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getStatus()",
+      "regionId": "#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getRegionId()",
+      "expiredTime": "#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getExpiredTime()"
+    }
+  },
+  "bind": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.AssociateEipAddressRequest",
+      "allocationId": "#allocationId",
+      "instanceId": "#instanceId"
+    },
+    "argValues": {
+      "request": "#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "AllocationId": "#allocationId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#instanceId ne null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "update": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.ModifyEipAddressAttributeRequest",
+      "bandwidth": "#bandwidth",
+      "allocationId": "#allocationId"
+    },
+    "argValues": {
+      "request": "#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "AllocationId": "#allocationId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#throwable eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "unbind": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.UnassociateEipAddressRequest",
+      "allocationId": "#allocationId",
+      "instanceId": "#instanceId"
+    },
+    "argValues": {
+      "request": "#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "AllocationId": "#allocationId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#status eq 'Available'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "updateName": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.vpc.model.v20160428.ModifyEipAddressAttributeRequest",
+      "name": "#name",
+      "allocationId": "#allocationId"
+    },
+    "argValues": {
+      "request": "#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "AllocationId": "#allocationId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#name ne null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  }
+}
+
+

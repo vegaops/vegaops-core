@@ -1,0 +1,103 @@
+{
+  "vendor": "aliyun",
+  "nodeType": "securityGroupRule",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list"
+  ],
+  "profile":"T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
+  "install": {
+    "client": "org.prophetech.hyperone.vegaops.alicloud.client.AliyunSecurityGroupRuleClient",
+    "method": "createScGroupRule",
+    "argNames": [
+      "param"
+    ],
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.alicloud.model.CreateSecurityGroupRuleRequest"
+    ],
+    "param": {
+      "regionId": "#regionId",
+      "accessKey": "#accessKey",
+      "secret":"#secret",
+      "ipProtocol": "#ipProtocol",
+      "portRange": "#portRange",
+      "description":"#description",
+      "policy":"#policy",
+      "direction":"#direction",
+      "securityGroupId":"#securityGroupId",
+      "destCidrIp":"#destCidrIp",
+      "sourceCidrIp":"#sourceCidrIp",
+      "priority": "#priority"
+    },
+    "argValues":{
+      "param": "#param"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "ipProtocol": "#result.getIpProtocol()",
+      "portRange": "#result.getPortRange()",
+      "description": "#result.getDescription()",
+      "policy": "#result.getPolicy()",
+      "direction": "#result.getDirection()",
+      "securityGroupId": "#result.getSecurityGroupId()",
+      "cidr": "#result.getDestCidrIp() eq null ? #result.getSourceCidrIp() : #result.getDestCidrIp()"
+    }
+  },
+  "uninstall": {
+    "client": "org.prophetech.hyperone.vegaops.alicloud.client.AliyunSecurityGroupRuleClient",
+    "method": "deleteScGroupRule",
+    "argNames": [
+      "param"
+    ],
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.alicloud.model.CreateSecurityGroupRuleRequest"
+    ],
+    "param": {
+      "regionId": "#regionId",
+      "accessKey": "#accessKey",
+      "secret":"#secret",
+      "ipProtocol": "#ipProtocol",
+      "portRange": "#portRange",
+      "policy":"#policy",
+      "description": "#description",
+      "direction":"#direction",
+      "securityGroupId":"#securityGroupId",
+      "destCidrIp":"#destCidrIp",
+      "sourceCidrIp": "#sourceCidrIp"
+    },
+    "argValues":{
+      "param": "#param"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#providerId"
+    }
+  },
+  "list": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DescribeSecurityGroupAttributeRequest",
+      "securityGroupId": "#securityGroupId"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "[securityGroupRuleList]:[#result.Permissions]": {
+        "securityGroupId": "#securityGroupId",
+        "zoneId": "#zoneId",
+        "vpcId": "#VpcId",
+        "ipProtocol": "#IpProtocol",
+        "description": "#Description",
+        "policy": "#Policy",
+        "cidr": "#SourceCidrIp eq '' ? #DestCidrIp:#SourceCidrIp",
+        "portRange": "#PortRange",
+        "direction": "#Direction"
+      }
+    }
+  }
+}

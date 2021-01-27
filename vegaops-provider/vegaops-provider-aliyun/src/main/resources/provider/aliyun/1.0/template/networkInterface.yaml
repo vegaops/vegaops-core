@@ -1,0 +1,148 @@
+vendor: aliyun
+nodeType: networkInterface
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+- query
+- bind-unbind
+profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
+install:
+  output:
+    networkInterfaceId: '#result.NetworkInterfaceId'
+    success: '#throwable eq null'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#throwable eq null'
+        mergeKeys: '*'
+      input:
+        NetworkInterfaceId:
+        - '#networkInterfaceId'
+      action: query
+      waitInterval: '3000'
+  request:
+    securityGroupId: '#securityGroupId'
+    primaryIpAddress: '#primaryIpAddress'
+    VSwitchId: '#vswitchId'
+    description: '#description'
+    secondaryPrivateIpAddressCount: '#secondaryPrivateIpAddressCount'
+    class: com.aliyuncs.ecs.model.v20140526.CreateNetworkInterfaceRequest
+    networkInterfaceName: '#name'
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+uninstall:
+  output:
+    deleteProviderId: '#networkInterfaceId'
+    success: '#throwable eq null'
+  request:
+    networkInterfaceId: '#networkInterfaceId'
+    class: com.aliyuncs.ecs.model.v20140526.DeleteNetworkInterfaceRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+list:
+  output:
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
+      condition: '#result.getNetworkInterfaceSets().size() != 0'
+      appendList:
+      - networkInterfaceSetsList
+    '[networkInterfaceSetsList]:[#result.NetworkInterfaceSets]':
+      networkInterfaceId: '#NetworkInterfaceId'
+      creationTime: '#CreationTime'
+      associatedPublicIp: '#AssociatedPublicIp'
+      type: '#Type'
+      privateIpAddress: '#PrivateIpAddress'
+      vswitchId: '#VSwitchId'
+      macAddress: '#MacAddress'
+      instanceId: '#InstanceId'
+      regionId: '#regionId'
+      providerId: '#NetworkInterfaceId'
+      securityGroupIds: '#SecurityGroupIds'
+      vpcId: '#VpcId'
+      name: '#networkInterfaceName'
+      zoneId: '#ZoneId'
+      status: '#Status'
+  request:
+    pageNumber: '1'
+    pageSize: '100'
+    class: com.aliyuncs.ecs.model.v20140526.DescribeNetworkInterfacesRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+query:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.alicloud.model.QueryNetworkInterfaceRequest
+  output:
+    networkInterfaceId: '#result.getNetworkInterfaceSets().get(0).getNetworkInterfaceId()'
+    creationTime: '#result.getNetworkInterfaceSets().get(0).getCreationTime()'
+    associatedPublicIp: '#result.getNetworkInterfaceSets().get(0).getAssociatedPublicIp()'
+    type: '#result.getNetworkInterfaceSets().get(0).getType()'
+    privateIpAddress: '#result.getNetworkInterfaceSets().get(0).getPrivateIpAddress()'
+    vswitchId: '#result.getNetworkInterfaceSets().get(0).getVSwitchId()'
+    macAddress: '#result.getNetworkInterfaceSets().get(0).getMacAddress()'
+    instanceId: '#result.getNetworkInterfaceSets().get(0).getInstanceId()'
+    success: '#throwable eq null'
+    providerId: '#result.getNetworkInterfaceSets().get(0).getNetworkInterfaceId()'
+    securityGroupIds: '#result.getNetworkInterfaceSets().get(0).getSecurityGroupIds()'
+    vpcId: '#result.getNetworkInterfaceSets().get(0).getVpcId()'
+    name: '#result.getNetworkInterfaceSets().get(0).getNetworkInterfaceName()'
+    zoneId: '#result.getNetworkInterfaceSets().get(0).getZoneId()'
+    status: '#result.getNetworkInterfaceSets().get(0).getStatus()'
+  method: queryNetworkInterface
+  param:
+    networkInterfaceId: '#networkInterfaceId'
+    regionId: '#regionId'
+    accessKey: '#accessKey'
+    secret: '#secret'
+  argNames:
+  - param
+  argValues:
+    param: '#param'
+  client: org.prophetech.hyperone.vegaops.alicloud.client.AliyunInstanceClient
+bind:
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#status eq ''InUse''&& #instanceId ne null'
+        mergeKeys: '*'
+      input:
+        networkInterfaceId: '#networkInterfaceId'
+      action: query
+      waitInterval: '3000'
+  request:
+    networkInterfaceId: '#networkInterfaceId'
+    instanceId: '#instanceId'
+    class: com.aliyuncs.ecs.model.v20140526.AttachNetworkInterfaceRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+unbind:
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '30'
+      output:
+        success: '#status eq ''Available''||#instanceId eq null'
+        mergeKeys: '*'
+      input:
+        networkInterfaceId: '#networkInterfaceId'
+      action: query
+      waitInterval: '3000'
+  request:
+    networkInterfaceId: '#networkInterfaceId'
+    instanceId: '#instanceId'
+    class: com.aliyuncs.ecs.model.v20140526.DetachNetworkInterfaceRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)

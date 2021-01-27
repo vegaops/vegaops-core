@@ -1,0 +1,353 @@
+{
+  "vendor": "ctyun",
+  "nodeType": "instance",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "query",
+    "list",
+    "start-stop",
+    "reboot",
+    "update",
+    "renew"
+  ],
+  "ctyunAccount": {
+    "class": "org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount",
+    "accessKey": "#accessKey",
+    "secret": "#secret"
+  },
+  "install": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient",
+    "method": "createInstance",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.CreateInstanceRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "payType": "#payType",
+      "regionId": "#region",
+      "availability_zone": "#zoneId",
+      "name": "#name",
+      "imageRef": "#imageId",
+      "osType": "#osType",
+      "volumetype": "#systemDiskCategory",
+      "volumeSize": "#systemDiskSize",
+      "dataVolumetype": "#dataVolumetype",
+      "dataVolumeSize": "#dataVolumeSize",
+      "flavorRef": "#flavorId",
+      "vpcid": "#vpcId",
+      "securityGroupId": "#securityGroups",
+      "subnet_id": "#VSwitchId",
+      "ip_address": "#privateIp",
+      "publicipId": "#publicIpId",
+      "iptype": "#ipType",
+      "bandwidthSize": "#bandwidthSize",
+      "sharetype": "#shareType",
+      "adminPass": "#password",
+      "count": "#count",
+      "instanceCnt": "#count",
+      "cycleCnt": "#servicePeriodQuantity",
+      "cycleType": "#servicePeriodUnit",
+      "instanceServiceTag": "#instanceServiceTag",
+      "volumeServiceTag": "#volumeServiceTag",
+      "memSize": "#memSize",
+      "cpuNum": "#cpuNum",
+      "flavorType": "#flavorType",
+      "support_auto_recovery": "#supportAutoRecovery",
+      "customerInfoType": "#customerInfoType",
+      "customerName": "#customerName",
+      "customerPhone": "#customerPhone",
+      "customerEmail": "#customerEmail",
+      "customerAccountId": "#customerAccountId",
+      "customerCrmBizId": "#customerCrmBizId",
+      "keyPairId": "#keyPairName"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "id": "#result.id",
+      "vswitchId": "#result.subnet_id",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#id"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "50",
+        "output": {
+          "success": "#status eq 'ACTIVE'",
+          "mergeKeys": "*"
+        }
+      },
+      "trigger": {
+        "action": "list",
+        "nodeType": "networkInterface",
+        "input": {
+          "instanceId": "#id"
+        }
+      },
+    }
+  },
+  "query": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient",
+    "method": "getInstances",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.GetVMsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "vmId": "#instanceId",
+      "regionId": "#regionId"
+    },
+    "output": {
+      "success": "true",
+      "id": "#result.get(0).getId()",
+      "status": "#result.get(0).getStatus()",
+      "name": "#result.get(0).getName()",
+      "image": "#result.get(0).getImage()",
+      "flavor": "#result.get(0).getFlavor()",
+      "vpcId": "#result.get(0).getVpcId()",
+      "privateIp": "#result.get(0).getPrivateIp()",
+      "created": "#result.get(0).getCreated()",
+      "expireTime": "#result.get(0).getExpireTime()",
+      "securityGroups": "#result.get(0).getSecurity_groups()",
+      "hostId": "#result.get(0).getHostId()",
+      "zoneId": "#result.get(0).getAvailability_zone()",
+      "volumes_attached": "#result.get(0).getVolumes_attached()",
+      "floatingIp": "#result.get(0).getFloatingIp()",
+      "payType": "#result.get(0).getPayType()"
+    }
+  },
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient",
+    "method": "getInstances",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.GetVMsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "vmId": "#instanceId",
+      "regionId": "#regionId",
+      "limit": "#limit",
+      "lastId": "#marker"
+    },
+    "output": {
+      "success": "true",
+      "[instanceList]:[#result]": {
+        "id": "#id",
+        "status": "#status",
+        "name": "#name",
+        "image": "#image",
+        "flavor": "#flavor",
+        "vpcId": "#vpcId",
+        "privateIp": "#privateIp",
+        "created": "#created",
+        "expireTime": "#expireTime",
+        "securityGroups": "#security_groups",
+        "hostId": "#hostId",
+        "zoneId": "#availability_zone",
+        "volumes_attached": "#volumes_attached",
+        "floatingIp": "#floatingIp",
+        "payType": "#payType",
+        "regionId": "#regionId"
+      }
+    }
+  },
+  "uninstall": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient",
+    "method": "deleteInstance",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.DeleteVMRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "vmId": "#instanceId",
+      "payType": "#instanceChargeType"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "deleteProviderId": "#instanceChargeType eq 'PostPaid' ? #instanceId : '0'"
+    }
+  },
+  "update": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient",
+    "method": "upgradeVm",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.UpgradeVMRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "vmId": "#instanceId",
+      "flavorId": "#flavorId"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId",
+          "regionId": "#regionId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#status eq 'SHUTOFF'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "renew": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient",
+    "method": "reNewInstance",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.RenewOrderRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "instanceId": "#instanceId",
+      "regionId": "#regionId",
+      "cycleCount": "#cycleCount",
+      "cycleType": "#cycleType"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "id": "#result.id",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#id",
+          "regionId": "#regionId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#status eq 'ACTIVE'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "start": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient",
+    "method": "start",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argValues": {
+      "instanceChargeType": "#instanceChargeType",
+      "regionId": "#regionId",
+      "instanceId": "#instanceId"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800) || #result.message.contains('主机当前状态（ACTIVE）')",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId",
+          "regionId": "#regionId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "50",
+        "output": {
+          "success": "#status  eq 'ACTIVE'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "stop": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunInstanceClient",
+    "method": "stop",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argValues": {
+      "instanceChargeType": "#instanceChargeType",
+      "regionId": "#regionId",
+      "instanceId": "#instanceId",
+      "type": "#type"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800) || #result.message.contains('主机当前状态（SHUTOFF）')",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId",
+          "regionId": "#regionId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#status  eq 'SHUTOFF'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "reboot": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.RestartVMRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "vmId": "#instanceId",
+      "type": "#type"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId",
+          "regionId": "#regionId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "#status  eq 'ACTIVE'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  }
+}

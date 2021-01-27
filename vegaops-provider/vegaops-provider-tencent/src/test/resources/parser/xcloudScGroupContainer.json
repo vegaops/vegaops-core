@@ -1,0 +1,16 @@
+{
+  "vendor": "tencent",
+  "accessKey": "xxxxx",
+  "secret": "xxxxx",
+  "regionId": "ap-beijing",
+  "nodes": [
+    {
+      "componentId": "securityGroup-1",
+      "nodeType": "securityGroup",
+      "vars": {
+        "groupName": "10.0.0.0/16",
+        "description": "vegaopsTest"
+      }
+    }
+  ]
+}

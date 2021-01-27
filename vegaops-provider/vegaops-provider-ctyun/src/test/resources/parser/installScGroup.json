@@ -1,0 +1,91 @@
+{
+  "componentId": "container_11yhyismtonk",
+  "containerType": "aliyun",
+  "nodes": [
+    {
+      "componentId": "vpc-1vq9mf3ydb9c0",
+      "leafNode": false,
+      "nodeType": "vpc",
+      "properties": [
+        {
+          "key": "providerId",
+          "value": "vpc-bp112pwjy5sjv4fnrz00m"
+        },
+        {
+          "key": "cidrBlock",
+          "value": "192.168.0.0/16"
+        },
+        {
+          "key": "name",
+          "value": "llx-vpc"
+        },
+        {
+          "key": "description"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "componentId": "securityGroup-1dddgx6bp41s0",
+      "leafNode": false,
+      "nodeType": "securityGroup",
+      "properties": [
+        {
+          "key": "vpcId",
+          "value": "vpc-bp112pwjy5sjv4fnrz00m"
+        },
+        {
+          "key": "name",
+          "value": "bbbb"
+        },
+        {
+          "key": "description",
+          "value": "bbbb"
+        },
+        {
+          "key": "type"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "componentId": "rule_v74olkirb9c0",
+      "leafNode": true,
+      "nodeType": "securityGroupRule",
+      "properties": [
+        {
+          "key": "direction",
+          "value": "egress"
+        },
+        {
+          "key": "policy",
+          "value": "1"
+        },{
+          "key": "protocol",
+          "value": "gre"
+        }
+      ,{
+          "key": "portStart",
+          "value": "-1"
+        }
+      ,{
+          "key": "portEnd",
+          "value": "-1"
+        },{
+          "key": "cidr",
+          "value": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "componentId": "relation_1w11kjy2vgio0",
+      "principalId": "securityGroup-1dddgx6bp41s0",
+      "relationType": "child",
+      "targetId": "rule_v74olkirb9c0"
+    }
+  ],
+  "regionId": "1157108313085378560",
+  "cloudAccountId": "1157108311423946752"
+}

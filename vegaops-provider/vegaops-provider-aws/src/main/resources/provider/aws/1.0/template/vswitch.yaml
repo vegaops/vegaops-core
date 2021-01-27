@@ -1,0 +1,125 @@
+vendor: aws
+nodeType: vswitch
+componentId: '#componentId'
+actions:
+- install-uninstall
+- query
+- list
+- tag
+awsRegion: T(software.amazon.awssdk.regions.Region).of(#regionId)
+credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)
+awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
+ec2Client: T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
+install:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.CreateSubnetRequest
+  output:
+    vswitchId: '#result.subnet()?.subnetId()'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    after:
+      retryTimes: '3'
+      output:
+        success: '#state.toString() eq ''available'''
+        mergeKeys: '*'
+      input:
+        resourceId: '#vswitchId'
+        name: '#name'
+      action: tag
+      waitInterval: '3000'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.CreateSubnetRequest).builder().availabilityZone(#availabilityZone).cidrBlock(#cidrBlock).vpcId(#vpcId).build()
+  method: createSubnet
+  argNames:
+  - request
+  client: '#ec2Client'
+query:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DescribeSubnetsRequest
+  output:
+    subnetId: '#result.subnets()[0]?.subnetId()'
+    subnetArn: '#result.subnets()[0]?.subnetArn()'
+    availabilityZoneId: '#result.subnets()[0]?.availabilityZoneId()'
+    cidrBlock: '#result.subnets()[0]?.cidrBlock()'
+    ownerId: '#result.subnets()[0]?.ownerId()'
+    availabilityZone: '#result.subnets()[0]?.availabilityZone()'
+    assignIpv6AddressOnCreation: '#result.subnets()[0]?.assignIpv6AddressOnCreation()'
+    tags: '#result.subnets()[0]?.tags()'
+    availableIpAddressCount: '#result.subnets()[0]?.availableIpAddressCount()'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    providerId: '#result.subnets()[0]?.subnetId()'
+    vpcId: '#result.subnets()[0]?.vpcId()'
+    mapPublicIpOnLaunch: '#result.subnets()[0]?.mapPublicIpOnLaunch()'
+    defaultForAz: '#result.subnets()[0]?.defaultForAz()'
+    outpostArn: '#result.subnets()[0]?.outpostArn()'
+    state: '#result.subnets()[0]?.state()'
+    close: '#ec2Client.close()'
+    ipv6CidrBlockAssociationSet: '#result.subnets()[0]?.ipv6CidrBlockAssociationSet()'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeSubnetsRequest).builder().subnetIds(#vswitchId).build()
+  method: describeSubnets
+  argNames:
+  - request
+  client: '#ec2Client'
+list:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DescribeSubnetsRequest
+  output:
+    log: 'false'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    '[vpcList]:[#result.subnets()]':
+      subnetId: '#me.subnetId()'
+      subnetArn: '#me.subnetArn()'
+      availabilityZoneId: '#me.availabilityZoneId()'
+      cidrBlock: '#me.cidrBlock()'
+      ownerId: '#me.ownerId()'
+      availabilityZone: '#me.availabilityZone()'
+      assignIpv6AddressOnCreation: '#me.assignIpv6AddressOnCreation()'
+      tags: '#me.tags()'
+      availableIpAddressCount: '#me.availableIpAddressCount()'
+      regionId: '#regionId'
+      providerId: '#me.subnetId()'
+      vpcId: '#me.vpcId()'
+      mapPublicIpOnLaunch: '#me.mapPublicIpOnLaunch()'
+      zoneId: '#zoneId'
+      defaultForAz: '#me.defaultForAz()'
+      outpostArn: '#me.outpostArn()'
+      state: '#me.state()'
+      ipv6CidrBlockAssociationSet: '#me.ipv6CidrBlockAssociationSet()'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeSubnetsRequest).builder().build()
+  method: describeSubnets
+  argNames:
+  - request
+  client: '#ec2Client'
+tag:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.CreateTagsRequest
+  output:
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    after:
+      retryTimes: '3'
+      output:
+        success: '#state.toString() eq ''available'''
+        mergeKeys: '*'
+      input:
+        vswitchId: '#resourceId'
+      action: query
+      waitInterval: '3000'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.CreateTagsRequest).builder().resources(#resourceId).tags(T(software.amazon.awssdk.services.ec2.model.Tag).builder().key("Name").value(#name).build()).build()
+  method: createTags
+  argNames:
+  - request
+  client: '#ec2Client'
+uninstall:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DeleteSubnetRequest
+  output:
+    deleteProviderId: '#vswitchId'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200||#throwable.getMessage().contains(''not
+      exist'')'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.DeleteSubnetRequest).builder().subnetId(#vswitchId).build()
+  method: deleteSubnet
+  argNames:
+  - request
+  client: '#ec2Client'

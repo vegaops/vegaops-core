@@ -1,0 +1,143 @@
+{
+  "vendor": "aws",
+  "nodeType": "vpc",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "query",
+    "list",
+    "tag"
+  ],
+  "awsRegion": "T(software.amazon.awssdk.regions.Region).of(#regionId)",
+  "credentials": "T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)",
+  "awsCredentialsProvider": "T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)",
+  "ec2Client": "T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()",
+  "install": {
+    "client": "#ec2Client",
+    "method": "createVpc",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.CreateVpcRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.CreateVpcRequest).builder().amazonProvidedIpv6CidrBlock(#amazonProvidedIpv6CidrBlock).cidrBlock(#cidrBlock).instanceTenancy(#instanceTenancy).ipv6CidrBlock(#ipv6CidrBlock).ipv6CidrBlockNetworkBorderGroup(#ipv6CidrBlockNetworkBorderGroup).ipv6Pool(#ipv6Pool).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "vpcId": "#result.vpc().vpcId()",
+      "after": {
+        "action": "tag",
+        "input": {
+          "resourceId": "#vpcId",
+          "name": "#name"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "3",
+        "output": {
+          "success": "#state.toString() eq 'available'",
+          "close": "#ec2Client.close()",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "tag": {
+    "client": "#ec2Client",
+    "method": "createTags",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.CreateTagsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.CreateTagsRequest).builder().resources(#resourceId).tags(T(software.amazon.awssdk.services.ec2.model.Tag).builder().key(\"Name\").value(#name).build()).build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "after": {
+        "action": "query",
+        "input": {
+          "vpcId": "#resourceId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "3",
+        "output": {
+          "success": "#state.toString() eq 'available'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "query": {
+    "client": "#ec2Client",
+    "method": "describeVpcs",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DescribeVpcsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DescribeVpcsRequest).builder().vpcIds(#vpcId).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "vpcId": "#result.vpcs()[0]?.vpcId()",
+      "providerId": "#result.vpcs()[0]?.vpcId()",
+      "cidrBlock": "#result.vpcs()[0]?.cidrBlock()",
+      "dhcpOptionsId": "#result.vpcs()[0]?.dhcpOptionsId()",
+      "state": "#result.vpcs()[0]?.state()",
+      "ownerId": "#result.vpcs()[0]?.ownerId()",
+      "instanceTenancy": "#result.vpcs()[0]?.instanceTenancy()",
+      "ipv6CidrBlockAssociationSet": "#result.vpcs()[0]?.ipv6CidrBlockAssociationSet()",
+      "cidrBlockAssociationSet": "#result.vpcs()[0]?.cidrBlockAssociationSet()",
+      "isDefault": "#result.vpcs()[0]?.isDefault()",
+      "tags": "#result.vpcs()[0]?.tags()"
+    }
+  },
+  "list": {
+    "client": "#ec2Client",
+    "method": "describeVpcs",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DescribeVpcsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DescribeVpcsRequest).builder().build()",
+    "output": {
+      "success": "true",
+      "close": "#ec2Client.close()",
+      "log": "false",
+      "[vpcList]:[#result.vpcs()]": {
+        "vpcId": "#me.vpcId()",
+        "cidrBlock": "#me.cidrBlock()",
+        "dhcpOptionsId": "#me.dhcpOptionsId()",
+        "state": "#me.state()",
+        "ownerId": "#me.ownerId()",
+        "regionId": "#regionId",
+        "zoneId": "#zoneId",
+        "instanceTenancy": "#me.instanceTenancy()",
+        "ipv6CidrBlockAssociationSet": "#me.ipv6CidrBlockAssociationSet()",
+        "cidrBlockAssociationSet": "#me.cidrBlockAssociationSet()",
+        "isDefault": "#me.isDefault()",
+        "tags": "#me.tags()"
+      }
+    }
+  },
+  "uninstall": {
+    "client": "#ec2Client",
+    "method": "deleteVpc",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DeleteVpcRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DeleteVpcRequest).builder().vpcId(#vpcId).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200||#throwable.getMessage().contains('not exist')",
+      "close": "#ec2Client.close()",
+      "deleteProviderId": "#vpcId"
+    }
+  }
+}

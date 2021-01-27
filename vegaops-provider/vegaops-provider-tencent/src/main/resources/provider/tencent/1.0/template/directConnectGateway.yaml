@@ -1,0 +1,108 @@
+vendor: tencent
+nodeType: directConnectGateway
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+- query
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: vpc.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+install:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.CreateDirectConnectGatewayRequest
+  output:
+    success: '#throwable eq null'
+    directConnectTunnelId: '#result.DirectConnectTunnelIdSet[0]'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#throwable eq null'
+        mergeKeys: '*'
+      input:
+        directConnectGatewayId: '#directConnectGatewayId'
+      action: query
+      waitInterval: '3000'
+  request:
+    directConnectGatewayName: '#name'
+    gatewayType: '#gatewayType'
+    networkInstanceId: '#networkInstanceId'
+    networkType: '#networkType'
+  method: CreateDirectConnectGateway
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+uninstall:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DeleteDirectConnectGatewayRequest
+  output:
+    deleteProviderId: '#directConnectGatewayId'
+    success: '#throwable eq null'
+  request:
+    directConnectGatewayId: '#directConnectGatewayId  '
+  method: DeleteDirectConnectGateway
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+list:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DescribeDirectConnectGatewaysRequest
+  output:
+    '[directConnectGatewayList]:[#result.DirectConnectGatewaySet]':
+      ccnId: '#CcnId'
+      directConnectGatewayId: '#DirectConnectGatewayId'
+      enableBGP: '#EnableBGP'
+      gatewayType: '#GatewayType'
+      createTime: '#CreateTime'
+      regionId: '#regionId'
+      providerId: '#DirectConnectGatewayId'
+      ccnRouteType: '#CcnRouteType'
+      vpcId: '#VpcId'
+      enableBGPCommunity: '#EnableBGPCommunity'
+      name: '#DirectConnectGatewayName'
+      networkInstanceId: '#NetworkInstanceId'
+      directConnectGatewayIp: '#DirectConnectGatewayIp'
+      networkType: '#NetworkType'
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
+      condition: '#result.getDirectConnectGatewaySet().length != 0'
+      appendList:
+      - directConnectGatewayList
+  request:
+    offset: '0'
+    limit: '100'
+    class: com.tencentcloudapi.vpc.v20170312.models.DescribeDirectConnectGatewaysRequest
+  method: DescribeDirectConnectGateways
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+query:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DescribeDirectConnectGatewaysRequest
+  output:
+    ccnId: '#result.getDirectConnectGatewaySet().length eq 0 ? null:#result.getDirectConnectGatewaySet()[0]?.getCcnId()'
+    directConnectGatewayId: '#result.getDirectConnectGatewaySet().length eq 0 ? null:#result.getDirectConnectGatewaySet()[0]?.getDirectConnectGatewayId()'
+    enableBGP: '#result.getDirectConnectGatewaySet().length eq 0 ? null:#result.getDirectConnectGatewaySet()[0]?.getEnableBGP()'
+    gatewayType: '#result.getDirectConnectGatewaySet().length eq 0 ? null:#result.getDirectConnectGatewaySet()[0]?.getGatewayType()'
+    createTime: '#result.getDirectConnectGatewaySet().length eq 0 ? null:#result.getDirectConnectGatewaySet()[0]?.getCreateTime()'
+    success: '#throwable eq null&&#result.totalCount eq 1'
+    providerId: '#result.getDirectConnectGatewaySet().length eq 0 ? null:#result.getDirectConnectGatewaySet()[0]?.getDirectConnectGatewayId()'
+    ccnRouteType: '#result.getDirectConnectGatewaySet().length eq 0 ? null:#result.getDirectConnectGatewaySet()[0]?.getCcnRouteType()'
+    vpcId: '#result.getDirectConnectGatewaySet().length eq 0 ? null:#result.getDirectConnectGatewaySet()[0]?.getVpcId()'
+    enableBGPCommunity: '#result.getDirectConnectGatewaySet().length eq 0 ? null:#result.getDirectConnectGatewaySet()[0]?.getEnableBGPCommunity()'
+    name: '#result.getDirectConnectGatewaySet().length eq 0 ? null:#result.getDirectConnectGatewaySet()[0]?.getDirectConnectGatewayName()'
+    networkInstanceId: '#result.getDirectConnectGatewaySet().length eq 0 ? null:#result.getDirectConnectGatewaySet()[0]?.getNetworkInstanceId()'
+    directConnectGatewayIp: '#result.getDirectConnectGatewaySet().length eq 0 ? null:#result.getDirectConnectGatewaySet()[0]?.getDirectConnectGatewayIp()'
+    networkType: '#result.getDirectConnectGatewaySet().length eq 0 ? null:#result.getDirectConnectGatewaySet()[0]?.getNetworkType()'
+  request:
+    directConnectGatewayIds: new String('["'+#directConnectGatewayId+'"]')
+  method: DescribeDirectConnectGateways
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)

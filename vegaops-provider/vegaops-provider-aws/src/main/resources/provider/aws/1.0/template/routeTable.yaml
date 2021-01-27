@@ -1,0 +1,53 @@
+vendor: aws
+nodeType: routeTable
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+awsRegion: T(software.amazon.awssdk.regions.Region).of(#regionId)
+credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)
+awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
+ec2Client: T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
+install:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.CreateRouteTableRequest
+  output:
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    providerId: '#result.routeTable().routeTableId()'
+    vpcId: '#result.routeTable().vpcId()'
+    routeTableId: '#result.routeTable().routeTableId()'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.CreateRouteTableRequest).builder().vpcId(#vpcId).build()
+  method: createRouteTable
+  argNames:
+  - request
+  client: '#ec2Client'
+list:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DescribeRouteTablesRequest
+  output:
+    '[routeTable]:[#result.routeTables()]':
+      providerId: '#me.routeTableId()'
+      routeTableId: '#me.routeTableId()'
+      vpcId: '#me.vpcId()'
+      tags: '#me.tags()'
+    log: 'false'
+    success: 'true'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeRouteTablesRequest).builder().build()
+  method: describeRouteTables
+  argNames:
+  - request
+  client: '#ec2Client'
+uninstall:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DeleteRouteTableRequest
+  output:
+    deleteProviderId: '#routeTableId'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.DeleteRouteTableRequest).builder().routeTableId(#routeTableId).build()
+  method: deleteRouteTable
+  argNames:
+  - request
+  client: '#ec2Client'

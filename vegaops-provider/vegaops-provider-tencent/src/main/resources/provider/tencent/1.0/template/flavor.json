@@ -1,0 +1,43 @@
+{
+  "vendor": "tencent",
+  "nodeType": "flavor",
+  "componentId": "#componentId",
+  "actions": [
+    "list"
+  ],
+  "credential":"new com.tencentcloudapi.common.Credential(#accessKey,#secret)",
+  "httpProfile": {
+    "class": "com.tencentcloudapi.common.profile.HttpProfile",
+    "endpoint": "cvm.tencentcloudapi.com"
+  },
+  "clientProfile": {
+    "class": "com.tencentcloudapi.common.profile.ClientProfile",
+    "httpProfile": "#httpProfile"
+  },
+  "list": {
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeInstanceTypeConfigs",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.DescribeInstanceTypeConfigsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "class": "com.tencentcloudapi.cvm.v20170312.models.DescribeInstanceTypeConfigsRequest"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "[flavorList]:[#result.InstanceTypeConfigSet]": {
+        "zone": "#Zone",
+        "family": "#InstanceFamily",
+        "providerId": "#InstanceType",
+        "instanceType": "#InstanceType",
+        "cpu": "#CPU",
+        "gpu": "#GPU",
+        "memory": "#Memory"
+      }
+    }
+  }
+}

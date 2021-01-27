@@ -1,0 +1,29 @@
+{
+  "componentId": "container_networkInterface1234567",
+  "containerType": "tencent",
+  "nodes": [
+    {
+      "componentId": "networkInterface_123456",
+      "leafNode": false,
+      "relations": [],
+      "nodeType": "networkInterface",
+      "properties": [
+        {
+          "key": "vpcId",
+          "value": "vpc-1f0ziyua"
+        },
+        {
+          "key": "name",
+          "value": "vegaopsTest1"
+        },
+        {
+          "key": "vswitchId",
+          "value": "subnet-8ni0c15d"
+        }
+      ]
+    }
+  ],
+  "relations": [],
+  "regionId": "ap-beijing",
+  "cloudAccountId": "1249274415906578432"
+}

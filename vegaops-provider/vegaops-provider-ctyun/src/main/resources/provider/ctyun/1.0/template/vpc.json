@@ -1,0 +1,122 @@
+{
+  "vendor": "ctyun",
+  "nodeType": "vpc",
+  "componentId": "#componentId",
+  "maskKeys": [
+    "secret"
+  ],
+  "actions": [
+    "install-uninstall",
+    "query",
+    "list"
+  ],
+  "ctyunAccount": {
+    "class": "org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount",
+    "accessKey": "#accessKey",
+    "secret": "#secret"
+  },
+  "install": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.CreateVpcRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "name": "#name",
+      "cidr": "#cidr",
+      "regionId": "#regionId"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "vpcId": "#result.returnObj.id",
+      "name": "#result.returnObj.name",
+      "cidr": "#result.returnObj.cidr",
+      "status": "#result.returnObj.status"
+    }
+  },
+  "query": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.QueryVPCDetailRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "vpcId": "#vpcId",
+      "regionId": "#regionId"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "vpcId": "#result.returnObj.resVpcId",
+      "name": "#result.returnObj.name",
+      "cidr": "#result.returnObj.cidr",
+      "status": "#result.returnObj.vpcStatus",
+      "regionId": "#result.returnObj.regionId",
+      "zoneId": "#result.returnObj.zoneId",
+      "zoneName": "#result.returnObj.zoneName",
+      "createDate": "#result.returnObj.createDate"
+    }
+  },
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.GetVpcsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "log": "false",
+      "[vpcList]:[#result.returnObj]": {
+        "vpcId": "#resVpcId",
+        "name": "#name",
+        "cidr": "#cidr",
+        "status": "#vpcStatus",
+        "regionId": "#regionId",
+        "zoneId": "#zoneId",
+        "zoneName": "#zoneName",
+        "createDate": "#createDate"
+      }
+    }
+  },
+  "uninstall": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.DeleteVPCRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "vpcId": "#vpcId",
+      "regionId": "#regionId"
+    },
+    "output": {
+      "success": "#result.statusCode?.equals(800)||#result.message?.contains('does not exist')",
+      "deleteProviderId": "#vpcId"
+    }
+  }
+}

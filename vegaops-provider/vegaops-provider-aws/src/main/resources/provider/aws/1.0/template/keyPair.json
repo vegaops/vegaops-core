@@ -1,0 +1,64 @@
+{
+  "vendor": "aws",
+  "nodeType": "keyPair",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list"
+  ],
+  "maskKeys": [
+    "privateKey"
+  ],
+  "awsRegion": "T(software.amazon.awssdk.regions.Region).of(#regionId)",
+  "credentials": "T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)",
+  "awsCredentialsProvider": "T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)",
+  "ec2Client": "T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()",
+  "list": {
+    "client": "#ec2Client",
+    "method": "describeKeyPairs",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "[keyPairs]:[#result.keyPairs()]": {
+        "name": "#me.keyName()",
+        "providerId": "#me.keyPairId()",
+        "keyFingerprint": "#me.keyFingerprint()",
+        "regionId": "#regionId",
+        "zoneId": "#zoneId"
+      }
+    }
+  },
+  "install": {
+    "client": "#ec2Client",
+    "method": "createKeyPair",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.CreateKeyPairRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.CreateKeyPairRequest).builder().keyName(#keyName).build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "name": "#result.keyName()",
+      "providerId": "#result.keyPairId()",
+      "keyFingerprint": "#result.keyFingerprint()",
+      "regionId": "#regionId",
+      "zoneId": "#zoneId",
+      "privateKey": "#result.keyMaterial()"
+    }
+  },
+  "uninstall": {
+    "client": "org.prophetech.hyperone.vegaops.aws.client.AwsKeyPairClient",
+    "method": "deleteKeyPair",
+    "argValues":{
+      "ec2Client": "#ec2Client",
+      "keyName": "#name"
+    },
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "deleteProviderId": "#keyId"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+vendor: aws
+nodeType: flavor
+componentId: '#componentId'
+actions:
+- list
+awsRegion: T(software.amazon.awssdk.regions.Region).of(#regionId)
+credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)
+awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
+ec2Client: T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
+list:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DescribeInstanceTypesRequest
+  output:
+    log: 'false'
+    success: 'true'
+    loop:
+      '1': '#builder.nextToken(#result.nextToken())'
+      condition: '#result.nextToken() ne null'
+      appendList:
+      - flavorList
+    '[flavorList]:[#result.instanceTypes()]':
+      enaSupport: '#me.networkInfo().enaSupport()'
+      gpuNum: '#me.gpuInfo()?.gpus()?.size()'
+      id: '#me.instanceType()'
+      cpuNum: '#me.vCpuInfo().defaultVCpus()'
+      memSize: '#me.memoryInfo().sizeInMiB()/1024'
+    close: '#result.nextToken() eq null?ec2Client.close():true'
+  method: describeInstanceTypes
+  builder: T(software.amazon.awssdk.services.ec2.model.DescribeInstanceTypesRequest).builder()
+  argValues:
+    request: '#builder.build()'
+  client: '#ec2Client'

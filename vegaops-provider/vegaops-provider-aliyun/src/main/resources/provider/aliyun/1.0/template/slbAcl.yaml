@@ -1,0 +1,28 @@
+vendor: aliyun
+nodeType: slbAcl
+componentId: '#componentId'
+actions:
+- list
+profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
+list:
+  output:
+    '[slbAclList]:[#result.Acls]':
+      regionId: '#regionId'
+      providerId: '#AclId'
+      name: '#AclName'
+      addressIPVersion: '#AddressIPVersion'
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
+      condition: '#result.getAcls().size() != 0'
+      appendList:
+      - slbAclList
+  request:
+    pageNumber: '1'
+    pageSize: '10'
+    class: com.aliyuncs.slb.model.v20140515.DescribeAccessControlListsRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)

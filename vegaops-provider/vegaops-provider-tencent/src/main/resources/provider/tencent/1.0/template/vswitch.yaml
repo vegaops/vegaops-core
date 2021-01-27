@@ -1,0 +1,95 @@
+vendor: tencent
+nodeType: vswitch
+componentId: '#componentId'
+actions:
+- install-uninstall
+- query
+- list
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: vpc.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+query:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DescribeSubnetsRequest
+  output:
+    '[vswitchList]:[#result.SubnetSet]':
+      vswitchId: '#SubnetId'
+      providerId: '#SubnetId'
+      Zone: '#Zone'
+      vpcId: '#VpcId'
+      cidrBlock: '#CidrBlock'
+      name: '#SubnetName'
+      createdTime: '#CreatedTime'
+      ipv6CidrBlock: '#Ipv6CidrBlock'
+    success: '#throwable eq null&&#result.totalCount eq 1'
+  request:
+    subnetIds:
+    - '#vswitchId'
+  method: DescribeSubnets
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+list:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DescribeSubnetsRequest
+  output:
+    '[vswitchList]:[#result.SubnetSet]':
+      vswitchId: '#SubnetId'
+      zone: '#Zone'
+      regionId: '#regionId'
+      vpcId: '#VpcId'
+      cidrBlock: '#CidrBlock'
+      name: '#SubnetName'
+      createdTime: '#CreatedTime'
+      ipv6CidrBlock: '#Ipv6CidrBlock'
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
+      condition: '#result.getSubnetSet().length != 0'
+      appendList:
+      - vswitchList
+  request:
+    offset: '0'
+    limit: '100'
+    class: com.tencentcloudapi.vpc.v20170312.models.DescribeSubnetsRequest
+  method: DescribeSubnets
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+install:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.CreateSubnetRequest
+  output:
+    vswitchId: '#result.Subnet.SubnetId'
+    zone: '#result.Subnet.Zone'
+    success: '#throwable eq null'
+    vpcId: '#result.Subnet.VpcId'
+    cidrBlock: '#result.Subnet.CidrBlock'
+    name: '#result.Subnet.SubnetName'
+    createdTime: '#result.Subnet.CreatedTime'
+  request:
+    zone: '#zone '
+    vpcId: '#vpcId'
+    cidrBlock: '#cidrBlock'
+    subnetName: '#name'
+  method: CreateSubnet
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+uninstall:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DeleteSubnetRequest
+  output:
+    deleteProviderId: '#vswitchId'
+    success: '#throwable eq null'
+  request:
+    subnetId: '#vswitchId'
+  method: DeleteSubnet
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)

@@ -1,0 +1,101 @@
+{
+  "vendor": "ctyun",
+  "nodeType": "networkInterface",
+  "componentId": "#componentId",
+  "actions": [
+    "list",
+    "install-uninstall"
+  ],
+  "ctyunAccount": {
+    "class": "org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount",
+    "accessKey": "#accessKey",
+    "secret": "#secret"
+  },
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunNetworkInterfaceClient",
+    "method": "getAllNetworkInterface",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argValues": {
+      "regionId": "#regionId",
+      "instanceId": "#instanceId"
+    },
+    "output": {
+      "success": "#throwable eq null || #throwable.toString().contains('Read timed out')",
+      "[netWorkCardList]:[#result]": {
+        "portId": "#port_id",
+        "netId": "#net_id",
+        "macAddr": "#mac_addr",
+        "portState": "#port_state",
+        "ipAddress": "#ip_addresses",
+        "subnetId": "#subnet_ids",
+        "vmId": "#vmId",
+        "regionId": "#regionId"
+      }
+    }
+  },
+  "uninstall": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.DeleteNetworkCardRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "vmId": "#instanceId",
+      "regionId": "#regionId",
+      "networkCardId": "#networkCardId"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "after": {
+        "action": "instance.query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "25",
+        "output": {
+          "success": "T(com.alibaba.fastjson.JSON).parseArray(#privateIp).size() eq 1"
+        }
+      },
+      "deleteProviderId": "#networkCardId"
+    }
+  },
+  "install": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunNetworkInterfaceClient",
+    "method": "createNetworkCard",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.CreateNetworkCardsParam"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "instanceId": "#instanceId",
+      "securityGroups": "#securityGroups",
+      "vswitchId": "#vswitchId"
+    },
+    "output": {
+      "success": "#throwable eq null || #throwable.toString().contains('Timeout')",
+      "portId": "#result.port_id",
+      "netId": "#result.net_id",
+      "macAddr": "#result.mac_addr",
+      "portState": "#result.port_state",
+      "ipAddress": "#result.ip_addresses",
+      "subnetId": "#result.subnet_ids",
+      "vmId": "#result.vmId",
+      "regionId": "#regionId"
+    }
+  }
+}

@@ -1,0 +1,50 @@
+vendor: aws
+nodeType: keyPair
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+maskKeys:
+- privateKey
+awsRegion: T(software.amazon.awssdk.regions.Region).of(#regionId)
+credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)
+awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
+ec2Client: T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
+list:
+  output:
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    '[keyPairs]:[#result.keyPairs()]':
+      regionId: '#regionId'
+      providerId: '#me.keyPairId()'
+      keyFingerprint: '#me.keyFingerprint()'
+      name: '#me.keyName()'
+      zoneId: '#zoneId'
+    close: '#ec2Client.close()'
+  method: describeKeyPairs
+  client: '#ec2Client'
+install:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.CreateKeyPairRequest
+  output:
+    privateKey: '#result.keyMaterial()'
+    regionId: '#regionId'
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    providerId: '#result.keyPairId()'
+    keyFingerprint: '#result.keyFingerprint()'
+    name: '#result.keyName()'
+    zoneId: '#zoneId'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.CreateKeyPairRequest).builder().keyName(#keyName).build()
+  method: createKeyPair
+  argNames:
+  - request
+  client: '#ec2Client'
+uninstall:
+  output:
+    deleteProviderId: '#keyId'
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+  method: deleteKeyPair
+  argValues:
+    keyName: '#name'
+    ec2Client: '#ec2Client'
+  client: org.prophetech.hyperone.vegaops.aws.client.AwsKeyPairClient

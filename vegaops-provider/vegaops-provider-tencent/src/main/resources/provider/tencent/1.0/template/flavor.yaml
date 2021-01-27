@@ -1,0 +1,32 @@
+vendor: tencent
+nodeType: flavor
+componentId: '#componentId'
+actions:
+- list
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: cvm.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+list:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.DescribeInstanceTypeConfigsRequest
+  output:
+    log: 'false'
+    success: '#throwable eq null'
+    '[flavorList]:[#result.InstanceTypeConfigSet]':
+      memory: '#Memory'
+      zone: '#Zone'
+      providerId: '#InstanceType'
+      instanceType: '#InstanceType'
+      cpu: '#CPU'
+      family: '#InstanceFamily'
+      gpu: '#GPU'
+  request:
+    class: com.tencentcloudapi.cvm.v20170312.models.DescribeInstanceTypeConfigsRequest
+  method: DescribeInstanceTypeConfigs
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)

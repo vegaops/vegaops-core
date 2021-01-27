@@ -1,0 +1,29 @@
+vendor: aliyun
+nodeType: flavor
+componentId: '#componentId'
+actions:
+- list
+profile: T(com.aliyuncs.profile.DefaultProfile).getProfile('cn-hangzhou',#accessKey,#secret)
+list:
+  output:
+    log: 'false'
+    success: '#throwable eq null'
+    '[flavorList]:[#result.InstanceTypes]':
+      memorySize: '#MemorySize'
+      localStorageCapacity: '#LocalStorageCapacity'
+      regionId: '#regionId'
+      cpus: '#CpuCoreCount'
+      eniQuantity: '#EniQuantity'
+      instanceTypeId: '#InstanceTypeId'
+      gpus: '#GPUAmount'
+      localStorageCategory: '#LocalStorageCategory'
+      familyLevel: '#InstanceFamilyLevel'
+      localStorageAmount: '#LocalStorageAmount'
+      family: '#InstanceTypeFamily'
+      gpuSpec: '#GPUSpec'
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DescribeInstanceTypesRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)

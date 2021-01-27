@@ -1,0 +1,38 @@
+{
+  "vendor": "aliyun",
+  "nodeType": "slbAcl",
+  "componentId": "#componentId",
+  "actions": [
+    "list"
+  ],
+  "profile":"T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
+  "list": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.slb.model.v20140515.DescribeAccessControlListsRequest",
+      "pageSize": "10",
+      "pageNumber": "1"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "loop": {
+        "condition": "#result.getAcls().size() != 0",
+        "appendList": [
+          "slbAclList"
+        ],
+        "1": "#request.setPageNumber(#request.getPageNumber()+1)"
+      },
+      "[slbAclList]:[#result.Acls]": {
+        "providerId": "#AclId",
+        "name": "#AclName",
+        "addressIPVersion": "#AddressIPVersion",
+        "regionId": "#regionId"
+      }
+    }
+  }
+}

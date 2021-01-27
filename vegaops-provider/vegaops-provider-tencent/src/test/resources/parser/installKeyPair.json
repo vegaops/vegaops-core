@@ -1,0 +1,21 @@
+{
+  "componentId": "container_keyPair1234567",
+  "containerType": "tencent",
+  "nodes": [
+    {
+      "componentId": "keyPair_123456",
+      "leafNode": false,
+      "relations": [],
+      "nodeType": "keyPair",
+      "properties": [
+        {
+          "key": "name",
+          "value": "vegaopsTest2"
+        }
+      ]
+    }
+  ],
+  "relations": [],
+  "regionId": "ap-beijing",
+  "cloudAccountId": "1249274415906578432"
+}

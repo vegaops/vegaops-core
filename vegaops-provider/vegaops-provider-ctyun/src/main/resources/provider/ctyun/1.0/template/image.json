@@ -1,0 +1,40 @@
+{
+  "vendor": "ctyun",
+  "nodeType": "image",
+  "componentId": "#componentId",
+  "actions": [
+    "list"
+  ],
+  "ctyunAccount": {
+    "class": "org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount",
+    "accessKey": "#accessKey",
+    "secret": "#secret"
+  },
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunImageClient",
+    "method": "getAllImage",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argValues":{
+      "regionId":"#regionId",
+      "imageType":"#imageType"
+    },
+    "output": {
+      "success": "true",
+      "log": "false",
+      "[imagesList]:[#result]": {
+        "id": "#id",
+        "osType": "#osType",
+        "platform": "#platform",
+        "name": "#name",
+        "osBit": "#osBit",
+        "virtual": "#virtual",
+        "minRam": "#minRam",
+        "minDisk": "#minDisk",
+        "imageType": "#imageType",
+        "regionId":"#regionId"
+      }
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "componentId": "container_scGroupRule1234567",
+  "containerType": "aws",
+  "nodes": [
+    {
+      "componentId": "securityGroup_123456",
+      "leafNode": false,
+      "relations": [],
+      "nodeType": "securityGroup",
+      "properties": [
+        {
+          "key": "name",
+          "value": "vegaopsTest4"
+        },
+        {
+          "key": "description",
+          "value": "xjh_test"
+        },
+        {
+          "key": "vpcId",
+          "value": "vpc-0fa36d6f17a396b13"
+        }
+      ]
+    },
+    {
+      "componentId": "securityGroupRule_123456",
+      "leafNode": true,
+      "relations": [],
+      "nodeType": "securityGroupRule",
+      "properties": [
+        {
+          "key": "securityGroupId",
+          "value": ""
+        },
+        {
+          "key": "protocol",
+          "value": "tcp"
+        },
+        {
+          "key": "ethertype",
+          "value": "IPv4"
+        },
+        {
+          "key": "direction",
+          "value": "ingress"
+        },
+        {
+          "key": "portStart",
+          "value": "2"
+        },
+        {
+          "key": "portEnd",
+          "value": "65535"
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "relationType": "child",
+      "componentId": "relation_1111",
+      "targetId": "securityGroupRule_123456",
+      "principalId": "securityGroup_123456"
+    }
+  ],
+  "zoneId": "cnn1-az1",
+  "regionId": "cn-north-1",
+  "cloudAccountId": "1249274415906578433"
+}

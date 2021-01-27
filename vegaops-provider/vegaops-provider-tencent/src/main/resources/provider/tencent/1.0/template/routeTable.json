@@ -1,0 +1,118 @@
+{
+  "vendor": "tencent",
+  "nodeType": "routeTable",
+  "componentId": "#componentId",
+  "actions": [
+    "list",
+    "query",
+    "install-uninstall"
+  ],
+  "credential":"new com.tencentcloudapi.common.Credential(#accessKey,#secret)",
+  "httpProfile": {
+    "class": "com.tencentcloudapi.common.profile.HttpProfile",
+    "endpoint": "vpc.tencentcloudapi.com"
+  },
+  "clientProfile": {
+    "class": "com.tencentcloudapi.common.profile.ClientProfile",
+    "httpProfile": "#httpProfile"
+  },
+  "list": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeRouteTables",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.DescribeRouteTablesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "class": "com.tencentcloudapi.vpc.v20170312.models.DescribeRouteTablesRequest",
+      "limit": "100",
+      "offset": "0"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "loop": {
+        "condition": "#result.getRouteTableSet().length != 0",
+        "appendList": [
+          "routeTableList"
+        ],
+        "1": "#request.setOffset(#request.getOffset()+#request.getLimit())"
+      },
+      "[routeTableList]:[#result.RouteTableSet]": {
+        "vpcId": "#VpcId",
+        "routeTableId": "#RouteTableId",
+        "routeTableName": "#RouteTableName",
+        "main": "#Main",
+        "createdTime": "#CreatedTime",
+        "regionId": "#regionId"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeRouteTables",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.DescribeRouteTablesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "routeTableIds": ["#routeTableId"]
+    },
+    "output": {
+      "success": "#throwable eq null&&#result.totalCount eq 1",
+      "[routeTableList]:[#result.RouteTableSet]": {
+        "vpcId": "#VpcId",
+        "routeTableId": "#RouteTableId",
+        "routeTableName": "#RouteTableName",
+        "main": "#Main",
+        "createdTime": "#CreatedTime",
+        "regionId": "#regionId"
+      }
+    }
+  },
+  "install": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "CreateRouteTable",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.CreateRouteTableRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "routeTableName": "#routeTableName",
+      "vpcId": "#vpcId"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "output": {
+        "vpcId": "#result.getRouteTable().getVpcId()",
+        "routeTableId": "#result.getRouteTable().getRouteTableId()",
+        "routeTableName": "#result.getRouteTable().getRouteTableName()",
+        "main": "#result.getRouteTable().getMain()",
+        "createdTime": "#result.getRouteTable().getCreatedTime()",
+        "regionId": "#regionId"
+      }
+    }
+  },
+  "uninstall": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "DeleteRouteTable",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.DeleteRouteTableRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "routeTableId": "#routeTableId"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#routeTableId"
+    }
+  }
+}

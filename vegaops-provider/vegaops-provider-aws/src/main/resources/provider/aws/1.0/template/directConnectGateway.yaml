@@ -1,0 +1,54 @@
+vendor: aws
+nodeType: directConnectGateway
+componentId: '#componentId'
+actions:
+- list
+- install-uninstall
+awsRegion: T(software.amazon.awssdk.regions.Region).of(#regionId)
+credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)
+awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
+directConnectClient: T(software.amazon.awssdk.services.directconnect.DirectConnectClient).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
+list:
+  argTypes:
+  - software.amazon.awssdk.services.directconnect.model.DescribeDirectConnectGatewaysRequest
+  output:
+    '[connections]:[#result.directConnectGateways()]':
+      regionId: '#regionId'
+      providerId: '#me.directConnectGatewayId()'
+      name: '#me.directConnectGatewayName()'
+      status: '#me.directConnectGatewayState()'
+    log: 'false'
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    close: '#directConnectClient.close()'
+  request: T(software.amazon.awssdk.services.directconnect.model.DescribeDirectConnectGatewaysRequest).builder().build()
+  method: describeDirectConnectGateways
+  argNames:
+  - request
+  client: '#directConnectClient'
+install:
+  argTypes:
+  - software.amazon.awssdk.services.directconnect.model.CreateDirectConnectGatewayRequest
+  output:
+    regionId: '#regionId'
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    providerId: '#result.directConnectGateway().directConnectGatewayId()'
+    name: '#result.directConnectGateway().directConnectGatewayName()'
+    close: '#directConnectClient.close()'
+    status: '#result.directConnectGateway().directConnectGatewayState()'
+  request: T(software.amazon.awssdk.services.directconnect.model.CreateDirectConnectGatewayRequest).builder().directConnectGatewayName(#name).amazonSideAsn(#amazonSideAsn).build()
+  method: createDirectConnectGateway
+  argNames:
+  - request
+  client: '#directConnectClient'
+uninstall:
+  argTypes:
+  - software.amazon.awssdk.services.directconnect.model.DeleteDirectConnectGatewayRequest
+  output:
+    deleteProviderId: '#directConnectGatewayId'
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    close: '#directConnectClient.close()'
+  request: T(software.amazon.awssdk.services.directconnect.model.DeleteDirectConnectGatewayRequest).builder().directConnectGatewayId(#directConnectGatewayId).build()
+  method: deleteDirectConnectGateway
+  argNames:
+  - request
+  client: '#directConnectClient'

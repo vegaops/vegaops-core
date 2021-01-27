@@ -1,0 +1,99 @@
+vendor: aws
+nodeType: slb
+componentId: '#componentId'
+actions:
+- query
+- list
+- install-uninstall
+awsRegion: T(software.amazon.awssdk.regions.Region).of(#regionId)
+credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)
+awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
+elasticLoadBalancingClient: T(software.amazon.awssdk.services.elasticloadbalancing.ElasticLoadBalancingClient).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
+list:
+  argTypes:
+  - software.amazon.awssdk.services.elasticloadbalancing.model.DescribeLoadBalancersRequest
+  output:
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    close: '#elasticLoadBalancingClient.close()'
+    '[slbList]:[#result.loadBalancerDescriptions()]':
+      canonicalHostedZoneNameID: '#me.canonicalHostedZoneNameID()'
+      scheme: '#me.scheme()'
+      instances: '#me.instances()'
+      policies: '#me.policies()'
+      dnsName: '#me.dnsName()'
+      availabilityZones: '#me.availabilityZones()?.get(0)'
+      backendServerDescriptions: '#me.backendServerDescriptions()'
+      sourceSecurityGroup: '#me.sourceSecurityGroup()'
+      listenerDescriptions: '#me.listenerDescriptions()'
+      loadBalancerName: '#me.loadBalancerName()'
+      healthCheck: '#me.healthCheck()'
+      vpcId: '#me.vpcId()'
+      createdTime: '#me.createdTime()'
+      securityGroups: '#me.securityGroups()'
+      subnets: '#me.subnets()?.get(0)'
+      canonicalHostedZoneName: '#me.canonicalHostedZoneName()'
+  request: T(software.amazon.awssdk.services.elasticloadbalancing.model.DescribeLoadBalancersRequest).builder().build()
+  method: describeLoadBalancers
+  argNames:
+  - request
+  client: '#elasticLoadBalancingClient'
+query:
+  argTypes:
+  - software.amazon.awssdk.services.elasticloadbalancing.model.DescribeLoadBalancersRequest
+  output:
+    canonicalHostedZoneNameID: '#result.loadBalancerDescriptions().get(0).canonicalHostedZoneNameID()'
+    scheme: '#result.loadBalancerDescriptions().get(0).scheme()'
+    instances: '#result.loadBalancerDescriptions().get(0).instances()'
+    policies: '#result.loadBalancerDescriptions().get(0).policies()'
+    dnsName: '#result.loadBalancerDescriptions().get(0).dnsName()'
+    availabilityZones: '#result.loadBalancerDescriptions().get(0).availabilityZones()?.get(0)'
+    backendServerDescriptions: '#result.loadBalancerDescriptions().get(0).backendServerDescriptions()'
+    sourceSecurityGroup: '#result.loadBalancerDescriptions().get(0).sourceSecurityGroup()'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    listenerDescriptions: '#result.loadBalancerDescriptions().get(0).listenerDescriptions()'
+    loadBalancerName: '#result.loadBalancerDescriptions().get(0).loadBalancerName()'
+    healthCheck: '#result.loadBalancerDescriptions().get(0).healthCheck()'
+    vpcId: '#result.loadBalancerDescriptions().get(0).vpcId()'
+    createdTime: '#result.loadBalancerDescriptions().get(0).createdTime()'
+    securityGroups: '#result.loadBalancerDescriptions().get(0).securityGroups()'
+    subnets: '#result.loadBalancerDescriptions().get(0).subnets()?.get(0)'
+    close: '#elasticLoadBalancingClient.close()'
+    canonicalHostedZoneName: '#result.loadBalancerDescriptions().get(0).canonicalHostedZoneName()'
+  request: T(software.amazon.awssdk.services.elasticloadbalancing.model.DescribeLoadBalancersRequest).builder().loadBalancerNames(#loadBalancerName).build()
+  method: describeLoadBalancers
+  argNames:
+  - request
+  client: '#elasticLoadBalancingClient'
+install:
+  argTypes:
+  - software.amazon.awssdk.services.elasticloadbalancing.model.CreateLoadBalancerRequest
+  output:
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    after:
+      retryTimes: '1'
+      output:
+        success: '#success eq true'
+        mergeKeys: '*'
+      input:
+        elasticLoadBalancingClient: '#elasticLoadBalancingClient'
+        loadBalancerName: '#name'
+      action: query
+      waitInterval: '3000'
+    close: '#elasticLoadBalancingClient.close()'
+  request: T(software.amazon.awssdk.services.elasticloadbalancing.model.CreateLoadBalancerRequest).builder().availabilityZones(#zoneId).listeners(T(software.amazon.awssdk.services.elasticloadbalancing.model.Listener).builder().instancePort(#instancePort).instanceProtocol(#instanceProtocol).loadBalancerPort(#loadBalancerPort).protocol(#protocol).build()).loadBalancerName(#name).scheme(#scheme).securityGroups(#securityGroups).subnets(#vswitchId).build()
+  method: createLoadBalancer
+  argNames:
+  - request
+  client: '#elasticLoadBalancingClient'
+uninstall:
+  argTypes:
+  - software.amazon.awssdk.services.elasticloadbalancing.model.DeleteLoadBalancerRequest
+  output:
+    deleteProviderId: '#name'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    close: '#elasticLoadBalancingClient.close()'
+  request: T(software.amazon.awssdk.services.elasticloadbalancing.model.DeleteLoadBalancerRequest).builder().loadBalancerName(#name).build()
+  method: deleteLoadBalancer
+  argNames:
+  - request
+  client: '#elasticLoadBalancingClient'

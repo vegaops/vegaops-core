@@ -1,0 +1,70 @@
+{
+  "vendor": "aws",
+  "nodeType": "directConnectGateway",
+  "componentId": "#componentId",
+  "actions": [
+    "list",
+    "install-uninstall"
+  ],
+  "awsRegion": "T(software.amazon.awssdk.regions.Region).of(#regionId)",
+  "credentials": "T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)",
+  "awsCredentialsProvider": "T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)",
+  "directConnectClient": "T(software.amazon.awssdk.services.directconnect.DirectConnectClient).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()",
+  "list": {
+    "client": "#directConnectClient",
+    "method": "describeDirectConnectGateways",
+    "argTypes": [
+      "software.amazon.awssdk.services.directconnect.model.DescribeDirectConnectGatewaysRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.directconnect.model.DescribeDirectConnectGatewaysRequest).builder().build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "close": "#directConnectClient.close()",
+      "log": "false",
+      "[connections]:[#result.directConnectGateways()]": {
+        "regionId": "#regionId",
+        "providerId": "#me.directConnectGatewayId()",
+        "name": "#me.directConnectGatewayName()",
+        "status": "#me.directConnectGatewayState()"
+      }
+    }
+  },
+  "install": {
+    "client": "#directConnectClient",
+    "method": "createDirectConnectGateway",
+    "argTypes": [
+      "software.amazon.awssdk.services.directconnect.model.CreateDirectConnectGatewayRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.directconnect.model.CreateDirectConnectGatewayRequest).builder().directConnectGatewayName(#name).amazonSideAsn(#amazonSideAsn).build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "close": "#directConnectClient.close()",
+      "regionId": "#regionId",
+      "providerId": "#result.directConnectGateway().directConnectGatewayId()",
+      "name": "#result.directConnectGateway().directConnectGatewayName()",
+      "status": "#result.directConnectGateway().directConnectGatewayState()"
+    }
+  },
+  "uninstall": {
+    "client": "#directConnectClient",
+    "method": "deleteDirectConnectGateway",
+    "argTypes": [
+      "software.amazon.awssdk.services.directconnect.model.DeleteDirectConnectGatewayRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.directconnect.model.DeleteDirectConnectGatewayRequest).builder().directConnectGatewayId(#directConnectGatewayId).build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "close": "#directConnectClient.close()",
+      "deleteProviderId": "#directConnectGatewayId"
+    }
+  }
+}

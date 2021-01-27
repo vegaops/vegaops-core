@@ -1,0 +1,305 @@
+vendor: tencent
+nodeType: instance
+componentId: '#componentId'
+actions:
+- list
+- query
+- install-uninstall
+- start-stop
+- queryState
+- reboot
+- update
+- renew
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: cvm.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+list:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.DescribeInstancesRequest
+  output:
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
+      condition: '#result.getInstanceSet().length != 0'
+      appendList:
+      - instanceList
+    '[instanceList]:[#result.InstanceSet]':
+      instanceChargeType: '#InstanceChargeType'
+      imageId: '#ImageId'
+      floatingIp: '#PublicIpAddresses'
+      memory: '#Memory'
+      internetMaxBandwidthOut: '#InternetAccessible?.InternetMaxBandwidthOut'
+      flavorId: '#InstanceType'
+      cpu: '#CPU'
+      osName: '#OsName'
+      createdAt: '#CreatedTime'
+      expiredAt: '#ExpiredTime'
+      internetChargeType: '#InternetAccessible?.InternetChargeType'
+      vSwitchId: '#VirtualPrivateCloud?.SubnetId'
+      regionId: '#regionId'
+      providerId: '#InstanceId'
+      vpcId: '#VirtualPrivateCloud?.VpcId'
+      name: '#InstanceName'
+      primaryIp: '#PrivateIpAddresses'
+      osType: '#OsName'
+      zoneId: '#Placement?.Zone'
+      securityGroups: '#SecurityGroupIds'
+      stoppedMode: '#StopChargingMode'
+      status: '#InstanceState'
+      keyPairName: ''
+  request:
+    offset: '0'
+    limit: '100'
+    class: com.tencentcloudapi.cvm.v20170312.models.DescribeInstancesRequest
+  method: DescribeInstances
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+query:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.DescribeInstancesRequest
+  output:
+    instanceChargeType: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getInstanceChargeType()'
+    imageId: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getImageId()'
+    floatingIp: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getPublicIpAddresses()'
+    memory: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getMemory()'
+    internetMaxBandwidthOut: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getInternetAccessible()?.getInternetMaxBandwidthOut()'
+    flavorId: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getInstanceType()'
+    cpu: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getCPU()'
+    osName: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getOsName()'
+    createdAt: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getCreatedTime()'
+    expiredAt: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getExpiredTime()'
+    internetChargeType: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getInternetAccessible()?.getInternetChargeType()'
+    vSwitchId: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getVirtualPrivateCloud()?.getSubnetId()'
+    success: '#throwable eq null'
+    providerId: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getInstanceId()'
+    vpcId: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getVirtualPrivateCloud()?.getVpcId()'
+    name: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0].getInstanceName()'
+    primaryIp: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getPrivateIpAddresses()'
+    osType: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getOsName()'
+    zoneId: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getPlacement()?.getZone()'
+    securityGroups: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getSecurityGroupIds()'
+    stoppedMode: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getStopChargingMode()'
+    status: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getInstanceState()'
+    keyPairName: '#result.getInstanceSet().length eq 0 ? null:#result.getInstanceSet()[0]?.getLoginSettings()'
+  request:
+    instanceIds:
+    - '#instanceId'
+  method: DescribeInstances
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+install:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.tencent.model.CreateInstanceParam
+  output:
+    instanceChargeType: '#result.getInstanceChargeType()'
+    imageId: '#result.getImageId()'
+    floatingIp: '#result.getPublicIpAddresses()'
+    memory: '#result.getMemory()'
+    internetMaxBandwidthOut: '#result.getInternetAccessible()?.getInternetMaxBandwidthOut()'
+    flavorId: '#result.getInstanceType()'
+    cpu: '#result.getCPU()'
+    osName: '#result.getOsName()'
+    createdAt: '#result.getCreatedTime()'
+    expiredAt: '#result.getExpiredTime()'
+    internetChargeType: '#result.getInternetAccessible()?.getInternetChargeType()'
+    vSwitchId: '#result.getVirtualPrivateCloud()?.getSubnetId()'
+    success: '#throwable eq null'
+    providerId: '#result.getInstanceId()'
+    vpcId: '#result.getVirtualPrivateCloud()?.getVpcId()'
+    name: '#result.getInstanceName()'
+    primaryIp: '#result.getPrivateIpAddresses()'
+    osType: '#result.getOsName()'
+    zoneId: '#result.getPlacement()?.getZone()'
+    securityGroups: '#result.getSecurityGroupIds()'
+    stoppedMode: '#result.getStopChargingMode()'
+    status: '#result.getInstanceState()'
+    keyPairName: ''
+  classProperties:
+    secret: '#secret'
+    key: '#accessKey'
+  method: createInstance
+  param:
+    subnetId: '#VSwitchId'
+    hostName: '#hostName'
+    asVpcGateway: '#asVpcGateway'
+    userData: '#userData'
+    instanceName: '#name'
+    internetMaxBandwidthOut: '#internetMaxBandwidthOut'
+    securityGroupId: '#securityGroups'
+    password: '#password'
+    diskSize: '#systemDiskSize'
+    zone: '#zoneId'
+    vpcId: '#vpcId'
+    publicIpAssigned: '#publicIpAssigned'
+    diskType: '#systemDiskCategory'
+    renewFlag: '#renewalStatus'
+    privateIpAddresses: '#privateIp'
+    instanceChargeType: '#instanceChargeType'
+    period: '#period'
+    imageId: '#imageId'
+    instanceType: '#flavorId'
+    keyName: '#keyPairName'
+    ipv6AddressCount: '#ipv6AddressCount'
+    internetChargeType: '#internetChargeType'
+    bandwidthPackageId: '#bandwidthPackageId'
+    regionId: '#regionId'
+    instanceCount: '#count'
+  argNames:
+  - param
+  client: org.prophetech.hyperone.vegaops.tencent.client.TencentInstanceClient
+uninstall:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.TerminateInstancesRequest
+  output:
+    deleteProviderId: '#instanceId'
+    success: '#throwable eq null'
+    after:
+      retryTimes: '25'
+      output:
+        success: '#providerId eq null'
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+      action: query
+      waitInterval: '5000'
+  request:
+    instanceIds:
+    - '#instanceId'
+  method: TerminateInstances
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+update:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.ResetInstancesTypeRequest
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '25'
+      output:
+        success: '#flavorId  eq #instanceType'
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+      action: query
+      waitInterval: '5000'
+  request:
+    instanceIds:
+    - '#instanceId'
+    instanceType: '#instanceType'
+    forceStop: '#forceStop'
+  method: ResetInstancesType
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+renew:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.tencent.model.RenewInstanceParam
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '25'
+      output:
+        success: '#throwable eq null'
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+      action: query
+      waitInterval: '5000'
+  classProperties:
+    secret: '#secret'
+    key: '#accessKey'
+  method: renewInstance
+  param:
+    period: '#period'
+    instanceId: '#instanceId'
+    regionId: '#regionId'
+    renewPortableDataDisk: '#renewPortableDataDisk'
+    renewFlag: '#renewFlag'
+  argNames:
+  - param
+  client: org.prophetech.hyperone.vegaops.tencent.client.TencentInstanceClient
+start:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.StartInstancesRequest
+  output:
+    success: '#throwable eq null || #throwable.toString().contains(''state of `RUNNING`'')'
+    after:
+      retryTimes: '25'
+      output:
+        success: '#status  eq ''RUNNING'''
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+      action: query
+      waitInterval: '5000'
+  request:
+    instanceIds:
+    - '#instanceId'
+  method: StartInstances
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+stop:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.StopInstancesRequest
+  output:
+    success: '#throwable eq null || #throwable.toString().contains(''state of `STOPPED`'')'
+    after:
+      retryTimes: '25'
+      output:
+        success: '#status  eq ''STOPPED'''
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+      action: query
+      waitInterval: '5000'
+  request:
+    instanceIds:
+    - '#instanceId'
+    stopType: '#type'
+  method: StopInstances
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+queryState:
+  output:
+    instanceId: '#result.getInstanceId()'
+    success: '#throwable eq null'
+    status: '#result.getInstanceState()'
+  classProperties:
+    secret: '#secret'
+    key: '#accessKey'
+  method: queryStatus
+  argValues:
+    instanceId: '#instanceId'
+    regionId: '#regionId'
+  client: org.prophetech.hyperone.vegaops.tencent.client.TencentInstanceClient
+reboot:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.RebootInstancesRequest
+  output:
+    success: '#throwable eq null || #throwable.toString().contains(''state of `STOPPED`'')'
+    after:
+      retryTimes: '25'
+      output:
+        success: '#status  eq ''RUNNING'''
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+      action: query
+      waitInterval: '5000'
+  request:
+    instanceIds:
+    - '#instanceId'
+    stopType: '#type'
+  method: RebootInstances
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)

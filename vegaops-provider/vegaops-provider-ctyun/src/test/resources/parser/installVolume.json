@@ -1,0 +1,43 @@
+{
+  "componentId": "component-volume",
+  "nodes": [
+    {
+      "componentId": "volume",
+      "leafNode": false,
+      "nodeType": "volume",
+      "relations": [],
+      "properties": [
+        {
+          "value": "PostPaid",
+          "key": "payType"
+        },
+        {
+          "value": "test-voulme-01",
+          "key": "name"
+        },
+        {
+          "value": "SATA",
+          "key": "type"
+        },
+        {
+          "value": "20",
+          "key": "size"
+        },
+        {
+          "value": "1",
+          "key": "count"
+        },
+        {
+          "value": "",
+          "key": "backupId"
+        }
+      ]
+    }
+  ],
+  "regionId": "cn-gzT",
+  "containerType": "ctyun",
+  "cloudAccountId": "1245215824219570177",
+  "zoneId": "cn-gzTa",
+  "relations": [
+  ]
+}

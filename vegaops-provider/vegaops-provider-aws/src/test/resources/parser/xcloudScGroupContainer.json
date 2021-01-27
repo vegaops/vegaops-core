@@ -1,0 +1,18 @@
+{
+  "vendor": "aws",
+  "accessKey": "xxxxx",
+  "secret": "xxxxx",
+  "regionId": "cn-north-1",
+  "zoneId": "cnn1-az1",
+  "nodes": [
+    {
+      "componentId": "securityGroup-1",
+      "nodeType": "securityGroup",
+      "vars": {
+        "vpcId": "vpc-0fa36d6f17a396b13",
+        "groupDesc": "xjh-test",
+        "groupName": "vegaops-Test"
+      }
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "vendor": "aliyun",
+  "nodeType": "redis",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query"
+  ],
+  "profile":"T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
+  "install": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.r_kvstore.model.v20150101.CreateInstanceRequest",
+      "instanceName": "#name",
+      "password": "#password",
+      "capacity": "#capacity",
+      "instanceClass": "#instanceClass",
+      "zoneId": "#zoneId",
+      "config": "#config",
+      "chargeType": "#chargeType",
+      "nodeType": "#nodeType",
+      "networkType": "#networkType",
+      "VSwitchId": "#vswitchId",
+      "vpcId": "#vpcId",
+      "period": "#period",
+      "businessInfo": "#businessInfo",
+      "couponNo": "#couponNo",
+      "srcDBInstanceId": "#srcDBInstanceId",
+      "backupId": "#backupId",
+      "instanceType": "#instanceType",
+      "engineVersion": "#engineVersion",
+      "privateIpAddress": "#privateIpAddress",
+      "autoUseCoupon": "#autoUseCoupon",
+      "autoRenew": "#autoRenew",
+      "autoRenewPeriod": "#autoRenewPeriod",
+      "restoreTime": "#restoreTime"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "instanceId": "#result.InstanceId",
+      "after": {
+        "action": "query",
+        "input": {
+          "instanceId": "#instanceId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#instanceStatus eq 'Creating'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.r_kvstore.model.v20150101.DeleteInstanceRequest",
+      "instanceId": "#instanceId"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#instanceId"
+    }
+  },
+  "list": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.r_kvstore.model.v20150101.DescribeInstancesRequest",
+      "pageSize": "100",
+      "pageNumber": "1"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "loop": {
+        "condition": "#result.getInstances().size() != 0",
+        "appendList": [
+          "redisList"
+        ],
+        "1": "#request.setPageNumber(#request.getPageNumber()+1)"
+      },
+      "log": "false",
+      "[redisList]:[#result.Instances]": {
+        "config": "#Config",
+        "hasRenewChangeOrder": "#HasRenewChangeOrder",
+        "instanceId": "#InstanceId",
+        "providerId": "#InstanceId",
+        "userName": "#UserName",
+        "zoneId": "#ZoneId",
+        "architectureType": "#ArchitectureType",
+        "privateIp": "#PrivateIp",
+        "vswitchId": "#VSwitchId",
+        "vpcId": "#VpcId",
+        "networkType": "#NetworkType",
+        "packageType": "#PackageType",
+        "qps": "#QPS",
+        "isRds": "#IsRds",
+        "engineVersion": "#EngineVersion",
+        "connectionDomain": "#ConnectionDomain",
+        "instanceName": "#InstanceName",
+        "replacateId": "#ReplacateId",
+        "bandwidth": "#Bandwidth",
+        "chargeType": "#ChargeType",
+        "instanceType": "#InstanceType",
+        "instanceStatus": "#instanceStatus",
+        "port": "#Port",
+        "instanceClass": "#InstanceClass",
+        "nodeType": "#NodeType",
+        "regionId": "#RegionId",
+        "createTime": "#CreateTime",
+        "capacity": "#Capacity",
+        "connections": "#Connections"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.r_kvstore.model.v20150101.DescribeInstancesRequest",
+      "instanceIds": "#instanceId"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "config": "#Config",
+      "hasRenewChangeOrder": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getHasRenewChangeOrder()",
+      "instanceId": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceId()",
+      "providerId": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceId()",
+      "userName": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getUserName()",
+      "zoneId": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getZoneId()",
+      "architectureType": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getArchitectureType()",
+      "privateIp": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getPrivateIp()",
+      "vswitchId": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getVSwitchId()",
+      "vpcId": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getVpcId()",
+      "networkType": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getNetworkType()",
+      "packageType": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getPackageType()",
+      "qps": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getQPS()",
+      "isRds": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getIsRds()",
+      "engineVersion": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getEngineVersion()",
+      "connectionDomain": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getConnectionDomain()",
+      "instanceName": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceName()",
+      "replacateId": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getReplacateId()",
+      "bandwidth": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getBandwidth()",
+      "chargeType": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getChargeType()",
+      "instanceType": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceType()",
+      "instanceStatus": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceStatus()",
+      "port": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getPort()",
+      "instanceClass": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceClass()",
+      "nodeType": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getNodeType()",
+      "regionId": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getRegionId()",
+      "createTime": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getCreateTime()",
+      "capacity": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getCapacity()",
+      "connections": "#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getConnections()"
+    }
+  }
+}

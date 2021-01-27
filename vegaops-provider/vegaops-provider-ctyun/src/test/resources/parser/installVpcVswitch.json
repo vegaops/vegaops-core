@@ -1,0 +1,56 @@
+{
+  "componentId": "container_1n6c8zzjrihs0",
+  "nodes": [
+    {
+      "componentId": "vpc-1ljdk9mra60w0",
+      "leafNode": false,
+      "nodeType": "vpc",
+      "relations": [],
+      "properties": [
+        {
+          "value": "10.0.0.0/8",
+          "key": "cidrBlock"
+        },
+        {
+          "value": "test-vpc-1",
+          "key": "name"
+        },
+        {
+          "value": "测试",
+          "key": "description"
+        }
+      ]
+    },
+    {
+      "componentId": "vswitch-12c2l7camoxs0",
+      "leafNode": true,
+      "nodeType": "vswitch",
+      "properties": [
+        {
+          "value": "10.0.0.1/8",
+          "key": "cidrBlock"
+        },
+        {
+          "value": "test-vswitch",
+          "key": "name"
+        },
+        {
+          "value": "测试",
+          "key": "description"
+        }
+      ]
+    }
+  ],
+  "regionId": "cn-gzT",
+  "containerType": "ctyun",
+  "cloudAccountId": "1245215824219570177",
+  "zoneId": "cn-gzTa",
+  "relations": [
+    {
+      "relationType": "child",
+      "componentId": "relation_20lwl5cyag800",
+      "targetId": "vswitch-12c2l7camoxs0",
+      "principalId": "vpc-1ljdk9mra60w0"
+    }
+  ]
+}

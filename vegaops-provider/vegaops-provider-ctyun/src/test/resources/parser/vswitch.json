@@ -1,0 +1,37 @@
+{
+  "componentId": "container_1n6c8zzjrihs0",
+  "nodes": [
+    {
+      "componentId": "vswitch-12c2l7camoxs0",
+      "leafNode": false,
+      "nodeType": "vswitch",
+      "properties": [
+        {
+          "key": "providerId",
+          "value": "vswitch-bp112pwjy5sjv4fnrz00m"
+        },
+        {
+          "value": "192.168.0.0/24",
+          "key": "cidrBlock"
+        },
+        {
+          "value": "072a240b-3a02-4abf-8d82-b27d8e120d86",
+          "key": "vpcId"
+        },
+
+        {
+          "value": "xjhtest-vswitch",
+          "key": "name"
+        },
+        {
+          "value": "tester",
+          "key": "description"
+        }
+      ]
+    }
+  ],
+  "regionId": "cn-gzT",
+  "containerType": "ctyun",
+  "cloudAccountId": "1245215824219570177",
+  "zoneId": "cn-gzTa"
+}

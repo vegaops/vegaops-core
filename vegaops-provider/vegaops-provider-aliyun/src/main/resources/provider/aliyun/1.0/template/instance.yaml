@@ -1,0 +1,280 @@
+vendor: aliyun
+nodeType: instance
+componentId: '#componentId'
+actions:
+- list
+- query
+- install-uninstall
+- start-stop
+- reboot
+- update
+- renew
+profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
+list:
+  output:
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
+      condition: '#result.getInstances().size() != 0'
+      appendList:
+      - instanceList
+    '[instanceList]:[#result.instances]':
+      memory: '#memory'
+      internetMaxBandwidthOut: '#internetMaxBandwidthOut'
+      flavorId: '#instanceType'
+      createdAt: '#creationTime'
+      expiredAt: '#instanceChargeType eq ''PostPaid'' ? null : #expiredTime'
+      vSwitchId: '#vpcAttributes.vSwitchId'
+      providerId: '#instanceId'
+      eipAddress: '#eipAddress.ipAddress'
+      vpcId: '#vpcAttributes.vpcId'
+      osType: '#oSType'
+      zoneId: '#zoneId'
+      keyPairName: '#keyPairName'
+      instanceChargeType: '#instanceChargeType'
+      imageId: '#imageId'
+      floatingIp: '#publicIpAddress'
+      cpu: '#cpu'
+      internetMaxBandwidthIn: '#internetMaxBandwidthIn'
+      osName: '#oSName'
+      internetChargeType: '#internetChargeType'
+      regionId: '#regionId'
+      name: '#instanceName'
+      primaryIp: '#vpcAttributes.privateIpAddress'
+      securityGroups: '#securityGroupIds'
+      stoppedMode: '#stoppedMode'
+      status: '#status'
+  request:
+    pageNumber: '1'
+    pageSize: '100'
+    class: com.aliyuncs.ecs.model.v20140526.DescribeInstancesRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+query:
+  output:
+    memory: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getMemory()'
+    internetMaxBandwidthOut: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInternetMaxBandwidthOut()'
+    flavorId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceType()'
+    createdAt: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getCreationTime()'
+    expiredAt: '#result.getInstances().size() eq 0 or #result.getInstances().get(0).getInstanceChargeType()
+      eq ''PostPaid'' ? null : #result.getInstances().get(0).getExpiredTime()'
+    vSwitchId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getVpcAttributes().getVSwitchId()'
+    providerId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceId()'
+    eipAddress: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getEipAddress().getIpAddress()'
+    vpcId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getVpcAttributes().getVpcId()'
+    osType: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getOSType()'
+    zoneId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getZoneId()'
+    keyPairName: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getKeyPairName()'
+    instanceChargeType: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceChargeType()'
+    imageId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getImageId()'
+    floatingIp: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getPublicIpAddress()'
+    cpu: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getCpu()'
+    internetMaxBandwidthIn: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInternetMaxBandwidthIn()'
+    osName: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getOSName()'
+    internetChargeType: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInternetChargeType()'
+    success: '#throwable eq null'
+    name: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceName()'
+    primaryIp: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getVpcAttributes().getPrivateIpAddress()'
+    securityGroups: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getSecurityGroupIds()'
+    stoppedMode: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getStoppedMode()'
+    status: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getStatus()'
+  request:
+    instanceIdArray:
+    - '#instanceId'
+    instanceIds: T(com.alibaba.fastjson.JSON).toJSONString(#instanceIdArray)
+    class: com.aliyuncs.ecs.model.v20140526.DescribeInstancesRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+install:
+  output:
+    instanceId: '#result.InstanceIdSets[0]'
+    regionId: '#regionId'
+    success: '#throwable eq null'
+    after:
+      retryTimes: '50'
+      output:
+        success: '#status eq ''Running'''
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+      action: query
+      waitInterval: '3000'
+  request:
+    hostName: '#hostName'
+    userData: '#userData'
+    systemDiskDescription: '#systemDiskDescription'
+    instanceName: '#name'
+    internetMaxBandwidthOut: '#internetMaxBandwidthOut'
+    systemDiskCategory: '#systemDiskCategory'
+    description: '#description'
+    periodUnit: '#periodUnit'
+    securityGroupId: '#securityGroups'
+    autoRenewPeriod: '#autoRenewPeriod'
+    password: '#password'
+    autoRenew: '#autoRenew'
+    zoneId: '#zoneId'
+    class: com.aliyuncs.ecs.model.v20140526.RunInstancesRequest
+    systemDiskPerformanceLevel: '#systemDiskPerformanceLevel'
+    keyPairName: '#keyPairName'
+    instanceChargeType: '#instanceChargeType'
+    period: '#period'
+    imageId: '#imageId'
+    vlanId: '#vlanId'
+    instanceType: '#flavorId'
+    VSwitchId: '#VSwitchId'
+    internetMaxBandwidthIn: '#internetMaxBandwidthIn'
+    systemDiskSize: '#systemDiskSize'
+    privateIpAddress: '#privateIp'
+    internetChargeType: '#internetChargeType'
+    systemDiskDiskName: '#systemDiskDiskName'
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+uninstall:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.alicloud.model.DeleteAliyunInstancesRequest
+  output:
+    deleteProviderId: '#instanceId'
+    success: '#throwable eq null'
+  method: deleteInstance
+  before:
+    output:
+      success: 'true'
+    input:
+      instanceId: '#instanceId'
+    action: stop
+  param:
+    instanceId: '#instanceId'
+    regionId: '#regionId'
+    accessKey: '#accessKey'
+    secret: '#secret'
+  argNames:
+  - param
+  argValues:
+    param: '#param'
+  client: org.prophetech.hyperone.vegaops.alicloud.client.AliyunInstanceClient
+stop:
+  output:
+    log: 'false'
+    success: '#throwable eq null || #throwable.toString().contains(''Status of the
+      specified instance is Stopped'')'
+    after:
+      retryTimes: '25'
+      output:
+        success: '#status  eq ''Stopped'''
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+      action: query
+      waitInterval: '5000'
+  request:
+    instanceId: '#instanceId'
+    confirmStop: 'true'
+    class: com.aliyuncs.ecs.model.v20140526.StopInstanceRequest
+    forceStop: '#forceStop'
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+start:
+  output:
+    log: 'false'
+    success: '#throwable eq null || #throwable.toString().contains(''Status of the
+      specified instance is Running'')'
+    after:
+      retryTimes: '25'
+      output:
+        success: '#status  eq ''Running'''
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+      action: query
+      waitInterval: '5000'
+  request:
+    instanceId: '#instanceId'
+    class: com.aliyuncs.ecs.model.v20140526.StartInstanceRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+reboot:
+  output:
+    log: 'false'
+    success: '#throwable eq null'
+    after:
+      retryTimes: '25'
+      output:
+        success: '#status  eq ''Running'''
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+      action: query
+      waitInterval: '5000'
+  request:
+    instanceId: '#instanceId'
+    class: com.aliyuncs.ecs.model.v20140526.RebootInstanceRequest
+    forceStop: '#forceStop'
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+update:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.alicloud.model.UpdateInstanceRequest
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#status eq ''Stopped'''
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+      action: query
+      waitInterval: '3000'
+  method: updateInstance
+  param:
+    autoPay: '#autoPay'
+    payType: '#payType'
+    instanceId: '#instanceId'
+    regionId: '#regionId'
+    accessKey: '#accessKey'
+    internetMaxBandwidthOut: '#internetMaxBandwidthOut'
+    instanceType: '#instanceType'
+    operatorType: '#operatorType'
+    secret: '#secret'
+    internetMaxBandwidthIn: '#internetMaxBandwidthIn'
+    allowMigrateAcrossZone: '#allowMigrateAcrossZone'
+  argNames:
+  - param
+  argValues:
+    param: '#param'
+  client: org.prophetech.hyperone.vegaops.alicloud.client.AliyunInstanceClient
+renew:
+  output:
+    log: 'false'
+    success: '#throwable eq null'
+    after:
+      retryTimes: '25'
+      output:
+        success: '#throwable eq null'
+        mergeKeys: '*'
+      input:
+        instanceId: '#instanceId'
+      action: query
+      waitInterval: '5000'
+  request:
+    period: '#period'
+    instanceId: '#instanceId'
+    class: com.aliyuncs.ecs.model.v20140526.RenewInstanceRequest
+    periodUnit: '#periodUnit'
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)

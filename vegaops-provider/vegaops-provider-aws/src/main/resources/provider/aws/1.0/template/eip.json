@@ -1,0 +1,203 @@
+{
+  "vendor": "aws",
+  "nodeType": "eip",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query",
+    "bind-unbind",
+    "tag"
+  ],
+  "awsRegion": "T(software.amazon.awssdk.regions.Region).of(#regionId)",
+  "credentials": "T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)",
+  "awsCredentialsProvider": "T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)",
+  "ec2Client": "T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()",
+  "query": {
+    "client": "#ec2Client",
+    "method": "describeAddresses",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DescribeAddressesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DescribeAddressesRequest).builder().allocationIds(#allocationId).build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "instanceId": "#result.addresses()[0]?.instanceId()",
+      "publicIp": "#result.addresses()[0]?.publicIp()",
+      "domain": "#result.addresses()[0]?.domain()",
+      "tags": "#result.addresses()[0]?.tags()",
+      "networkInterfaceId": "#result.addresses()[0]?.networkInterfaceId()",
+      "networkInterfaceOwnerId": "#result.addresses()[0]?.networkInterfaceOwnerId()",
+      "privateIpAddress": "#result.addresses()[0]?.privateIpAddress()",
+      "publicIpv4Pool": "#result.addresses()[0]?.publicIpv4Pool()",
+      "networkBorderGroup": "#result.addresses()[0]?.networkBorderGroup()",
+      "customerOwnedIp": "#result.addresses()[0]?.customerOwnedIp()",
+      "customerOwnedIpv4Pool": "#result.addresses()[0]?.customerOwnedIpv4Pool()",
+      "allocationId": "#result.addresses()[0]?.allocationId()",
+      "associationId": "#result.addresses()[0]?.associationId()"
+    }
+  },
+  "list": {
+    "client": "#ec2Client",
+    "method": "describeAddresses",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DescribeAddressesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DescribeAddressesRequest).builder().build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "log": "false",
+      "[addresses]:[#result.addresses()]": {
+        "instanceId": "#me.instanceId()",
+        "publicIp": "#me.publicIp()",
+        "domain": "#me.domain()",
+        "networkInterfaceId": "#me.networkInterfaceId()",
+        "networkInterfaceOwnerId": "#me.networkInterfaceOwnerId()",
+        "privateIpAddress": "#me.privateIpAddress()",
+        "publicIpv4Pool": "#me.publicIpv4Pool()",
+        "networkBorderGroup": "#me.networkBorderGroup()",
+        "customerOwnedIp": "#me.customerOwnedIp()",
+        "customerOwnedIpv4Pool": "#me.customerOwnedIpv4Pool()",
+        "regionId": "#regionId",
+        "zoneId": "#zoneId",
+        "tags": "#me.tags()",
+        "allocationId": "#me.allocationId()",
+        "associationId": "#me.associationId()"
+      }
+    }
+  },
+  "install": {
+    "client": "org.prophetech.hyperone.vegaops.aws.client.AwsEipClient",
+    "method": "createEip",
+    "param": {
+      "class": "org.prophetech.hyperone.vegaops.aws.model.CreateEipParam",
+      "domainType": "#domainType",
+      "publicIpv4Pool":"#publicIpv4Pool",
+      "networkBorderGroup":"#networkBorderGroup",
+      "name": "#name"
+    },
+    "argValues":{
+      "ec2Client": "#ec2Client",
+      "param": "#param"
+    },
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "allocationId": "#result.allocationId()",
+      "publicIp": "#result.publicIp()",
+      "after": {
+        "action": "tag",
+        "input": {
+          "resourceId": "#allocationId",
+          "name": "#name"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#allocationId ne null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "client": "#ec2Client",
+    "method": "releaseAddress",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.ReleaseAddressRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.ReleaseAddressRequest).builder().allocationId(#allocationId).build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "deleteProviderId": "#allocationId"
+    }
+  },
+  "tag": {
+    "client": "#ec2Client",
+    "method": "createTags",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.CreateTagsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.CreateTagsRequest).builder().resources(#resourceId).tags(T(software.amazon.awssdk.services.ec2.model.Tag).builder().key(\"Name\").value(#name).build()).build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "after": {
+        "action": "query",
+        "input": {
+          "allocationId": "#resourceId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#allocationId ne null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "bind": {
+    "client": "#ec2Client",
+    "method": "associateAddress",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.AssociateAddressRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.AssociateAddressRequest).builder().instanceId(#instanceId).allocationId(#allocationId).build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "after": {
+        "action": "query",
+        "input": {
+          "allocationId": "#allocationId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#associationId ne null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "unbind": {
+    "client": "#ec2Client",
+    "method": "disassociateAddress",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DisassociateAddressRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DisassociateAddressRequest).builder().associationId(#associationId).build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "after": {
+        "action": "query",
+        "input": {
+          "allocationId": "#allocationId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#associationId eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  }
+}

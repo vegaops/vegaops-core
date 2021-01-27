@@ -1,0 +1,21 @@
+vendor: tencent
+nodeType: slbRule
+componentId: '#componentId'
+actions:
+- list
+list:
+  output:
+    success: '#throwable eq null'
+    '[ruleList]:[#result]':
+      providerId: '#LocationId'
+      domain: '#Domain'
+      serverGroupId: '#TargetGroup.TargetGroupId'
+      url: '#Url'
+  classProperties:
+    secret: '#secret'
+    key: '#accessKey'
+  method: querySlbRule
+  argValues:
+    slbId: '#load_balancer_id'
+    regionId: '#regionId'
+  client: org.prophetech.hyperone.vegaops.tencent.client.TencentSlbRuleClient

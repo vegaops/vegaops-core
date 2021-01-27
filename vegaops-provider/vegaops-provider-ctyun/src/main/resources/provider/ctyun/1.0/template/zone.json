@@ -1,0 +1,29 @@
+{
+  "vendor": "ctyun",
+  "nodeType": "region",
+  "componentId": "#componentId",
+  "actions": [
+    "list"
+  ],
+  "ctyunAccount": {
+    "class": "org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount",
+    "accessKey": "#accessKey",
+    "secret": "#secret"
+  },
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunRegionZoneClient",
+    "method": "getAllZones",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "output": {
+      "success": "true",
+      "[regionList]:[#result]": {
+        "name": "#name",
+        "regionId": "#zoneRegionId",
+        "vendor": "#vendor",
+        "providerId": "#providerId"
+      }
+    }
+  }
+}

@@ -1,0 +1,188 @@
+{
+  "vendor": "aliyun",
+  "nodeType": "networkInterface",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query",
+    "bind-unbind"
+  ],
+  "profile":"T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
+  "install": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.CreateNetworkInterfaceRequest",
+      "VSwitchId": "#vswitchId",
+      "securityGroupId": "#securityGroupId",
+      "networkInterfaceName": "#name",
+      "description": "#description",
+      "primaryIpAddress": "#primaryIpAddress",
+      "secondaryPrivateIpAddressCount": "#secondaryPrivateIpAddressCount"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "networkInterfaceId": "#result.NetworkInterfaceId",
+      "after": {
+        "action": "query",
+        "input": {
+          "NetworkInterfaceId": ["#networkInterfaceId"]
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#throwable eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DeleteNetworkInterfaceRequest",
+      "networkInterfaceId": "#networkInterfaceId"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#networkInterfaceId"
+    }
+  },
+  "list": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DescribeNetworkInterfacesRequest",
+      "pageSize": "100",
+      "pageNumber": "1"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "loop": {
+        "condition": "#result.getNetworkInterfaceSets().size() != 0",
+        "appendList": [
+          "networkInterfaceSetsList"
+        ],
+        "1": "#request.setPageNumber(#request.getPageNumber()+1)"
+      },
+      "[networkInterfaceSetsList]:[#result.NetworkInterfaceSets]": {
+        "regionId": "#regionId",
+        "status": "#Status",
+        "privateIpAddress": "#PrivateIpAddress",
+        "zoneId": "#ZoneId",
+        "instanceId": "#InstanceId",
+        "vswitchId": "#VSwitchId",
+        "name": "#networkInterfaceName",
+        "networkInterfaceId": "#NetworkInterfaceId",
+        "providerId": "#NetworkInterfaceId",
+        "macAddress": "#MacAddress",
+        "securityGroupIds": "#SecurityGroupIds",
+        "vpcId": "#VpcId",
+        "type": "#Type",
+        "associatedPublicIp": "#AssociatedPublicIp",
+        "creationTime": "#CreationTime"
+      }
+    }
+  },
+  "query": {
+    "client": "org.prophetech.hyperone.vegaops.alicloud.client.AliyunInstanceClient",
+    "method": "queryNetworkInterface",
+    "argNames": [
+      "param"
+    ],
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.alicloud.model.QueryNetworkInterfaceRequest"
+    ],
+    "param": {
+      "regionId": "#regionId",
+      "accessKey": "#accessKey",
+      "secret":"#secret",
+      "networkInterfaceId":"#networkInterfaceId"
+    },
+    "argValues":{
+      "param": "#param"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "status": "#result.getNetworkInterfaceSets().get(0).getStatus()",
+      "type": "#result.getNetworkInterfaceSets().get(0).getType()",
+      "privateIpAddress": "#result.getNetworkInterfaceSets().get(0).getPrivateIpAddress()",
+      "zoneId": "#result.getNetworkInterfaceSets().get(0).getZoneId()",
+      "instanceId": "#result.getNetworkInterfaceSets().get(0).getInstanceId()",
+      "name": "#result.getNetworkInterfaceSets().get(0).getNetworkInterfaceName()",
+      "vswitchId": "#result.getNetworkInterfaceSets().get(0).getVSwitchId()",
+      "networkInterfaceId": "#result.getNetworkInterfaceSets().get(0).getNetworkInterfaceId()",
+      "providerId": "#result.getNetworkInterfaceSets().get(0).getNetworkInterfaceId()",
+      "macAddress": "#result.getNetworkInterfaceSets().get(0).getMacAddress()",
+      "securityGroupIds": "#result.getNetworkInterfaceSets().get(0).getSecurityGroupIds()",
+      "vpcId": "#result.getNetworkInterfaceSets().get(0).getVpcId()",
+      "associatedPublicIp": "#result.getNetworkInterfaceSets().get(0).getAssociatedPublicIp()",
+      "creationTime": "#result.getNetworkInterfaceSets().get(0).getCreationTime()"
+    }
+  },
+  "bind": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.AttachNetworkInterfaceRequest",
+      "instanceId": "#instanceId",
+      "networkInterfaceId": "#networkInterfaceId"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "networkInterfaceId": "#networkInterfaceId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#status eq 'InUse'&& #instanceId ne null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "unbind": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DetachNetworkInterfaceRequest",
+      "instanceId": "#instanceId",
+      "networkInterfaceId": "#networkInterfaceId"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "networkInterfaceId": "#networkInterfaceId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "30",
+        "output": {
+          "success": "#status eq 'Available'||#instanceId eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  }
+}

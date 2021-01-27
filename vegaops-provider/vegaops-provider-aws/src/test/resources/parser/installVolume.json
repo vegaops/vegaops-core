@@ -1,0 +1,30 @@
+{
+  "componentId": "container_vpc1234567",
+  "containerType": "aws",
+  "nodes": [
+    {
+      "componentId": "vpc_123456",
+      "leafNode": false,
+      "relations": [],
+      "nodeType": "volume",
+      "properties": [
+        {
+          "key": "size",
+          "value": "4"
+        },
+        {
+          "key": "volumeType",
+          "value": "gp2"
+        },
+        {
+          "key": "availabilityZone",
+          "value": "cn-north-1b"
+        }
+      ]
+    }
+  ],
+  "relations": [],
+  "zoneId": "cnn1-az1",
+  "regionId": "cn-north-1",
+  "cloudAccountId": "1249274415906578433"
+}

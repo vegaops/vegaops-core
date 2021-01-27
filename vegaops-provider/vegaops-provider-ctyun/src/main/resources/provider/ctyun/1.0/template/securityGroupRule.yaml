@@ -1,0 +1,92 @@
+vendor: ctyun
+nodeType: securityGroupRule
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+ctyunAccount:
+  accessKey: '#accessKey'
+  secret: '#secret'
+  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
+install:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.CreateSecurityGroupRuleRequest
+  output:
+    ethertype: '#result.returnObj?.security_group_rule?.ethertype'
+    description: '#result.returnObj?.security_group_rule?.description'
+    portRangeMax: '#result.returnObj?.security_group_rule?.port_range_max'
+    remoteIpPrefix: '#result.returnObj?.security_group_rule?.remote_ip_prefix'
+    securityGroupRuleId: '#result.returnObj?.security_group_rule?.id'
+    securityGroupId: '#result.returnObj?.security_group_rule?.security_group_id'
+    createdAt: '#result.returnObj?.security_group_rule?.created_at'
+    protocol: '#result.returnObj?.security_group_rule?.protocol'
+    portRangeMin: '#result.returnObj?.security_group_rule?.port_range_min'
+    regionId: '#regionId'
+    success: '#result.statusCode?.equals(800)'
+    tenantId: '#result.returnObj?.security_group_rule?.tenant_id'
+    id: '#result.returnObj?.security_group_rule?.id'
+    direction: '#result.returnObj?.security_group_rule?.direction'
+    updatedAt: '#result.returnObj?.security_group_rule?.updated_at'
+  request:
+    securityGroupId: '#securityGroupId'
+    protocol: '#protocol'
+    portRangeMin: '#portStart'
+    remoteGroupId: '#remoteGroupId'
+    regionId: '#regionId'
+    ethertype: '#ethertype'
+    portRangeMax: '#portEnd'
+    remoteIpPrefix: '#cidrBlock'
+    direction: '#direction'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+list:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.QueryGroupRuleRequest
+  output:
+    log: 'false'
+    success: 'true'
+    '[securityGroupRuleList]:[#result]':
+      remoteGroupId: '#remote_group_id'
+      ethertype: '#ethertype'
+      description: '#description'
+      portRangeMax: '#port_range_max'
+      remoteIpPrefix: '#remote_ip_prefix'
+      securityGroupRuleId: '#id'
+      securityGroupId: '#security_group_id'
+      ipv6Cidr: '#ipv6Cidr'
+      createdAt: '#created_at'
+      protocol: '#protocol'
+      portRangeMin: '#port_range_min'
+      regionId: '#regionId'
+      tenantId: '#tenant_id'
+      direction: '#direction'
+      updatedAt: '#updated_at'
+  request:
+    securityGroupId: '#securityGroupId'
+    regionId: '#regionId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getSecurityGroupRules
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunSecurityGroupRuleClient
+uninstall:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.DeleteSecurityGroupRuleRequest
+  output:
+    deleteProviderId: '#securityGroupRuleId'
+    success: '#result.statusCode?.equals(800)||#result.message?.contains(''does not
+      exist'')'
+  request:
+    regionId: '#regionId'
+    securityGroupRuleId: '#securityGroupRuleId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient

@@ -1,0 +1,18 @@
+{
+  "vendor": "tencent",
+  "accessKey": "xxxxx",
+  "secret": "xxxxx",
+  "regionId": "ap-beijing",
+  "nodes": [
+    {
+      "componentId": "vswitch-1",
+      "nodeType": "vswitch",
+      "vars": {
+        "vpcId": "vpc-83p4kdj8",
+        "name": "vegaopsTest",
+        "cidrBlock": "10.0.0.0/18",
+        "zone":"ap-beijing-1"
+      }
+    }
+  ]
+}

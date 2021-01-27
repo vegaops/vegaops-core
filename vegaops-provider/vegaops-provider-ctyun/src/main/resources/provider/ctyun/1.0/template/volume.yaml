@@ -1,0 +1,178 @@
+vendor: ctyun
+nodeType: volume
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+- bind-unbind
+- query
+ctyunAccount:
+  accessKey: '#accessKey'
+  secret: '#secret'
+  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
+install:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.CreateDatadiskRequest
+  output:
+    payType: '#result.payType'
+    size: '#result.size'
+    regionId: '#regionId'
+    cycleCnt: '#result.cycleCnt'
+    success: '#result.statusCode.equals(800)'
+    providerId: '#result.id'
+    name: '#result.name'
+    zoneId: '#result.zoneId'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#status eq ''available'''
+        mergeKeys: '*'
+      input:
+        volumeId: '#providerId'
+      action: query
+      waitInterval: '5000'
+    type: '#result.type'
+  request:
+    payType: '#payType'
+    size: '#size'
+    regionId: '#regionId'
+    backupId: '#backupId'
+    name: '#name'
+    count: '#count'
+    zoneId: '#zoneId'
+    type: '#type'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: createVolume
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunVolumeClient
+query:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.GetVolumesRequest
+  output:
+    description: ''
+    type: ''
+    createdAt: '#result.get(0).getCreated_at()'
+    expiredAt: '#result.get(0).getExpireTime()'
+    instanceId: '#result.get(0).getServer_id()'
+    size: '#result.get(0).getSize()'
+    regionId: '#regionId'
+    success: 'true'
+    providerId: '#result.get(0).getId()'
+    diskChargeType: '#result.get(0).getPayType()'
+    name: '#result.get(0).getName()'
+    zoneId: '#result.get(0).getAvailability_zone()'
+    category: '#result.get(0).getVolume_type()'
+    status: '#result.get(0).getStatus()'
+  request:
+    regionId: '#regionId'
+    marker: '#marker'
+    volumeId: '#volumeId'
+    limit: '#limit'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getVolumes
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunVolumeClient
+list:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.GetVolumesRequest
+  output:
+    log: 'false'
+    success: 'true'
+    '[volumes]:[#result]':
+      description: ''
+      type: ''
+      createdAt: '#created_at'
+      expiredAt: '#expireTime'
+      instanceId: '#server_id'
+      size: '#size'
+      regionId: '#regionId'
+      providerId: '#id'
+      diskChargeType: '#payType'
+      name: '#name'
+      zoneId: '#availability_zone'
+      category: '#volume_type'
+      status: '#status'
+  request:
+    regionId: '#regionId'
+    marker: '#marker'
+    volumeId: '#volumeId'
+    limit: '#limit'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getVolumes
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunVolumeClient
+bind:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.AttachVolumeRequest
+  output:
+    success: '#result.statusCode.equals(800)'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#instanceId ne null'
+        mergeKeys: '*'
+      input:
+        volumeId: '#volumeId'
+      action: query
+      waitInterval: '5000'
+  request:
+    payType: '#payType'
+    regionId: '#regionId'
+    vmId: '#vmId'
+    volumeId: '#volumeId'
+    device: '#device'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+unbind:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.UninstallVolumeRequest
+  retryTimes: '3'
+  output:
+    success: '#result.statusCode.equals(800)'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#instanceId eq null'
+        mergeKeys: '*'
+      input:
+        volumeId: '#volumeId'
+      action: query
+      waitInterval: '3000'
+  request:
+    payType: '#payType'
+    regionId: '#regionId'
+    vmId: '#vmId'
+    volumeId: '#volumeId'
+    device: '#device'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+  waitInterval: '5000'
+uninstall:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.DeleteVolumeRequest
+  output:
+    deleteProviderId: '#volumeId'
+    success: '#result.equals(800)||#message?.contains(''does not exist'')'
+  request:
+    regionId: '#regionId'
+    volumeId: '#volumeId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: deleteVolume
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunVolumeClient

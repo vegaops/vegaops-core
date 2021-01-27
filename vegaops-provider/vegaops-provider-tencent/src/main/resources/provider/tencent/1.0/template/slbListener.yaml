@@ -1,0 +1,36 @@
+vendor: tencent
+nodeType: slbListener
+componentId: '#componentId'
+actions:
+- list
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: clb.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+list:
+  argTypes:
+  - com.tencentcloudapi.clb.v20180317.models.DescribeListenersRequest
+  output:
+    success: '#throwable eq null'
+    '[listenerList]:[#result.Listeners]':
+      healthCheckUri: '#HealthCheck.HttpCheckPath'
+      scheduler: '#Scheduler'
+      protocol: '#Protocol'
+      lbId: '#loadBalancerId'
+      healthCheckDomain: '#HealthCheck.HttpCheckDomain'
+      providerId: '#ListenerId'
+      healthCheckHttpCode: '#HealthCheck.HttpCode'
+      sslCertificateId: '#Certificate'
+      establishedTimeout: '#SessionExpireTime'
+      listenerPort: '#Port'
+      healthCheckInterval: '#HealthCheck.IntervalTime'
+  request:
+    loadBalancerId: '#load_balancer_id'
+    class: com.tencentcloudapi.clb.v20180317.models.DescribeListenersRequest
+  method: DescribeListeners
+  argNames:
+  - request
+  client: new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)

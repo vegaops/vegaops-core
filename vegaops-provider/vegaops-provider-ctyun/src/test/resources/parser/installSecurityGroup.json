@@ -1,0 +1,29 @@
+{
+  "componentId": "component-sg",
+  "nodes": [
+    {
+      "componentId": "sg",
+      "leafNode": true,
+      "nodeType": "securityGroup",
+      "relations": [],
+      "properties": [
+        {
+          "value": "cn-gzT",
+          "key": "regionId"
+        },
+        {
+          "value": "3819d846-20bc-4159-bb7b-b434334707bd",
+          "key": "vpcId"
+        },
+        {
+          "value": "sg-01-1122",
+          "key": "name"
+        }
+      ]
+    }
+  ],
+  "regionId": "cn-gzT",
+  "containerType": "ctyun",
+  "cloudAccountId": "1245215824219570177",
+  "zoneId": "cn-gzTa"
+}

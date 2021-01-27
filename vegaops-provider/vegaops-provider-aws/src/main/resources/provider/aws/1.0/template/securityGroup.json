@@ -1,0 +1,102 @@
+{
+  "vendor": "aws",
+  "nodeType": "securityGroup",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query"
+  ],
+  "awsRegion": "T(software.amazon.awssdk.regions.Region).of(#regionId)",
+  "credentials": "T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)",
+  "awsCredentialsProvider": "T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)",
+  "ec2Client": "T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()",
+  "list": {
+    "client": "#ec2Client",
+    "method": "describeSecurityGroups",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest).builder().groupIds(#groupIds).groupNames(#groupNames).build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "log": "false",
+      "[securityGroups]:[#result.securityGroups()]": {
+        "description": "#me.description()",
+        "name": "#me.groupName()",
+        "providerId": "#me.groupId()",
+        "vpcId": "#me.vpcId()",
+        "regionId": "#regionId",
+        "zoneId": "#zoneId"
+      }
+    }
+  },
+  "query": {
+    "client": "#ec2Client",
+    "method": "describeSecurityGroups",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest).builder().groupIds(#groupId).groupNames(#groupNames).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "description": "#result.securityGroups()[0]?.description()",
+      "name": "#result.securityGroups()[0]?.groupName()",
+      "providerId": "#result.securityGroups()[0]?.groupId()",
+      "securityGroupId": "#result.securityGroups()[0]?.groupId()",
+      "vpcId": "#result.securityGroups()[0]?.vpcId()"
+    }
+  },
+  "install": {
+    "client": "#ec2Client",
+    "method": "createSecurityGroup",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.CreateSecurityGroupRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.CreateSecurityGroupRequest).builder().groupName(#groupName).description(#groupDesc).vpcId(#vpcId).build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "groupId": "#result.groupId()",
+      "after": {
+        "action": "query",
+        "input": {
+          "groupId": "#groupId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "3",
+        "output": {
+          "success": "true",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "client": "#ec2Client",
+    "method": "deleteSecurityGroup",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DeleteSecurityGroupRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DeleteSecurityGroupRequest).builder().groupId(#securityGroupId).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200||#throwable.getMessage().contains('not exist')",
+      "close": "#ec2Client.close()",
+      "deleteProviderId": "#securityGroupId"
+    }
+  }
+}

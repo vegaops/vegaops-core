@@ -1,0 +1,77 @@
+vendor: ctyun
+nodeType: networkInterface
+componentId: '#componentId'
+actions:
+- list
+- install-uninstall
+ctyunAccount:
+  accessKey: '#accessKey'
+  secret: '#secret'
+  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
+list:
+  output:
+    success: '#throwable eq null || #throwable.toString().contains(''Read timed out'')'
+    '[netWorkCardList]:[#result]':
+      subnetId: '#subnet_ids'
+      portState: '#port_state'
+      netId: '#net_id'
+      vmId: '#vmId'
+      regionId: '#regionId'
+      ipAddress: '#ip_addresses'
+      portId: '#port_id'
+      macAddr: '#mac_addr'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getAllNetworkInterface
+  argValues:
+    instanceId: '#instanceId'
+    regionId: '#regionId'
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunNetworkInterfaceClient
+uninstall:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.DeleteNetworkCardRequest
+  output:
+    deleteProviderId: '#networkCardId'
+    success: '#result.statusCode.equals(800)'
+    after:
+      retryTimes: '25'
+      output:
+        success: T(com.alibaba.fastjson.JSON).parseArray(#privateIp).size() eq 1
+      input:
+        instanceId: '#instanceId'
+      action: instance.query
+      waitInterval: '5000'
+  request:
+    vmId: '#instanceId'
+    regionId: '#regionId'
+    networkCardId: '#networkCardId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+install:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.CreateNetworkCardsParam
+  output:
+    subnetId: '#result.subnet_ids'
+    portState: '#result.port_state'
+    netId: '#result.net_id'
+    vmId: '#result.vmId'
+    regionId: '#regionId'
+    success: '#throwable eq null || #throwable.toString().contains(''Timeout'')'
+    ipAddress: '#result.ip_addresses'
+    portId: '#result.port_id'
+    macAddr: '#result.mac_addr'
+  request:
+    vswitchId: '#vswitchId'
+    instanceId: '#instanceId'
+    regionId: '#regionId'
+    securityGroups: '#securityGroups'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: createNetworkCard
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunNetworkInterfaceClient

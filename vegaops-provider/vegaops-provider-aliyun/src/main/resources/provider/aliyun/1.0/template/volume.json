@@ -1,0 +1,203 @@
+{
+  "vendor": "aliyun",
+  "nodeType": "volume",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query",
+    "bind-unbind"
+  ],
+  "profile":"T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
+  "install": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.CreateDiskRequest",
+      "zoneId": "#zoneId",
+      "snapshotId": "#snapshotId",
+      "diskName": "#name",
+      "size": "#size",
+      "dnapshotId": "#dnapshotId",
+      "description": "#description",
+      "encrypted": "#encrypted",
+      "instanceId": "#instanceId",
+      "diskCategory": "#category"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "diskId": "#result.DiskId",
+      "after": {
+        "action": "query",
+        "input": {
+          "diskId": "#diskId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#diskChargeType ne null",
+          "mergeKeys": "*"
+        }
+      }
+
+    }
+  },
+  "uninstall": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DeleteDiskRequest",
+      "diskId": "#diskId"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#diskId"
+    }
+  },
+  "list": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DescribeDisksRequest",
+      "pageSize": "100",
+      "pageNumber": "1"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "loop": {
+        "condition": "#result.getDisks().size()!= 0",
+        "appendList": [
+          "volumeList"
+        ],
+        "1": "#request.setPageNumber(#request.getPageNumber()+1)"
+      },
+      "[volumeList]:[#result.Disks]": {
+        "name": "#DiskName",
+        "zoneId": "#zoneId",
+        "description": "#Description",
+        "instanceId": "#InstanceId",
+        "creationTime": "#CreationTime",
+        "expiredTime": "#ExpiredTime",
+        "diskChargeType": "#DiskChargeType",
+        "size": "#Size",
+        "type": "#Type",
+        "category": "#Category",
+        "regionId": "#regionId",
+        "portable": "#Portable",
+        "status": "#Status",
+        "providerId": "#DiskId"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DescribeDisksRequest",
+      "diskIds": "new String('[\"'+#diskId+'\"]')",
+      "zoneId": "#zoneId",
+      "diskType": "#diskType",
+      "category": "#category",
+      "status": "#status",
+      "diskName": "#diskName",
+      "portable": "#portable",
+      "deleteWithInstance": "#deleteWithInstance",
+      "deleteAutoSnapshot": "#deleteAutoSnapshot",
+      "diskChargeType": "#diskChargeType",
+      "instanceId": "#InstanceId"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "name": "#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getDiskName()",
+      "zoneId": "#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getZoneId()",
+      "description": "#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getDescription()",
+      "instanceId": "#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getInstanceId()",
+      "bindInstanceId": "#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getInstanceId()",
+      "creationTime": "#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getCreationTime()",
+      "expiredTime": "#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getExpiredTime()",
+      "diskChargeType": "#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getDiskChargeType()",
+      "size": "#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getSize()",
+      "type": "#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getType()",
+      "category": "#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getCategory()",
+      "regionId": "#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getRegionId()",
+      "portable": "#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getPortable()",
+      "status": "#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getStatus()",
+      "providerId": "#result.getDisks().size() eq 0 ? null:#result.getDisks().get(0).getDiskId()"
+
+    }
+  },
+  "bind": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.AttachDiskRequest",
+      "instanceId": "#instanceId",
+      "diskId": "#diskId",
+      "device": "#device",
+      "deleteWithInstance": "#deleteWithInstance",
+      "bootable": "#bootable",
+      "password": "#password",
+      "encrypted": "#encrypted",
+      "keyPairName": "#keyPairName"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "diskId": "#diskId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#status eq 'In_use'" ,
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "unbind": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DetachDiskRequest",
+      "instanceId": "#instanceId",
+      "diskId": "#diskId",
+      "deleteWithInstance": "#deleteWithInstance"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "diskId": "#diskId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#status eq 'Available'" ,
+          "mergeKeys": "*"
+        }
+      }
+    }
+  }
+}

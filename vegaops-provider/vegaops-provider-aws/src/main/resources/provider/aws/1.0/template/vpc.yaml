@@ -1,0 +1,114 @@
+vendor: aws
+nodeType: vpc
+componentId: '#componentId'
+actions:
+- install-uninstall
+- query
+- list
+- tag
+awsRegion: T(software.amazon.awssdk.regions.Region).of(#regionId)
+credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)
+awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
+ec2Client: T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
+install:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.CreateVpcRequest
+  output:
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    vpcId: '#result.vpc().vpcId()'
+    after:
+      retryTimes: '3'
+      output:
+        success: '#state.toString() eq ''available'''
+        mergeKeys: '*'
+        close: '#ec2Client.close()'
+      input:
+        resourceId: '#vpcId'
+        name: '#name'
+      action: tag
+      waitInterval: '3000'
+  request: T(software.amazon.awssdk.services.ec2.model.CreateVpcRequest).builder().amazonProvidedIpv6CidrBlock(#amazonProvidedIpv6CidrBlock).cidrBlock(#cidrBlock).instanceTenancy(#instanceTenancy).ipv6CidrBlock(#ipv6CidrBlock).ipv6CidrBlockNetworkBorderGroup(#ipv6CidrBlockNetworkBorderGroup).ipv6Pool(#ipv6Pool).build()
+  method: createVpc
+  argNames:
+  - request
+  client: '#ec2Client'
+tag:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.CreateTagsRequest
+  output:
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    after:
+      retryTimes: '3'
+      output:
+        success: '#state.toString() eq ''available'''
+        mergeKeys: '*'
+      input:
+        vpcId: '#resourceId'
+      action: query
+      waitInterval: '3000'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.CreateTagsRequest).builder().resources(#resourceId).tags(T(software.amazon.awssdk.services.ec2.model.Tag).builder().key("Name").value(#name).build()).build()
+  method: createTags
+  argNames:
+  - request
+  client: '#ec2Client'
+query:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DescribeVpcsRequest
+  output:
+    instanceTenancy: '#result.vpcs()[0]?.instanceTenancy()'
+    cidrBlock: '#result.vpcs()[0]?.cidrBlock()'
+    cidrBlockAssociationSet: '#result.vpcs()[0]?.cidrBlockAssociationSet()'
+    ownerId: '#result.vpcs()[0]?.ownerId()'
+    tags: '#result.vpcs()[0]?.tags()'
+    isDefault: '#result.vpcs()[0]?.isDefault()'
+    dhcpOptionsId: '#result.vpcs()[0]?.dhcpOptionsId()'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    providerId: '#result.vpcs()[0]?.vpcId()'
+    vpcId: '#result.vpcs()[0]?.vpcId()'
+    state: '#result.vpcs()[0]?.state()'
+    close: '#ec2Client.close()'
+    ipv6CidrBlockAssociationSet: '#result.vpcs()[0]?.ipv6CidrBlockAssociationSet()'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeVpcsRequest).builder().vpcIds(#vpcId).build()
+  method: describeVpcs
+  argNames:
+  - request
+  client: '#ec2Client'
+list:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DescribeVpcsRequest
+  output:
+    log: 'false'
+    success: 'true'
+    close: '#ec2Client.close()'
+    '[vpcList]:[#result.vpcs()]':
+      instanceTenancy: '#me.instanceTenancy()'
+      isDefault: '#me.isDefault()'
+      dhcpOptionsId: '#me.dhcpOptionsId()'
+      regionId: '#regionId'
+      vpcId: '#me.vpcId()'
+      cidrBlock: '#me.cidrBlock()'
+      zoneId: '#zoneId'
+      cidrBlockAssociationSet: '#me.cidrBlockAssociationSet()'
+      state: '#me.state()'
+      ownerId: '#me.ownerId()'
+      ipv6CidrBlockAssociationSet: '#me.ipv6CidrBlockAssociationSet()'
+      tags: '#me.tags()'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeVpcsRequest).builder().build()
+  method: describeVpcs
+  argNames:
+  - request
+  client: '#ec2Client'
+uninstall:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DeleteVpcRequest
+  output:
+    deleteProviderId: '#vpcId'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200||#throwable.getMessage().contains(''not
+      exist'')'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.DeleteVpcRequest).builder().vpcId(#vpcId).build()
+  method: deleteVpc
+  argNames:
+  - request
+  client: '#ec2Client'

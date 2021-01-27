@@ -1,0 +1,103 @@
+{
+  "vendor": "aliyun",
+  "nodeType": "routeTable",
+  "componentId": "#componentId",
+  "actions": [
+    "list",
+    "install-uninstall",
+    "query"
+  ],
+  "profile":"T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
+  "list": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.vpc.model.v20160428.DescribeRouteTablesRequest",
+      "pageSize": "10",
+      "pageNumber": "1"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "loop": {
+        "condition": "#result.getRouteTables().size() != 0",
+        "appendList": [
+          "routeTableList"
+        ],
+        "1": "#request.setPageNumber(#request.getPageNumber()+1)"
+      },
+      "[routeTableList]:[#result.RouteTables]": {
+        "providerId": "#RouteTableId",
+        "type": "#RouteTableType",
+        "regionId": "#regionId"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.vpc.model.v20160428.DescribeRouteTablesRequest",
+      "routeTableId": "#routeTableId"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "creationTime": "#result.getRouteTables().size() eq 0 ? null: #result.getRouteTables().get(0).getCreationTime()",
+      "providerId": "#result.getRouteTables().size() eq 0 ? null: #result.getRouteTables().get(0).getRouteTableId()",
+      "routeTableType": "#result.getRouteTables().size() eq 0 ? null: #result.getRouteTables().get(0).getRouteTableType()",
+      "vRouterId": "#result.getRouteTables().size() eq 0 ? null: #result.getRouteTables().get(0).getVRouterId()"
+    }
+  },
+  "install": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.vpc.model.v20160428.CreateRouteTableRequest",
+      "vpcId": "#vpcId",
+      "routeTableName": "#name",
+      "description": "#description"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "routeTableId": "result.routeTableId",
+      "after": {
+        "action": "query",
+        "input": {
+          "routeTableId": "#routeTableId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#throwable eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.vpc.model.v20160428.DeleteRouteTableRequest",
+      "routeTableId": "#routeTableId"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#routeTableId"
+    }
+  }
+}
+
+

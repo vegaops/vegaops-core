@@ -1,0 +1,118 @@
+{
+  "vendor": "aliyun",
+  "nodeType": "vswitch",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query"
+  ],
+  "profile":"T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
+  "install": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.CreateVSwitchRequest",
+      "cidrBlock": "#cidrBlock",
+      "vpcId": "#vpcId",
+      "zoneId": "#zoneId",
+      "VSwitchName": "#name",
+      "description": "#description"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "regionId": "#RegionId",
+      "vswitchId": "#result.VSwitchId",
+      "after": {
+        "action": "query",
+        "input": {
+          "VSwitchId": "#vswitchId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#status eq 'Available'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DeleteVSwitchRequest",
+      "VSwitchId": "#vswitchId"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#vswitchId"
+    }
+  },
+  "list": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DescribeVSwitchesRequest",
+      "pageSize": "10",
+      "pageNumber": "1"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "loop": {
+        "condition": "#result.getVSwitches().size() != 0",
+        "appendList": [
+          "vswitchList"
+        ],
+        "1": "#request.setPageNumber(#request.getPageNumber()+1)"
+      },
+      "[vswitchList]:[#result.vSwitches]": {
+        "vswitchId": "#vSwitchId",
+        "providerId": "#vSwitchId",
+        "zoneId": "#zoneId",
+        "vpcId": "#vpcId",
+        "status": "#status",
+        "creationTime": "#creationTime",
+        "cidrBlock": "#cidrBlock",
+        "regionId": "#regionId",
+        "description": "#description",
+        "name": "#vSwitchName"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DescribeVSwitchesRequest",
+      "VSwitchId": "#vswitchId",
+      "vpcId": "#vpcId",
+      "vSwitchName": "#name"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "vswitchId": "#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getVSwitchId()",
+      "providerId": "#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getVSwitchId()",
+      "zoneId": "#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getZoneId()",
+      "vpcId": "#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getVpcId()",
+      "status": "#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getStatus()",
+      "creationTime": "#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getCreationTime()",
+      "cidrBlock": "#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getCidrBlock()",
+      "description": "#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getDescription()",
+      "name": "#result.getVSwitches().size() eq 0 ? null : #result.getVSwitches().get(0).getVSwitchName()"
+    }
+  }
+}

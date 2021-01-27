@@ -1,0 +1,33 @@
+{
+  "vendor": "ctyun",
+  "ctyunAccount": {
+    "accessKey": "xxxxx",
+    "secret": "xxxxx"
+  },
+  "regionId": "cn-gzT",
+  "zoneId": "cn-gzTa",
+  "nodes": [
+    {
+      "componentId": "vpc-1",
+      "nodeType": "vpc",
+      "vars": {
+        "regionId": "#regionId",
+        "name": "vegaopsTest",
+        "cidr": "192.168.0.0/24"
+      }
+    },
+    {
+      "componentId": "vswitch-1",
+      "nodeType": "vswitch",
+      "vars": {
+        "regionId": "#regionId",
+        "zoneId": "#zoneId",
+        "name": "hyberbin-test",
+        "cidr": "192.168.0.0/24",
+        "gatewayIp": "192.168.0.1",
+        "dhcpEnable": "true",
+        "vpcId": "&vpc-1.vpcId"
+      }
+    }
+  ]
+}

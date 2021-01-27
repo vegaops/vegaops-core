@@ -1,0 +1,27 @@
+vendor: tencent
+nodeType: region
+componentId: '#componentId'
+actions:
+- list
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: cvm.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+list:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.DescribeRegionsRequest
+  output:
+    log: 'false'
+    '[regionList]:[#result.RegionSet]':
+      name: '#regionName'
+      regionState: '#regionState'
+      id: '#region'
+    success: '#throwable eq null'
+  request: {}
+  method: DescribeRegions
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)

@@ -1,0 +1,106 @@
+{
+  "vendor": "aws",
+  "nodeType": "image",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "query",
+    "list"
+  ],
+  "awsRegion": "T(software.amazon.awssdk.regions.Region).of(#regionId)",
+  "credentials": "T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)",
+  "awsCredentialsProvider": "T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)",
+  "ec2Client": "T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()",
+  "install": {
+    "client": "#ec2Client",
+    "method": "createImage",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.CreateImageRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.CreateImageRequest).builder().description(#description).instanceId(#instanceId).name(#name).noReboot(#noReboot).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "imageId": "#result.imageId()"
+    }
+  },
+  "list": {
+    "client": "#ec2Client",
+    "method": "describeImages",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DescribeImagesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DescribeImagesRequest).builder().imageIds(#imageIds).owners('amazon').build()",
+
+    "output": {
+      "log": "false",
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "[imageList]:[#result.images()]": {
+        "architecture": "#me.architecture()",
+        "imageId": "#me.imageId()",
+        "imageType": "#me.imageType()",
+        "imageLocation": "#me.imageLocation()",
+        "ownerId": "#me.ownerId()",
+        "platform": "#me.platform()",
+        "state": "#me.state()",
+        "name": "#me.name()",
+        "regionId": "#regionId",
+        "zoneId": "#zoneId",
+        "size": "#me.blockDeviceMappings().size() eq 0 ? null : #me.blockDeviceMappings()[0]?.ebs()?.volumeSize()",
+        "enaSupport": "#me.enaSupport()",
+        "virtualizationType": "#me.virtualizationType()",
+        "description": "#me.description()",
+        "platformDetails": "#me.platformDetails()",
+        "imageOwnerAlias": "#me.imageOwnerAlias()"
+      }
+    }
+  },
+  "query": {
+    "client": "#ec2Client",
+    "method": "describeImages",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DescribeImagesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DescribeImagesRequest).builder().imageIds(#imageId).build()",
+
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "provideId": "#result.images()[0]?.imageId()",
+      "imageId": "#result.images()[0]?.imageId()",
+      "imageType": "#result.images()[0]?.imageType()",
+      "imageLocation": "#result.images()[0]?.imageLocation()",
+      "ownerId": "#result.images()[0]?.ownerId()",
+      "platform": "#result.images()[0]?.platform()",
+      "state": "#result.images()[0]?.state()",
+      "name": "#result.images()[0]?.name()",
+      "description": "#result.images()[0]?.description()",
+      "platformDetails": "#result.images()[0]?.platformDetails()",
+      "imageOwnerAlias": "#result.images()[0]?.imageOwnerAlias()"
+    }
+  },
+  "uninstall": {
+    "client": "#ec2Client",
+    "method": "deleteFpgaImage",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DeleteFpgaImageRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DeleteFpgaImageRequest).builder().fpgaImageId(#fpgaImageId).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200||#throwable.getMessage().contains('not exist')",
+      "deleteProviderId": "#fpgaImageId"
+    }
+  }
+}

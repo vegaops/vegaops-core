@@ -1,0 +1,181 @@
+{
+  "vendor": "aws",
+  "nodeType": "volume",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "query",
+    "list",
+    "bind-unbind"
+  ],
+  "awsRegion": "T(software.amazon.awssdk.regions.Region).of(#regionId)",
+  "credentials": "T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)",
+  "awsCredentialsProvider": "T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)",
+  "ec2Client": "T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()",
+  "install": {
+    "client": "#ec2Client",
+    "method": "createVolume",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.CreateVolumeRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.CreateVolumeRequest).builder().availabilityZone(#availabilityZone).encrypted(#encrypted).iops(#iops).kmsKeyId(#kmsKeyId).outpostArn(#outpostArn).size(#size).snapshotId(#snapshotId).volumeType(#volumeType).multiAttachEnabled(#multiAttachEnabled).tagSpecifications(T(software.amazon.awssdk.services.ec2.model.TagSpecification).builder().resourceType('volume').tags(T(software.amazon.awssdk.services.ec2.model.Tag).builder().key('Name').value(#name).build()).build()).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "volumeId": "#result.volumeId()",
+      "providerId": "#result.volumeId()",
+      "after": {
+        "action": "query",
+        "input": {
+          "volumeId": "#volumeId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#state eq 'available'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "query": {
+    "client": "#ec2Client",
+    "method": "describeVolumes",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DescribeVolumesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DescribeVolumesRequest).builder().volumeIds(#volumeId).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "instanceId": "#result.volumes()[0]?.attachments().size() eq 0 ? null: #result.volumes()[0]?.attachments()[0]?.instanceId()",
+      "availabilityZone": "#result.volumes()[0]?.availabilityZone()",
+      "createTime": "#result.volumes()[0]?.createTime()",
+      "encrypted": "#result.volumes()[0]?.encrypted()",
+      "kmsKeyId": "#result.volumes()[0]?.kmsKeyId()",
+      "outpostArn": "#result.volumes()[0]?.outpostArn()",
+      "size": "#result.volumes()[0]?.size()",
+      "snapshotId": "#result.volumes()[0]?.snapshotId()",
+      "state": "#result.volumes()[0]?.stateAsString()",
+      "volumeId": "#result.volumes()[0]?.volumeId()",
+      "providerId": "#result.volumes()[0]?.volumeId()",
+      "iops": "#result.volumes()[0]?.iops()",
+      "tags": "#result.volumes()[0]?.tags()",
+      "volumeType": "#result.volumes()[0]?.volumeTypeAsString()",
+      "fastRestored": "#result.volumes()[0]?.fastRestored()",
+      "multiAttachEnabled": "#result.volumes()[0]?.multiAttachEnabled()"
+    }
+  },
+  "list": {
+    "client": "#ec2Client",
+    "method": "describeVolumes",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DescribeVolumesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DescribeVolumesRequest).builder().build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "log": "false",
+      "[volumeList]:[#result.volumes()]": {
+        "instanceId": "#me.attachments().size() eq 0 ? null :#me.attachments()[0]?.instanceId()",
+        "availabilityZone": "#me.availabilityZone()",
+        "createTime": "#me.createTime()",
+        "encrypted": "#me.encrypted()",
+        "kmsKeyId": "#me.kmsKeyId()",
+        "outpostArn": "#me.outpostArn()",
+        "size": "#me.size()",
+        "snapshotId": "#me.snapshotId()",
+        "state": "#me.stateAsString()",
+        "volumeId": "#me.volumeId()",
+        "providerId": "#me.volumeId()",
+        "volumeType": "#me.volumeTypeAsString()",
+        "iops": "#me.iops()",
+        "tags": "#me.tags()",
+        "regionId": "#regionId",
+        "zoneId": "#me.availabilityZone()",
+        "fastRestored": "#me.fastRestored()",
+        "multiAttachEnabled": "#me.multiAttachEnabled()"
+      }
+    }
+  },
+  "uninstall": {
+    "client": "#ec2Client",
+    "method": "deleteVolume",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DeleteVolumeRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DeleteVolumeRequest).builder().volumeId(#volumeId).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200||#throwable.getMessage().contains('not exist')",
+      "close": "#ec2Client.close()",
+      "deleteProviderId": "#volumeId"
+    }
+  },
+  "bind": {
+    "client": "#ec2Client",
+    "method": "attachVolume",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.AttachVolumeRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.AttachVolumeRequest).builder().device(#device).instanceId(#instanceId).volumeId(#volumeId).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200 || #throwable.toString().contains('is already attached to an instance')",
+      "close": "#ec2Client.close()",
+      "after": {
+        "action": "query",
+        "input": {
+          "volumeId": "#volumeId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#instanceId ne null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "unbind": {
+    "client": "#ec2Client",
+    "method": "detachVolume",
+    "argTypes": [
+      "software.amazon.awssdk.services.ec2.model.DetachVolumeRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.ec2.model.DetachVolumeRequest).builder().device(#device).instanceId(#instanceId).volumeId(#volumeId).force(#force).build()",
+    "output": {
+      "success": "#result?.sdkHttpResponse()?.statusCode() eq 200",
+      "close": "#ec2Client.close()",
+      "after": {
+        "action": "query",
+        "input": {
+          "volumeId": "#volumeId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#instanceId eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  }
+}

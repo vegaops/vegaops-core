@@ -1,0 +1,228 @@
+{
+  "vendor": "ctyun",
+  "nodeType": "volume",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "bind-unbind",
+    "query"
+  ],
+  "ctyunAccount": {
+    "class": "org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount",
+    "accessKey": "#accessKey",
+    "secret": "#secret"
+  },
+  "install": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunVolumeClient",
+    "method": "createVolume",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.CreateDatadiskRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "payType": "#payType",
+      "regionId": "#regionId",
+      "zoneId": "#zoneId",
+      "name": "#name",
+      "type": "#type",
+      "size": "#size",
+      "count": "#count",
+      "backupId": "#backupId"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "regionId": "#regionId",
+      "zoneId": "#result.zoneId",
+      "name": "#result.name",
+      "type": "#result.type",
+      "size": "#result.size",
+      "payType": "#result.payType",
+      "providerId": "#result.id",
+      "cycleCnt": "#result.cycleCnt",
+      "after": {
+        "action": "query",
+        "input": {
+          "volumeId": "#providerId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#status eq 'available'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "query": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunVolumeClient",
+    "method": "getVolumes",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.GetVolumesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "volumeId": "#volumeId",
+      "limit": "#limit",
+      "marker": "#marker"
+    },
+    "output": {
+      "success": "true",
+      "category": "#result.get(0).getVolume_type()",
+      "createdAt": "#result.get(0).getCreated_at()",
+      "description": "",
+      "diskChargeType": "#result.get(0).getPayType()",
+      "expiredAt": "#result.get(0).getExpireTime()",
+      "instanceId": "#result.get(0).getServer_id()",
+      "name": "#result.get(0).getName()",
+      "providerId": "#result.get(0).getId()",
+      "regionId": "#regionId",
+      "size": "#result.get(0).getSize()",
+      "status": "#result.get(0).getStatus()",
+      "type": "",
+      "zoneId": "#result.get(0).getAvailability_zone()"
+    }
+  },
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunVolumeClient",
+    "method": "getVolumes",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.GetVolumesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "volumeId": "#volumeId",
+      "limit": "#limit",
+      "marker": "#marker"
+    },
+    "output": {
+      "success": "true",
+      "log": "false",
+      "[volumes]:[#result]": {
+        "category": "#volume_type",
+        "createdAt": "#created_at",
+        "description": "",
+        "diskChargeType": "#payType",
+        "expiredAt": "#expireTime",
+        "instanceId": "#server_id",
+        "name": "#name",
+        "providerId": "#id",
+        "regionId": "#regionId",
+        "size": "#size",
+        "status": "#status",
+        "type": "",
+        "zoneId": "#availability_zone"
+      }
+    }
+  },
+  "bind": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.AttachVolumeRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "volumeId": "#volumeId",
+      "vmId": "#vmId",
+      "device": "#device",
+      "payType": "#payType"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "after": {
+        "action": "query",
+        "input": {
+          "volumeId": "#volumeId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#instanceId ne null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "unbind": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.UninstallVolumeRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "waitInterval": "5000",
+    "retryTimes": "3",
+    "request": {
+      "volumeId": "#volumeId",
+      "regionId": "#regionId",
+      "vmId": "#vmId",
+      "device": "#device",
+      "payType": "#payType"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "after": {
+        "action": "query",
+        "input": {
+          "volumeId": "#volumeId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#instanceId eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunVolumeClient",
+    "method": "deleteVolume",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.DeleteVolumeRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "volumeId": "#volumeId"
+    },
+    "output": {
+      "success": "#result.equals(800)||#message?.contains('does not exist')",
+      "deleteProviderId": "#volumeId"
+    }
+  }
+}

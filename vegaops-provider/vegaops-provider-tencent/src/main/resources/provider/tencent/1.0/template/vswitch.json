@@ -1,0 +1,123 @@
+{
+  "vendor": "tencent",
+  "nodeType": "vswitch",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "query",
+    "list"
+  ],
+  "credential":"new com.tencentcloudapi.common.Credential(#accessKey,#secret)",
+  "httpProfile": {
+    "class": "com.tencentcloudapi.common.profile.HttpProfile",
+    "endpoint": "vpc.tencentcloudapi.com"
+  },
+  "clientProfile": {
+    "class": "com.tencentcloudapi.common.profile.ClientProfile",
+    "httpProfile": "#httpProfile"
+  },
+  "query": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeSubnets",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.DescribeSubnetsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "subnetIds": ["#vswitchId"]
+    },
+    "output": {
+      "success": "#throwable eq null&&#result.totalCount eq 1",
+      "[vswitchList]:[#result.SubnetSet]": {
+        "vpcId": "#VpcId",
+        "vswitchId": "#SubnetId",
+        "providerId": "#SubnetId",
+        "name": "#SubnetName",
+        "cidrBlock": "#CidrBlock",
+        "Zone": "#Zone",
+        "createdTime": "#CreatedTime",
+        "ipv6CidrBlock": "#Ipv6CidrBlock"
+      }
+    }
+  },
+  "list": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeSubnets",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.DescribeSubnetsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "class": "com.tencentcloudapi.vpc.v20170312.models.DescribeSubnetsRequest",
+      "limit": "100",
+      "offset": "0"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "loop": {
+        "condition": "#result.getSubnetSet().length != 0",
+        "appendList": [
+          "vswitchList"
+        ],
+        "1": "#request.setOffset(#request.getOffset()+#request.getLimit())"
+      },
+      "[vswitchList]:[#result.SubnetSet]": {
+        "vpcId": "#VpcId",
+        "vswitchId": "#SubnetId",
+        "name": "#SubnetName",
+        "cidrBlock": "#CidrBlock",
+        "zone": "#Zone",
+        "createdTime": "#CreatedTime",
+        "ipv6CidrBlock": "#Ipv6CidrBlock",
+        "regionId": "#regionId"
+      }
+    }
+  },
+  "install": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "CreateSubnet",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.CreateSubnetRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "vpcId": "#vpcId",
+      "cidrBlock": "#cidrBlock",
+      "subnetName":"#name",
+      "zone": "#zone "
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "vpcId": "#result.Subnet.VpcId",
+      "vswitchId": "#result.Subnet.SubnetId",
+      "name": "#result.Subnet.SubnetName",
+      "cidrBlock": "#result.Subnet.CidrBlock",
+      "zone": "#result.Subnet.Zone",
+      "createdTime": "#result.Subnet.CreatedTime"
+    }
+  },
+  "uninstall": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "DeleteSubnet",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.DeleteSubnetRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "subnetId": "#vswitchId"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#vswitchId"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "vendor": "tencent",
+  "nodeType": "zone",
+  "componentId": "#componentId",
+  "actions": [
+    "list"
+  ],
+  "credential": "new com.tencentcloudapi.common.Credential(#accessKey,#secret)",
+  "httpProfile": {
+    "class": "com.tencentcloudapi.common.profile.HttpProfile",
+    "endpoint": "cvm.tencentcloudapi.com"
+  },
+  "clientProfile": {
+    "class": "com.tencentcloudapi.common.profile.ClientProfile",
+    "httpProfile": "#httpProfile"
+  },
+  "list": {
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeZones",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.DescribeZonesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "[zoneList]:[#result.ZoneSet]": {
+        "providerId": "#zone",
+        "name": "#zoneName",
+        "id": "#zoneId",
+        "zoneState": "#zoneState",
+        "vendor": "tencent",
+        "regionId": "#regionId"
+      }
+    }
+  }
+}

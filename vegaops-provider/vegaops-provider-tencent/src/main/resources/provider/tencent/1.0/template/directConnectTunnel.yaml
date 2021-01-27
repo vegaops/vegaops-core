@@ -1,0 +1,126 @@
+vendor: tencent
+nodeType: directConnectTunnel
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+- query
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: dc.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+install:
+  argTypes:
+  - com.tencentcloudapi.dc.v20180410.models.CreateDirectConnectTunnelRequest
+  output:
+    success: '#throwable eq null'
+    directConnectTunnelId: '#result.DirectConnectTunnelIdSet[0]'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#throwable eq null'
+        mergeKeys: '*'
+      input:
+        directConnectTunnelId: '#directConnectTunnelId'
+      action: query
+      waitInterval: '3000'
+  request:
+    customerAddress: '#customerAddress'
+    networkRegion: '#networkRegion'
+    bandwidth: '#bandwidth'
+    directConnectOwnerAccount: '#directConnectOwnerAccount'
+    directConnectGatewayId: '#directConnectGatewayId'
+    directConnectTunnelName: '#name'
+    vlan: '#vlan'
+    vpcId: '#vpcId'
+    tencentBackupAddress: '#tencentBackupAddress'
+    directConnectId: '#directConnectId'
+    networkType: '#networkType'
+    routeType: '#routeType'
+    tencentAddress: '#tencentAddress'
+  method: CreateDirectConnectTunnel
+  argNames:
+  - request
+  client: new com.tencentcloudapi.dc.v20180410.DcClient(#credential,#regionId,#clientProfile)
+uninstall:
+  argTypes:
+  - com.tencentcloudapi.dc.v20180410.models.DeleteDirectConnectTunnelRequest
+  output:
+    deleteProviderId: '#directConnectTunnelId'
+    success: '#throwable eq null'
+  request:
+    'directConnectTunnelId ': '#directConnectTunnelId '
+  method: DeleteDirectConnectTunnel
+  argNames:
+  - request
+  client: new com.tencentcloudapi.dc.v20180410.DcClient(#credential,#regionId,#clientProfile)
+list:
+  argTypes:
+  - com.tencentcloudapi.dc.v20180410.models.DescribeDirectConnectTunnelsRequest
+  output:
+    '[directConnectTunnelsList]:[#result.DirectConnectTunnelSet]':
+      customerAddress: '#CustomerAddress'
+      networkRegion: '#NetworkRegion'
+      bandwidth: '#Bandwidth'
+      directConnectOwnerAccount: '#DirectConnectOwnerAccount'
+      ownerAccount: '#OwnerAccount'
+      directConnectGatewayId: '#DirectConnectGatewayId'
+      vlan: '#Vlan'
+      regionId: '#regionId'
+      providerId: '#DirectConnectTunnelId'
+      vpcId: '#VpcId'
+      name: '#DirectConnectTunnelName'
+      createdTime: '#CreatedTime'
+      bgpPeer: '#BgpPeer'
+      directConnectId: '#DirectConnectId'
+      networkType: '#NetworkType'
+      routeType: '#RouteType'
+      status: '#State'
+      tencentAddress: '#TencentAddress'
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
+      condition: '#result.getDirectConnectTunnelSet().length != 0'
+      appendList:
+      - directConnectTunnelsList
+  request:
+    offset: '0'
+    limit: '100'
+    class: com.tencentcloudapi.dc.v20180410.models.DescribeDirectConnectTunnelsRequest
+  method: DescribeDirectConnectTunnels
+  argNames:
+  - request
+  client: new com.tencentcloudapi.dc.v20180410.DcClient(#credential,#regionId,#clientProfile)
+query:
+  argTypes:
+  - com.tencentcloudapi.dc.v20180410.models.DescribeDirectConnectTunnelsRequest
+  output:
+    customerAddress: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getCustomerAddress()'
+    networkRegion: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getNetworkRegion()'
+    bandwidth: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getBandwidth()'
+    directConnectOwnerAccount: '#result.getDirectConnectTunnelSet().length eq 0 ?
+      null:#result.getDirectConnectTunnelSet()[0]?.getDirectConnectOwnerAccount()'
+    ownerAccount: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getOwnerAccount()'
+    directConnectGatewayId: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getDirectConnectGatewayId()'
+    vlan: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getVlan()'
+    success: '#throwable eq null&&#result.totalCount eq 1'
+    providerId: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getDirectConnectId()'
+    vpcId: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getVpcId()'
+    name: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getDirectConnectTunnelName()'
+    createdTime: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getCreatedTime()'
+    bgpPeer: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getBgpPeer()'
+    directConnectId: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getDirectConnectId()'
+    networkType: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getNetworkType()'
+    routeType: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getRouteType()'
+    status: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getState()'
+    tencentAddress: '#result.getDirectConnectTunnelSet().length eq 0 ? null:#result.getDirectConnectTunnelSet()[0]?.getTencentAddress()'
+  request:
+    directConnectTunnelIds: new String('["'+#directConnectTunnelId+'"]')
+  method: DescribeDirectConnectTunnels
+  argNames:
+  - request
+  client: new com.tencentcloudapi.dc.v20180410.DcClient(#credential,#regionId,#clientProfile)

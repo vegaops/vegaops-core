@@ -1,0 +1,117 @@
+{
+  "vendor": "ctyun",
+  "nodeType": "sshs",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query"
+  ],
+  "maskKeys": [
+    "privateKey"
+  ],
+  "ctyunAccount": {
+    "class": "org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount",
+    "accessKey": "#accessKey",
+    "secret": "#secret"
+  },
+  "install": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.CreateKeyPairRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "name": "#name",
+      "regionId": "#regionId",
+      "publicKey": "#publicKey"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "regionId": "#regionId",
+      "name": "#result.returnObj.keypair.name",
+      "publicKey": "#result.returnObj.keypair.public_key",
+      "userId": "#result.returnObj.keypair.user_id",
+      "type": "#result.returnObj.keypair.type",
+      "privateKey": "#result.returnObj.keypair.private_key",
+      "fingerPrint": "#result.returnObj.keypair.fingerprint"
+    }
+  },
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.GetKeyPairsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "log": "false",
+      "[keyPairs]:[#result.returnObj.keypairs]": {
+        "publicKey": "#keypair.public_key",
+        "fingerPrint": "#keypair.fingerprint",
+        "name": "#keypair.name",
+        "regionId": "#regionId"
+      }
+    }
+  },
+  "query": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunKeyPairClient",
+    "method": "getKeyPair",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.CreateKeytPairsParam"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "regionId": "#regionId",
+      "name": "#name"
+    },
+    "output": {
+      "success": "true",
+      "log": "false",
+      "fingerPrint": "#result.keypair.fingerprint",
+      "name": "#result.keypair.name",
+      "regionId": "#regionId"
+    }
+  },
+  "uninstall": {
+    "client": "org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient",
+    "method": "getCtyunResponse",
+    "classProperties": {
+      "ctyunAccount": "#ctyunAccount"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.ctyun.model.DeleteKeyPairRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "name": "#name",
+      "regionId": "#regionId"
+    },
+    "output": {
+      "success": "#result.statusCode.equals(800)",
+      "deleteProviderId": "#name"
+    }
+  }
+}

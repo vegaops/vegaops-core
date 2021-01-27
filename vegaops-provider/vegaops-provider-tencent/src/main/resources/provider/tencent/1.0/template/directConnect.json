@@ -1,0 +1,74 @@
+{
+  "vendor": "tencent",
+  "nodeType": "directConnect",
+  "componentId": "#componentId",
+  "actions": [
+    "list",
+    "query"
+  ],
+  "credential":"new com.tencentcloudapi.common.Credential(#accessKey,#secret)",
+  "httpProfile": {
+    "class": "com.tencentcloudapi.common.profile.HttpProfile",
+    "endpoint": "dc.tencentcloudapi.com"
+  },
+  "clientProfile": {
+    "class": "com.tencentcloudapi.common.profile.ClientProfile",
+    "httpProfile": "#httpProfile"
+  },
+  "list": {
+    "client": "new com.tencentcloudapi.dc.v20180410.DcClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeDirectConnects",
+    "argTypes": [
+      "com.tencentcloudapi.dc.v20180410.models.DescribeDirectConnectsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "new com.tencentcloudapi.dc.v20180410.models.DescribeDirectConnectsRequest()",
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "[directConnects]:[#result.DirectConnectSet]": {
+        "providerId": "#directConnectId",
+        "name": "#directConnectName",
+        "accessPointId": "#accessPointId",
+        "status": "#state",
+        "creationTime": "#createdTime",
+        "enabledTime": "#enabledTime",
+        "lineOperator": "#lineOperator",
+        "adLocation": "#location",
+        "bandwidth": "#bandwidth",
+        "portType": "#portType",
+        "circuitCode": "#circuitCode",
+        "endTime": "#expiredTime",
+        "chargeType": "#chargeType"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.tencentcloudapi.dc.v20180410.DcClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeDirectConnects",
+    "argTypes": [
+      "com.tencentcloudapi.dc.v20180410.models.DescribeDirectConnectsRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(org.prophetech.hyperone.vegaops.tencent.util.RequestBuilder).build().put(\"DirectConnectIds\", new String[]{#directConnectId}).build(T(Class).forName(\"com.tencentcloudapi.dc.v20180410.models.DescribeDirectConnectsRequest\"))",
+    "output": {
+      "success": "#throwable eq null&&#result.totalCount eq 1",
+      "providerId": "#result.DirectConnectSet()[0]?.directConnectId",
+      "accessPointId": "#result.DirectConnectSet()[0]?.accessPointId",
+      "status": "#result.DirectConnectSet()[0]?.state",
+      "creationTime": "#result.DirectConnectSet()[0]?.createdTime",
+      "enabledTime": "#result.DirectConnectSet()[0]?.enabledTime",
+      "lineOperator": "#result.DirectConnectSet()[0]?.lineOperator",
+      "adLocation": "#result.DirectConnectSet()[0]?.location",
+      "bandwidth": "#result.DirectConnectSet()[0]?.bandwidth",
+      "portType": "#result.DirectConnectSet()[0]?.portType",
+      "circuitCode": "#result.DirectConnectSet()[0]?.circuitCode",
+      "endTime": "#result.DirectConnectSet()[0]?.expiredTime",
+      "chargeType": "#result.DirectConnectSet()[0]?.chargeType"
+    }
+  }
+}

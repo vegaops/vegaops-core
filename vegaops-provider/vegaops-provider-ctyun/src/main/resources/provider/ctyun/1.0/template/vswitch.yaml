@@ -1,0 +1,113 @@
+vendor: ctyun
+nodeType: vswitch
+componentId: '#componentId'
+actions:
+- install-uninstall
+- query
+- list
+ctyunAccount:
+  accessKey: '#accessKey'
+  secret: '#secret'
+  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
+install:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.CreateSubnetRequest
+  output:
+    resVlanId: '#result.returnObj.id'
+    primaryDns: '#result.returnObj.primary_dns'
+    success: '#result.statusCode.equals(800)'
+    vpcId: '#result.returnObj.vpc_id'
+    name: '#result.returnObj.name'
+    cidr: '#result.returnObj.cidr'
+    secondaryDns: '#result.returnObj.secondary_dns'
+    availabilityZone: '#result.returnObj.availability_zone'
+    gateway: '#result.returnObj.gateway_ip'
+    status: '#result.returnObj.status'
+  request:
+    dhcpEnable: '#dhcpEnable'
+    regionId: '#regionId'
+    primaryDns: '#primaryDns'
+    vpcId: '#vpcId'
+    name: '#name'
+    zoneId: '#zoneId'
+    cidr: '#cidr'
+    gatewayIp: '#gatewayIp'
+    secondaryDns: '#secondaryDns'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+query:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.QuerySubnetDetailRequest
+  output:
+    resVlanId: '#result.returnObj.resVlanId'
+    regionId: '#result.returnObj.regionId'
+    success: '#result.statusCode.equals(800)'
+    vpcId: '#result.returnObj.vpcId'
+    firstDcn: '#result.returnObj.firstDcn'
+    name: '#result.returnObj.name'
+    zoneId: '#result.returnObj.zoneId'
+    cidr: '#result.returnObj.cidr'
+    zoneName: '#result.returnObj.zoneName'
+    gateway: '#result.returnObj.gateway'
+    status: '#result.returnObj.vlanStatus'
+    secondDcn: '#result.returnObj.secondDcn'
+  request:
+    subnetId: '#vswitchId'
+    regionId: '#regionId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+list:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.GetSubnetsRequest
+  output:
+    log: 'false'
+    success: '#result.statusCode.equals(800)'
+    '[subnetList]:[#result.returnObj]':
+      neutronSubnetId: '#neutronSubnetId'
+      resVlanId: '#resVlanId'
+      regionId: '#regionId'
+      vpcId: '#vpcId'
+      firstDcn: '#firstDcn'
+      name: '#name'
+      zoneId: '#zoneId'
+      cidr: '#cidr'
+      zoneName: '#zoneName'
+      gateway: '#gateway'
+      status: '#vlanStatus'
+      secondDcn: '#secondDcn'
+  request:
+    regionId: '#regionId'
+    vpcId: '#vpcId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+uninstall:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.DeleteSubnetRequest
+  retryTimes: '3'
+  output:
+    deleteProviderId: '#vswitchId'
+    success: '#result?.message?.contains(''VPC.0202'')'
+    retry: '#success ne true'
+  request:
+    subnetId: '#vswitchId'
+    regionId: '#regionId'
+    vpcId: '#vpcId'
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  method: getCtyunResponse
+  argNames:
+  - request
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+  waitInterval: '3000'

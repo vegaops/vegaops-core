@@ -1,0 +1,29 @@
+{
+  "vendor": "tencent",
+  "nodeType": "slbRule",
+  "componentId": "#componentId",
+  "actions": [
+    "list"
+  ],
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.tencent.client.TencentSlbRuleClient",
+    "method": "querySlbRule",
+    "classProperties": {
+      "key": "#accessKey",
+      "secret": "#secret"
+    },
+    "argValues": {
+      "regionId": "#regionId",
+      "slbId": "#load_balancer_id"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "[ruleList]:[#result]": {
+        "domain": "#Domain",
+        "url": "#Url",
+        "serverGroupId": "#TargetGroup.TargetGroupId",
+        "providerId": "#LocationId"
+      }
+    }
+  }
+}

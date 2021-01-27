@@ -1,0 +1,80 @@
+vendor: aws
+nodeType: securityGroup
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+- query
+awsRegion: T(software.amazon.awssdk.regions.Region).of(#regionId)
+credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)
+awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
+ec2Client: T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
+list:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest
+  output:
+    '[securityGroups]:[#result.securityGroups()]':
+      regionId: '#regionId'
+      providerId: '#me.groupId()'
+      vpcId: '#me.vpcId()'
+      name: '#me.groupName()'
+      description: '#me.description()'
+      zoneId: '#zoneId'
+    log: 'false'
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest).builder().groupIds(#groupIds).groupNames(#groupNames).build()
+  method: describeSecurityGroups
+  argNames:
+  - request
+  client: '#ec2Client'
+query:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest
+  output:
+    securityGroupId: '#result.securityGroups()[0]?.groupId()'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    providerId: '#result.securityGroups()[0]?.groupId()'
+    vpcId: '#result.securityGroups()[0]?.vpcId()'
+    name: '#result.securityGroups()[0]?.groupName()'
+    description: '#result.securityGroups()[0]?.description()'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest).builder().groupIds(#groupId).groupNames(#groupNames).build()
+  method: describeSecurityGroups
+  argNames:
+  - request
+  client: '#ec2Client'
+install:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.CreateSecurityGroupRequest
+  output:
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    groupId: '#result.groupId()'
+    after:
+      retryTimes: '3'
+      output:
+        success: 'true'
+        mergeKeys: '*'
+      input:
+        groupId: '#groupId'
+      action: query
+      waitInterval: '3000'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.CreateSecurityGroupRequest).builder().groupName(#groupName).description(#groupDesc).vpcId(#vpcId).build()
+  method: createSecurityGroup
+  argNames:
+  - request
+  client: '#ec2Client'
+uninstall:
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.DeleteSecurityGroupRequest
+  output:
+    deleteProviderId: '#securityGroupId'
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200||#throwable.getMessage().contains(''not
+      exist'')'
+    close: '#ec2Client.close()'
+  request: T(software.amazon.awssdk.services.ec2.model.DeleteSecurityGroupRequest).builder().groupId(#securityGroupId).build()
+  method: deleteSecurityGroup
+  argNames:
+  - request
+  client: '#ec2Client'

@@ -1,0 +1,61 @@
+vendor: tencent
+nodeType: directConnect
+componentId: '#componentId'
+actions:
+- list
+- query
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: dc.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+list:
+  argTypes:
+  - com.tencentcloudapi.dc.v20180410.models.DescribeDirectConnectsRequest
+  output:
+    log: 'false'
+    '[directConnects]:[#result.DirectConnectSet]':
+      adLocation: '#location'
+      enabledTime: '#enabledTime'
+      creationTime: '#createdTime'
+      bandwidth: '#bandwidth'
+      accessPointId: '#accessPointId'
+      chargeType: '#chargeType'
+      lineOperator: '#lineOperator'
+      portType: '#portType'
+      circuitCode: '#circuitCode'
+      providerId: '#directConnectId'
+      name: '#directConnectName'
+      endTime: '#expiredTime'
+      status: '#state'
+    success: '#throwable eq null'
+  request: new com.tencentcloudapi.dc.v20180410.models.DescribeDirectConnectsRequest()
+  method: DescribeDirectConnects
+  argNames:
+  - request
+  client: new com.tencentcloudapi.dc.v20180410.DcClient(#credential,#regionId,#clientProfile)
+query:
+  argTypes:
+  - com.tencentcloudapi.dc.v20180410.models.DescribeDirectConnectsRequest
+  output:
+    adLocation: '#result.DirectConnectSet()[0]?.location'
+    enabledTime: '#result.DirectConnectSet()[0]?.enabledTime'
+    creationTime: '#result.DirectConnectSet()[0]?.createdTime'
+    bandwidth: '#result.DirectConnectSet()[0]?.bandwidth'
+    accessPointId: '#result.DirectConnectSet()[0]?.accessPointId'
+    chargeType: '#result.DirectConnectSet()[0]?.chargeType'
+    lineOperator: '#result.DirectConnectSet()[0]?.lineOperator'
+    portType: '#result.DirectConnectSet()[0]?.portType'
+    circuitCode: '#result.DirectConnectSet()[0]?.circuitCode'
+    success: '#throwable eq null&&#result.totalCount eq 1'
+    providerId: '#result.DirectConnectSet()[0]?.directConnectId'
+    endTime: '#result.DirectConnectSet()[0]?.expiredTime'
+    status: '#result.DirectConnectSet()[0]?.state'
+  request: T(org.prophetech.hyperone.vegaops.tencent.util.RequestBuilder).build().put("DirectConnectIds",
+    new String[]{#directConnectId}).build(T(Class).forName("com.tencentcloudapi.dc.v20180410.models.DescribeDirectConnectsRequest"))
+  method: DescribeDirectConnects
+  argNames:
+  - request
+  client: new com.tencentcloudapi.dc.v20180410.DcClient(#credential,#regionId,#clientProfile)

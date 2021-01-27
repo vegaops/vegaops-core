@@ -1,0 +1,83 @@
+vendor: aliyun
+nodeType: securityGroupRule
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
+install:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.alicloud.model.CreateSecurityGroupRuleRequest
+  output:
+    portRange: '#result.getPortRange()'
+    securityGroupId: '#result.getSecurityGroupId()'
+    success: '#throwable eq null'
+    description: '#result.getDescription()'
+    cidr: '#result.getDestCidrIp() eq null ? #result.getSourceCidrIp() : #result.getDestCidrIp()'
+    ipProtocol: '#result.getIpProtocol()'
+    policy: '#result.getPolicy()'
+    direction: '#result.getDirection()'
+  method: createScGroupRule
+  param:
+    portRange: '#portRange'
+    securityGroupId: '#securityGroupId'
+    sourceCidrIp: '#sourceCidrIp'
+    regionId: '#regionId'
+    accessKey: '#accessKey'
+    destCidrIp: '#destCidrIp'
+    description: '#description'
+    secret: '#secret'
+    ipProtocol: '#ipProtocol'
+    priority: '#priority'
+    policy: '#policy'
+    direction: '#direction'
+  argNames:
+  - param
+  argValues:
+    param: '#param'
+  client: org.prophetech.hyperone.vegaops.alicloud.client.AliyunSecurityGroupRuleClient
+uninstall:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.alicloud.model.CreateSecurityGroupRuleRequest
+  output:
+    deleteProviderId: '#providerId'
+    success: '#throwable eq null'
+  method: deleteScGroupRule
+  param:
+    portRange: '#portRange'
+    securityGroupId: '#securityGroupId'
+    sourceCidrIp: '#sourceCidrIp'
+    regionId: '#regionId'
+    accessKey: '#accessKey'
+    destCidrIp: '#destCidrIp'
+    description: '#description'
+    secret: '#secret'
+    ipProtocol: '#ipProtocol'
+    policy: '#policy'
+    direction: '#direction'
+  argNames:
+  - param
+  argValues:
+    param: '#param'
+  client: org.prophetech.hyperone.vegaops.alicloud.client.AliyunSecurityGroupRuleClient
+list:
+  output:
+    log: 'false'
+    success: '#throwable eq null'
+    '[securityGroupRuleList]:[#result.Permissions]':
+      securityGroupId: '#securityGroupId'
+      portRange: '#PortRange'
+      vpcId: '#VpcId'
+      zoneId: '#zoneId'
+      description: '#Description'
+      cidr: '#SourceCidrIp eq '''' ? #DestCidrIp:#SourceCidrIp'
+      ipProtocol: '#IpProtocol'
+      policy: '#Policy'
+      direction: '#Direction'
+  request:
+    securityGroupId: '#securityGroupId'
+    class: com.aliyuncs.ecs.model.v20140526.DescribeSecurityGroupAttributeRequest
+  method: getAcsResponse
+  argValues:
+    request: '#request'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)

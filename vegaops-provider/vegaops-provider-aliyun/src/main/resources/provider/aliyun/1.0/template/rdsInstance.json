@@ -1,0 +1,192 @@
+{
+  "vendor": "aliyun",
+  "nodeType": "rds",
+  "componentId": "#componentId",
+  "actions": [
+    "install-uninstall",
+    "list",
+    "query"
+  ],
+  "profile":"T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
+  "install": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.rds.model.v20140815.CreateDBInstanceRequest",
+      "engine": "#engine",
+      "engineVersion": "#engineVersion",
+      "DBInstanceClass": "#dBInstanceClass",
+      "DBInstanceStorage": "#dBInstanceStorage",
+      "DBInstanceNetType": "#dBInstanceNetType",
+      "securityIPList": "#securityIPList",
+      "payType": "#payType",
+      "DBInstanceDescription": "#name",
+      "zoneId": "#zoneId",
+      "instanceNetworkType": "#instanceNetworkType",
+      "VPCId": "#vpcId",
+      "VSwitchId": "#vswitchId",
+      "privateIpAddress": "#privateIpAddress",
+      "period": "#period",
+      "DBInstanceStorageType": "#dBInstanceStorageType",
+      "encryptionKey": "#encryptionKey",
+      "roleARN": "#roleARN",
+      "autoRenew": "#autoRenew",
+      "category": "#category",
+      "dedicatedHostGroupId": "#dedicatedHostGroupId",
+      "targetDedicatedHostIdForMaster": "#targetDedicatedHostIdForMaster",
+      "targetDedicatedHostIdForSlave": "#targetDedicatedHostIdForMaster",
+      "targetDedicatedHostIdForLog": "#targetDedicatedHostIdForLog",
+      "dBParamGroupId": "#dBParamGroupId",
+      "dBTimeZone": "#dBTimeZone",
+      "dBIsIgnoreCase": "#dBIsIgnoreCase",
+      "readTimeout": "300000"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null || #result.DBInstanceId ne null || #throwable.toString().contains('SDK.ReadTimeout')",
+      "dBInstanceId": "#result.DBInstanceId",
+      "after": {
+        "action": "query",
+        "input": {
+          "dBInstanceId": "#dBInstanceId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "50",
+        "output": {
+          "success": "#dbInstanceStatus eq 'Creating'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.rds.model.v20140815.DeleteDBInstanceRequest",
+      "DBInstanceId": "#dBInstanceId"
+    },
+    "argValues": {
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "deleteProviderId": "#dBInstanceId"
+    }
+  },
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.alicloud.client.AliyunRdsClient",
+    "method": "getRdsInstanceList",
+    "argNames": [
+      "param"
+    ],
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.alicloud.model.CreateRdsInstanceRequest"
+    ],
+    "param": {
+      "regionId": "#regionId",
+      "accessKey": "#accessKey",
+      "secret":"#secret"
+    },
+    "argValues":{
+      "param": "#param"
+    },
+    "output": {
+      "success": "true",
+      "log": "false",
+      "[rdsList]:[#result]": {
+        "dBInstanceId": "#dBInstanceId",
+        "providerId": "#dBInstanceId",
+        "dbType": "#dbType",
+        "chargeType": "#chargeType",
+        "engineVersion": "#engineVersion",
+        "regionId": "#regionId",
+        "engine": "#engine",
+        "name": "#name",
+        "netType": "#netType",
+        "connectionMode": "#connectionMode",
+        "instanceType": "#instanceType",
+        "guardInstanceId": "#guardInstanceId",
+        "tempInstanceId": "#tempInstanceId",
+        "readonlyInstanceIds": "#readonlyInstanceIds",
+        "vpcId": "#vpcId",
+        "vswitchId": "#vswitchId",
+        "masterInstanceId": "#masterInstanceId",
+        "dbInstanceStatus": "#dbInstanceStatus",
+        "dbInstanceMemory": "#dbInstanceMemory",
+        "instanceNetworkType": "#instanceNetworkType",
+        "autoUpgradeMinorVersion": "#autoUpgradeMinorVersion",
+        "category": "#category",
+        "dbInstanceClass": "#dbInstanceClass",
+        "dbInstanceStorageType": "#dbInstanceStorageType",
+        "mutriOrsignle": "#mutriOrsignle",
+        "maxiops": "#maxiops",
+        "zoneId": "#zoneId",
+        "maxConnections": "#maxConnections",
+        "dbInstanceCpu": "#dbInstanceCpu",
+        "port": "#port",
+        "dbInstanceStorage": "#dbInstanceStorage",
+        "dbInstanceClassType": "#dbInstanceClassType",
+        "createTime": "#createTime",
+        "expireTime": "#expireTime"
+      }
+    }
+  },
+  "query": {
+    "client": "org.prophetech.hyperone.vegaops.alicloud.client.AliyunRdsClient",
+    "method": "getRdsInstanceList",
+    "argNames": [
+      "param"
+    ],
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.alicloud.model.CreateRdsInstanceRequest"
+    ],
+    "param": {
+      "regionId": "#regionId",
+      "accessKey": "#accessKey",
+      "secret":"#secret",
+      "dbInstanceId": "#dBInstanceId"
+    },
+    "argValues":{
+      "param": "#param"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "dBInstanceId": "#result.size() eq 0 ? null : #result.get(0).dBInstanceId",
+      "providerId": "#result.size() eq 0 ? null : #result.get(0).dBInstanceId",
+      "chargeType": "#result.size() eq 0 ? null : #result.get(0).chargeType",
+      "engineVersion": "#result.size() eq 0 ? null :#result.get(0).engineVersion",
+      "regionId": "#result.size() eq 0 ? null :#result.get(0).regionId",
+      "engine": "#result.size() eq 0 ? null :#result.get(0).engine",
+      "name": "#result.size() eq 0 ? null :#result.get(0).name",
+      "netType": "#result.size() eq 0 ? null :#result.get(0).netType",
+      "dbInstanceMemory": "#result.size() eq 0 ? null :#result.get(0).dbInstanceMemory",
+      "connectionMode": "#result.size() eq 0 ? null :#result.get(0).connectionMode",
+      "instanceType": "#result.size() eq 0 ? null :#result.get(0).instanceType",
+      "guardInstanceId": "#result.size() eq 0 ? null :#result.get(0).guardInstanceId",
+      "tempInstanceId": "#result.size() eq 0 ? null :#result.get(0).tempInstanceId",
+      "readonlyInstanceIds": "#result.size() eq 0 ? null :#result.get(0).readonlyInstanceIds",
+      "vpcId": "#result.size() eq 0 ? null :#result.get(0).vpcId",
+      "vswitchId": "#result.size() eq 0 ? null :#result.get(0).vswitchId",
+      "masterInstanceId": "#result.size() eq 0 ? null :#result.get(0).masterInstanceId",
+      "dbInstanceStatus": "#result.size() eq 0 ? null :#result.get(0).dbInstanceStatus",
+      "instanceNetworkType": "#result.size() eq 0 ? null :#result.get(0).instanceNetworkType",
+      "autoUpgradeMinorVersion": "#result.size() eq 0 ? null :#result.get(0).autoUpgradeMinorVersion",
+      "category": "#result.size() eq 0 ? null :#result.get(0).category",
+      "dbInstanceClass": "#result.size() eq 0 ? null :#result.get(0).dbInstanceClass",
+      "dbInstanceStorageType": "#result.size() eq 0 ? null :#result.get(0).dbInstanceStorageType",
+      "mutriOrsignle": "#result.size() eq 0 ? null :#result.get(0).mutriOrsignle",
+      "maxiops": "#result.size() eq 0 ? null :#result.get(0).maxiops",
+      "zoneId": "#result.size() eq 0 ? null :#result.get(0).zoneId",
+      "maxConnections": "#result.size() eq 0 ? null :#result.get(0).maxConnections",
+      "dbInstanceCpu": "#result.size() eq 0 ? null :#result.get(0).dbInstanceCpu",
+      "port": "#result.size() eq 0 ? null :#result.get(0).port",
+      "dbInstanceStorage": "#result.size() eq 0 ? null :#result.get(0).dbInstanceStorage",
+      "dbInstanceClassType": "#result.size() eq 0 ? null :#result.get(0).dbInstanceClassType",
+      "createTime": "#result.size() eq 0 ? null :#result.get(0).createTime",
+      "expireTime": "#result.size() eq 0 ? null :#result.get(0).expireTime"
+    }
+  }
+}

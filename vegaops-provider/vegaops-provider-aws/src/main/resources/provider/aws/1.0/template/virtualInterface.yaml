@@ -1,0 +1,174 @@
+vendor: aws
+nodeType: virtualInterface
+componentId: '#componentId'
+actions:
+- list
+- query
+- install-uninstall
+- associate
+awsRegion: T(software.amazon.awssdk.regions.Region).of(#regionId)
+credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)
+awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
+directConnectClient: T(software.amazon.awssdk.services.directconnect.DirectConnectClient).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
+list:
+  argTypes:
+  - software.amazon.awssdk.services.directconnect.model.DescribeVirtualInterfacesRequest
+  output:
+    '[virtualInterfaces]:[#result.virtualInterfaces()]':
+      customerAddress: '#me.customerAddress()'
+      routeFilterPrefixes: '#me.routeFilterPrefixes()'
+      authKey: '#me.authKey()'
+      address: '#me.amazonAddress()'
+      bgpPeers: '#me.bgpPeers()'
+      directConnectGatewayId: '#me.directConnectGatewayId()'
+      type: '#me.virtualInterfaceType()'
+      mtu: '#me.mtu()'
+      tags: '#me.tags()'
+      virtualGatewayId: '#me.virtualGatewayId()'
+      cloudSideAsn: '#me.amazonSideAsn()'
+      vlan: '#me.vlan()'
+      jumboFrameCapable: '#me.jumboFrameCapable()'
+      regionId: '#regionId'
+      customerRouterConfig: '#me.customerRouterConfig()'
+      providerId: '#me.virtualInterfaceId()'
+      name: '#me.virtualInterfaceName()'
+      connectionId: '#me.connectionId()'
+      location: '#me.location()'
+      state: '#me.virtualInterfaceStateAsString()'
+      addressFamily: '#me.addressFamilyAsString()'
+      asn: '#me.asn()'
+      device: '#me.awsDeviceV2()'
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    close: '#directConnectClient.close()'
+  request: T(software.amazon.awssdk.services.directconnect.model.DescribeVirtualInterfacesRequest).builder().build()
+  method: describeVirtualInterfaces
+  argNames:
+  - request
+  client: '#directConnectClient'
+query:
+  argTypes:
+  - software.amazon.awssdk.services.directconnect.model.DescribeVirtualInterfacesRequest
+  output:
+    bgpPeers: '#result.virtualInterfaces().get(0).bgpPeers()'
+    type: '#result.virtualInterfaces().get(0).virtualInterfaceType()'
+    virtualGatewayId: '#result.virtualInterfaces().get(0).virtualGatewayId()'
+    vlan: '#result.virtualInterfaces().get(0).vlan()'
+    jumboFrameCapable: '#result.virtualInterfaces().get(0).jumboFrameCapable()'
+    providerId: '#result.virtualInterfaces().get(0).virtualInterfaceId()'
+    state: '#result.virtualInterfaces().get(0).virtualInterfaceStateAsString()'
+    close: '#directConnectClient.close()'
+    addressFamily: '#result.virtualInterfaces().get(0).addressFamilyAsString()'
+    customerAddress: '#result.virtualInterfaces().get(0).customerAddress()'
+    routeFilterPrefixes: '#result.virtualInterfaces().get(0).routeFilterPrefixes()'
+    authKey: '#result.virtualInterfaces().get(0).authKey()'
+    address: '#result.virtualInterfaces().get(0).amazonAddress()'
+    directConnectGatewayId: '#result.virtualInterfaces().get(0).directConnectGatewayId()'
+    mtu: '#result.virtualInterfaces().get(0).mtu()'
+    tags: '#result.virtualInterfaces().get(0).tags()'
+    cloudSideAsn: '#result.virtualInterfaces().get(0).amazonSideAsn()'
+    regionId: '#result.virtualInterfaces().get(0).region()'
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    customerRouterConfig: '#result.virtualInterfaces().get(0).customerRouterConfig()'
+    name: '#result.virtualInterfaces().get(0).virtualInterfaceName()'
+    connectionId: '#result.virtualInterfaces().get(0).connectionId()'
+    location: '#result.virtualInterfaces().get(0).location()'
+    asn: '#result.virtualInterfaces().get(0).asn()'
+    device: '#result.virtualInterfaces().get(0).awsDeviceV2()'
+  request: T(software.amazon.awssdk.services.directconnect.model.DescribeVirtualInterfacesRequest).builder().virtualInterfaceId(#virtualInterfaceId).build()
+  method: describeVirtualInterfaces
+  argNames:
+  - request
+  client: '#directConnectClient'
+install:
+  output:
+    bgpPeers: '#result.bgpPeers'
+    type: '#result.virtualInterfaceType'
+    virtualGatewayId: '#result.virtualGatewayId'
+    vlan: '#result.vlan'
+    jumboFrameCapable: '#result.jumboFrameCapable'
+    providerId: '#result.virtualInterfaceId'
+    state: '#result.virtualInterfaceStateAsString'
+    close: '#directConnectClient.close()'
+    addressFamily: '#result.addressFamilyAsString'
+    customerAddress: '#result.customerAddress'
+    routeFilterPrefixes: '#result.routeFilterPrefixes'
+    authKey: '#result.authKey'
+    address: '#result.amazonAddress'
+    directConnectGatewayId: '#result.directConnectGatewayId'
+    mtu: '#result.mtu'
+    tags: '#result.tags'
+    cloudSideAsn: '#result.amazonSideAsn'
+    regionId: '#regionId'
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    customerRouterConfig: '#result.customerRouterConfig'
+    name: '#result.virtualInterfaceName'
+    connectionId: '#result.connectionId'
+    location: '#result.location'
+    asn: '#result.asn'
+    device: '#result.awsDeviceV2'
+  method: createVirtualInterface
+  param:
+    customerAddress: '#customerAddress'
+    authKey: '#authKey'
+    address: '#address'
+    type: '#type'
+    directConnectGatewayId: '#directConnectGatewayId'
+    mtu: '#mtu'
+    virtualGatewayId: '#virtualGatewayId'
+    vlan: '#vlan'
+    name: '#name'
+    cidr: '#cidr'
+    connectId: '#connectId'
+    class: org.prophetech.hyperone.vegaops.aws.model.CreateVirtualInterfaceParam
+    addressFamily: '#addressFamily'
+    asn: '#asn'
+  argValues:
+    param: '#param'
+    client: '#directConnectClient'
+  client: org.prophetech.hyperone.vegaops.aws.client.AwsVirtualInterfaceClient
+uninstall:
+  argTypes:
+  - software.amazon.awssdk.services.directconnect.model.DeleteVirtualInterfaceRequest
+  output:
+    deleteProviderId: '#virtualInterfaceId'
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    close: '#directConnectClient.close()'
+  request: T(software.amazon.awssdk.services.directconnect.model.DeleteVirtualInterfaceRequest).builder().virtualInterfaceId(#virtualInterfaceId).build()
+  method: deleteVirtualInterface
+  argNames:
+  - request
+  client: '#directConnectClient'
+associate:
+  argTypes:
+  - software.amazon.awssdk.services.directconnect.model.AssociateVirtualInterfaceRequest
+  output:
+    bgpPeers: '#result.bgpPeers()'
+    type: '#result.virtualInterfaceType()'
+    virtualGatewayId: '#result.virtualGatewayId()'
+    vlan: '#result.vlan()'
+    jumboFrameCapable: '#result.jumboFrameCapable()'
+    providerId: '#result.virtualInterfaceId()'
+    state: '#result.virtualInterfaceStateAsString()'
+    close: '#directConnectClient.close()'
+    addressFamily: '#result.addressFamilyAsString()'
+    customerAddress: '#result.customerAddress()'
+    routeFilterPrefixes: '#result.routeFilterPrefixes()'
+    authKey: '#result.authKey()'
+    address: '#result.amazonAddress()'
+    directConnectGatewayId: '#result.directConnectGatewayId()'
+    mtu: '#result.mtu()'
+    tags: '#result.tags()'
+    cloudSideAsn: '#result.amazonSideAsn()'
+    regionId: '#regionId'
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    customerRouterConfig: '#result.customerRouterConfig()'
+    name: '#result.virtualInterfaceName()'
+    connectionId: '#result.connectionId()'
+    location: '#result.location()'
+    asn: '#result.asn()'
+    device: '#result.awsDeviceV2()'
+  request: T(software.amazon.awssdk.services.directconnect.model.AssociateVirtualInterfaceRequest).builder().connectionId(#connectionId).virtualInterfaceId(#virtualInterfaceId).build()
+  method: associateVirtualInterface
+  argNames:
+  - request
+  client: '#directConnectClient'

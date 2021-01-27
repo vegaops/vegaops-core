@@ -1,0 +1,275 @@
+{
+  "vendor": "tencent",
+  "nodeType": "eip",
+  "componentId": "#componentId",
+  "actions": [
+    "list",
+    "query",
+    "install-uninstall",
+    "bind-unbind",
+    "update",
+    "modify",
+    "task"
+  ],
+  "credential":"new com.tencentcloudapi.common.Credential(#accessKey,#secret)",
+  "httpProfile": {
+    "class": "com.tencentcloudapi.common.profile.HttpProfile",
+    "endpoint": "vpc.tencentcloudapi.com"
+  },
+  "clientProfile": {
+    "class": "com.tencentcloudapi.common.profile.ClientProfile",
+    "httpProfile": "#httpProfile"
+  },
+  "list": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeAddresses",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.DescribeAddressesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "class": "com.tencentcloudapi.vpc.v20170312.models.DescribeAddressesRequest",
+      "limit": "100",
+      "offset": "0"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "loop": {
+        "condition": "#result.getAddressSet().length != 0",
+        "appendList": [
+          "eipList"
+        ],
+        "1": "#request.setOffset(#request.getOffset()+#request.getLimit())"
+      },
+      "[eipList]:[#result.AddressSet]": {
+        "name": "#addressName",
+        "status": "#addressStatus",
+        "ipAddress": "#addressIp",
+        "instanceId": "#instanceId",
+        "providerId": "#addressId",
+        "regionId": "#regionId",
+        "allocationTime": "#createdTime",
+        "networkInterfaceId": "#networkInterfaceId",
+        "privateAddressIp": "#privateAddressIp"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeAddresses",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.DescribeAddressesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(org.prophetech.hyperone.vegaops.tencent.util.RequestBuilder).build().put(\"AddressIds\", new String[]{#addressId}).build(T(Class).forName(\"com.tencentcloudapi.vpc.v20170312.models.DescribeAddressesRequest\"))",
+    "output": {
+      "success": "#throwable eq null",
+      "name": "#result.totalCount eq 0 ? null: #result.getAddressSet()[0].getAddressName()",
+      "status": "#result.totalCount eq 0 ? null: #result.getAddressSet()[0].addressStatus",
+      "ipAddress": "#result.totalCount eq 0  ? null: #result.getAddressSet()[0].addressIp",
+      "instanceId": "#result.totalCount eq 0  ? null: #result.getAddressSet()[0].instanceId",
+      "providerId": "#result.totalCount eq 0  ? null: #result.getAddressSet()[0].addressId",
+      "allocationTime": "#result.totalCount eq 0  ? null: #result.getAddressSet()[0].createdTime",
+      "networkInterfaceId": "#result.totalCount eq 0  ? null: #result.getAddressSet()[0].networkInterfaceId",
+      "privateAddressIp": "#result.totalCount eq 0  ? null: #result.getAddressSet()[0].privateAddressIp"
+    }
+  },
+  "install": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "AllocateAddresses",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.AllocateAddressesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request":{
+      "InternetChargeType": "#internetChargeType",
+      "InternetMaxBandwidthOut": "#internetMaxBandwidthOut",
+      "AnycastZone": "#anycastZone",
+      "name": "#name"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "addressId":"#result.AddressSet[0]",
+      "after": {
+        "action": "modify",
+        "input": {
+          "addressId": "#addressId",
+          "name": "#name"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#status eq 'UNBIND'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "uninstall": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "ReleaseAddresses",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.ReleaseAddressesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(org.prophetech.hyperone.vegaops.tencent.util.RequestBuilder).build().put(\"AddressIds\", new String[]{#addressId}).build(T(Class).forName(\"com.tencentcloudapi.vpc.v20170312.models.ReleaseAddressesRequest\"))",
+    "output": {
+      "success": "#throwable eq null",
+      "taskId":"#result.TaskId",
+      "deleteProviderId": "#addressId",
+      "after": {
+        "action": "task",
+        "input": {
+          "taskId": "#taskId"
+        },
+        "waitInterval": "3000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#throwable eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "bind": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "AssociateAddress",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.AssociateAddressRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "addressId": "#addressId",
+      "instanceId": "#instanceId",
+      "networkInterfaceId": "#networkInterfaceId",
+      "privateIpAddress": "#privateIpAddress"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "addressId": "#addressId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#status eq 'BIND'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "update": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "ModifyAddressesBandwidth",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.ModifyAddressesBandwidthRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "addressIds": ["#addressId"],
+      "internetMaxBandwidthOut": "#internetMaxBandwidthOut"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "addressId": "#addressId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#throwable eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "modify": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "ModifyAddressAttribute",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.ModifyAddressAttributeRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "addressId":"#addressId",
+      "addressName": "#name"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "addressId": "#addressId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#throwable eq null",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "unbind": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "DisassociateAddress",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.DisassociateAddressRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "addressId": "#addressId",
+      "reallocateNormalPublicIp": "#reallocateNormalPublicIp"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "after": {
+        "action": "query",
+        "input": {
+          "addressId": "#addressId"
+        },
+        "waitInterval": "5000",
+        "retryTimes": "10",
+        "output": {
+          "success": "#status eq 'UNBIND'",
+          "mergeKeys": "*"
+        }
+      }
+    }
+  },
+  "task": {
+    "client": "new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeTaskResult",
+    "argTypes": [
+      "com.tencentcloudapi.vpc.v20170312.models.DescribeTaskResultRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(org.prophetech.hyperone.vegaops.tencent.util.RequestBuilder).build().put(\"TaskId\", #taskId).build(T(Class).forName(\"com.tencentcloudapi.vpc.v20170312.models.DescribeTaskResultRequest\"))",
+    "output": {
+      "success": "#result?.Result eq 'SUCCESS'"
+    }
+  }
+}

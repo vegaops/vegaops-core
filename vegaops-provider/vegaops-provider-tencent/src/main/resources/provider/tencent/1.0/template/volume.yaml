@@ -1,0 +1,168 @@
+vendor: tencent
+nodeType: volume
+componentId: '#componentId'
+actions:
+- install-uninstall
+- list
+- query
+- bind-unbind
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: cbs.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+bind:
+  argTypes:
+  - com.tencentcloudapi.cbs.v20170312.models.AttachDisksRequest
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '10'
+      output:
+        success: '#status eq ''ATTACHED'''
+        mergeKeys: '*'
+      input:
+        regionId: '#regionId'
+        volumeId: '#diskIds'
+      action: query
+      waitInterval: '3000'
+  request:
+    instanceId: '#instanceId'
+    diskIds:
+    - '#diskIds'
+  method: AttachDisks
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cbs.v20170312.CbsClient(#credential,#regionId,#clientProfile)
+unbind:
+  argTypes:
+  - com.tencentcloudapi.cbs.v20170312.models.DetachDisksRequest
+  output:
+    success: '#throwable eq null'
+    after:
+      retryTimes: '30'
+      output:
+        success: '#status eq ''UNATTACHED'''
+        mergeKeys: '*'
+      input:
+        regionId: '#regionId'
+        volumeId: '#diskIds'
+      action: query
+      waitInterval: '3000'
+  request:
+    diskIds:
+    - '#diskIds'
+  method: DetachDisks
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cbs.v20170312.CbsClient(#credential,#regionId,#clientProfile)
+list:
+  argTypes:
+  - com.tencentcloudapi.cbs.v20170312.models.DescribeDisksRequest
+  output:
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
+      condition: '#result.getDiskSet().length != 0'
+      appendList:
+      - volumeList
+    '[volumeList]:[#result.DiskSet]':
+      portable: '#Portable'
+      type: '#DiskUsage'
+      createdAt: '#CreateTime'
+      expiredAt: '#DeadlineTime'
+      instanceId: '#InstanceId'
+      size: '#DiskSize'
+      regionId: '#regionId'
+      providerId: '#DiskId'
+      diskChargeType: '#DiskChargeType'
+      name: '#DiskName'
+      zoneId: '#Placement?.Zone'
+      category: '#DiskType'
+      status: '#DiskState'
+  request:
+    offset: '0'
+    limit: '100'
+    class: com.tencentcloudapi.cbs.v20170312.models.DescribeDisksRequest
+  method: DescribeDisks
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cbs.v20170312.CbsClient(#credential,#regionId,#clientProfile)
+query:
+  output:
+    portable: '#result.size() eq 0 ? null: #result[0]?.Portable'
+    type: '#result.size() eq 0 ? null: #result[0]?.DiskUsage'
+    createdAt: '#result.size() eq 0 ? null: #result[0]?.CreateTime'
+    expiredAt: '#result.size() eq 0 ? null: #result[0]?.DeadlineTime'
+    instanceId: '#result.size() eq 0 ? null: #result[0]?.InstanceId'
+    size: '#result.size() eq 0 ? null: #result[0]?.DiskSize'
+    regionId: '#result.size() eq 0 ? null: #regionId'
+    success: '#throwable eq null'
+    providerId: '#result.size() eq 0 ? null: #result[0]?.DiskId'
+    diskChargeType: '#result.size() eq 0 ? null: #result[0]?.DiskChargeType'
+    name: '#result.size() eq 0 ? null: #result[0]?.DiskName'
+    zoneId: '#result.size() eq 0 ? null: #result[0]?.Placement?.Zone'
+    category: '#result.size() eq 0 ? null: #result[0]?.DiskType'
+    status: '#result.size() eq 0 ? null: #result[0]?.DiskState'
+  classProperties:
+    secret: '#secret'
+    key: '#accessKey'
+  method: queryVolumes
+  argValues:
+    volumeId: '#volumeId'
+    region: '#regionId'
+  client: org.prophetech.hyperone.vegaops.tencent.client.TencentVolumeClient
+install:
+  argTypes:
+  - org.prophetech.hyperone.vegaops.tencent.model.CreateVolumeParam
+  output:
+    portable: '#result?.Portable'
+    type: '#result?.DiskUsage'
+    createdAt: '#result?.CreateTime'
+    expiredAt: '#result?.DeadlineTime'
+    instanceId: '#result?.InstanceId'
+    size: '#result?.DiskSize'
+    regionId: '#regionId'
+    success: '#throwable eq null'
+    providerId: '#result?.DiskId'
+    diskChargeType: '#result?.DiskChargeType'
+    name: '#result?.DiskName'
+    zoneId: '#result?.Placement?.Zone'
+    category: '#result?.DiskType'
+    status: '#result?.DiskState'
+  classProperties:
+    secret: '#secret'
+    key: '#accessKey'
+  method: createVolume
+  param:
+    shareable: '#shareable'
+    diskName: '#name'
+    period: '#period'
+    diskSize: '#size'
+    snapshotId: '#snapshotId'
+    regionId: '#regionId'
+    zone: '#zoneId'
+    clientToken: '#clientToken'
+    encrypt: '#encrypt'
+    diskChargeType: '#chargeType'
+    diskType: '#category'
+    diskCount: '#count'
+  argNames:
+  - param
+  client: org.prophetech.hyperone.vegaops.tencent.client.TencentVolumeClient
+uninstall:
+  argTypes:
+  - com.tencentcloudapi.cbs.v20170312.models.TerminateDisksRequest
+  output:
+    deleteProviderId: '#diskIds'
+    success: '#throwable eq null'
+  request:
+    diskIds:
+    - '#diskIds'
+  method: TerminateDisks
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cbs.v20170312.CbsClient(#credential,#regionId,#clientProfile)

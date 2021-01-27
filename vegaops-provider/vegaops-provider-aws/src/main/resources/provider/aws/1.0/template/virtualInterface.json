@@ -1,0 +1,198 @@
+{
+  "vendor": "aws",
+  "nodeType": "virtualInterface",
+  "componentId": "#componentId",
+  "actions": [
+    "list",
+    "query",
+    "install-uninstall",
+    "associate"
+  ],
+  "awsRegion": "T(software.amazon.awssdk.regions.Region).of(#regionId)",
+  "credentials": "T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).create(#accessKey,#secret)",
+  "awsCredentialsProvider": "T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)",
+  "directConnectClient": "T(software.amazon.awssdk.services.directconnect.DirectConnectClient).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()",
+  "list": {
+    "client": "#directConnectClient",
+    "method": "describeVirtualInterfaces",
+    "argTypes": [
+      "software.amazon.awssdk.services.directconnect.model.DescribeVirtualInterfacesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.directconnect.model.DescribeVirtualInterfacesRequest).builder().build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "close": "#directConnectClient.close()",
+      "[virtualInterfaces]:[#result.virtualInterfaces()]": {
+        "addressFamily": "#me.addressFamilyAsString()",
+        "address": "#me.amazonAddress()",
+        "asn": "#me.asn()",
+        "cloudSideAsn": "#me.amazonSideAsn()",
+        "authKey": "#me.authKey()",
+        "device": "#me.awsDeviceV2()",
+        "bgpPeers": "#me.bgpPeers()",
+        "connectionId": "#me.connectionId()",
+        "customerAddress": "#me.customerAddress()",
+        "customerRouterConfig": "#me.customerRouterConfig()",
+        "directConnectGatewayId": "#me.directConnectGatewayId()",
+        "jumboFrameCapable": "#me.jumboFrameCapable()",
+        "location": "#me.location()",
+        "mtu": "#me.mtu()",
+        "regionId": "#regionId",
+        "routeFilterPrefixes": "#me.routeFilterPrefixes()",
+        "tags": "#me.tags()",
+        "virtualGatewayId": "#me.virtualGatewayId()",
+        "providerId": "#me.virtualInterfaceId()",
+        "name": "#me.virtualInterfaceName()",
+        "state": "#me.virtualInterfaceStateAsString()",
+        "type": "#me.virtualInterfaceType()",
+        "vlan": "#me.vlan()"
+      }
+    }
+  },
+  "query": {
+    "client": "#directConnectClient",
+    "method": "describeVirtualInterfaces",
+    "argTypes": [
+      "software.amazon.awssdk.services.directconnect.model.DescribeVirtualInterfacesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.directconnect.model.DescribeVirtualInterfacesRequest).builder().virtualInterfaceId(#virtualInterfaceId).build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "close": "#directConnectClient.close()",
+      "addressFamily": "#result.virtualInterfaces().get(0).addressFamilyAsString()",
+      "address": "#result.virtualInterfaces().get(0).amazonAddress()",
+      "asn": "#result.virtualInterfaces().get(0).asn()",
+      "cloudSideAsn": "#result.virtualInterfaces().get(0).amazonSideAsn()",
+      "authKey": "#result.virtualInterfaces().get(0).authKey()",
+      "device": "#result.virtualInterfaces().get(0).awsDeviceV2()",
+      "bgpPeers": "#result.virtualInterfaces().get(0).bgpPeers()",
+      "connectionId": "#result.virtualInterfaces().get(0).connectionId()",
+      "customerAddress": "#result.virtualInterfaces().get(0).customerAddress()",
+      "customerRouterConfig": "#result.virtualInterfaces().get(0).customerRouterConfig()",
+      "directConnectGatewayId": "#result.virtualInterfaces().get(0).directConnectGatewayId()",
+      "jumboFrameCapable": "#result.virtualInterfaces().get(0).jumboFrameCapable()",
+      "location": "#result.virtualInterfaces().get(0).location()",
+      "mtu": "#result.virtualInterfaces().get(0).mtu()",
+      "regionId": "#result.virtualInterfaces().get(0).region()",
+      "routeFilterPrefixes": "#result.virtualInterfaces().get(0).routeFilterPrefixes()",
+      "tags": "#result.virtualInterfaces().get(0).tags()",
+      "virtualGatewayId": "#result.virtualInterfaces().get(0).virtualGatewayId()",
+      "providerId": "#result.virtualInterfaces().get(0).virtualInterfaceId()",
+      "name": "#result.virtualInterfaces().get(0).virtualInterfaceName()",
+      "state": "#result.virtualInterfaces().get(0).virtualInterfaceStateAsString()",
+      "type": "#result.virtualInterfaces().get(0).virtualInterfaceType()",
+      "vlan": "#result.virtualInterfaces().get(0).vlan()"
+    }
+  },
+  "install": {
+    "client": "org.prophetech.hyperone.vegaops.aws.client.AwsVirtualInterfaceClient",
+    "method": "createVirtualInterface",
+    "param": {
+      "class": "org.prophetech.hyperone.vegaops.aws.model.CreateVirtualInterfaceParam",
+      "type": "#type",
+      "connectId": "#connectId",
+      "addressFamily": "#addressFamily",
+      "address": "#address",
+      "asn": "#asn",
+      "authKey": "#authKey",
+      "customerAddress": "#customerAddress",
+      "directConnectGatewayId": "#directConnectGatewayId",
+      "mtu": "#mtu",
+      "virtualGatewayId": "#virtualGatewayId",
+      "name": "#name",
+      "vlan": "#vlan",
+      "cidr": "#cidr"
+    },
+    "argValues": {
+      "client": "#directConnectClient",
+      "param": "#param"
+    },
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "close": "#directConnectClient.close()",
+      "addressFamily": "#result.addressFamilyAsString",
+      "address": "#result.amazonAddress",
+      "asn": "#result.asn",
+      "cloudSideAsn": "#result.amazonSideAsn",
+      "authKey": "#result.authKey",
+      "device": "#result.awsDeviceV2",
+      "bgpPeers": "#result.bgpPeers",
+      "connectionId": "#result.connectionId",
+      "customerAddress": "#result.customerAddress",
+      "customerRouterConfig": "#result.customerRouterConfig",
+      "directConnectGatewayId": "#result.directConnectGatewayId",
+      "jumboFrameCapable": "#result.jumboFrameCapable",
+      "location": "#result.location",
+      "mtu": "#result.mtu",
+      "regionId": "#regionId",
+      "routeFilterPrefixes": "#result.routeFilterPrefixes",
+      "tags": "#result.tags",
+      "virtualGatewayId": "#result.virtualGatewayId",
+      "providerId": "#result.virtualInterfaceId",
+      "name": "#result.virtualInterfaceName",
+      "state": "#result.virtualInterfaceStateAsString",
+      "type": "#result.virtualInterfaceType",
+      "vlan": "#result.vlan"
+    }
+  },
+  "uninstall": {
+    "client": "#directConnectClient",
+    "method": "deleteVirtualInterface",
+    "argTypes": [
+      "software.amazon.awssdk.services.directconnect.model.DeleteVirtualInterfaceRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.directconnect.model.DeleteVirtualInterfaceRequest).builder().virtualInterfaceId(#virtualInterfaceId).build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "close": "#directConnectClient.close()",
+      "deleteProviderId": "#virtualInterfaceId"
+    }
+  },
+  "associate": {
+    "client": "#directConnectClient",
+    "method": "associateVirtualInterface",
+    "argTypes": [
+      "software.amazon.awssdk.services.directconnect.model.AssociateVirtualInterfaceRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": "T(software.amazon.awssdk.services.directconnect.model.AssociateVirtualInterfaceRequest).builder().connectionId(#connectionId).virtualInterfaceId(#virtualInterfaceId).build()",
+    "output": {
+      "success": "#result.sdkHttpResponse().statusCode() eq 200",
+      "close": "#directConnectClient.close()",
+      "addressFamily": "#result.addressFamilyAsString()",
+      "address": "#result.amazonAddress()",
+      "asn": "#result.asn()",
+      "cloudSideAsn": "#result.amazonSideAsn()",
+      "authKey": "#result.authKey()",
+      "device": "#result.awsDeviceV2()",
+      "bgpPeers": "#result.bgpPeers()",
+      "connectionId": "#result.connectionId()",
+      "customerAddress": "#result.customerAddress()",
+      "customerRouterConfig": "#result.customerRouterConfig()",
+      "directConnectGatewayId": "#result.directConnectGatewayId()",
+      "jumboFrameCapable": "#result.jumboFrameCapable()",
+      "location": "#result.location()",
+      "mtu": "#result.mtu()",
+      "regionId": "#regionId",
+      "routeFilterPrefixes": "#result.routeFilterPrefixes()",
+      "tags": "#result.tags()",
+      "virtualGatewayId": "#result.virtualGatewayId()",
+      "providerId": "#result.virtualInterfaceId()",
+      "name": "#result.virtualInterfaceName()",
+      "state": "#result.virtualInterfaceStateAsString()",
+      "type": "#result.virtualInterfaceType()",
+      "vlan": "#result.vlan()"
+    }
+  }
+}

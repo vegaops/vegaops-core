@@ -1,0 +1,94 @@
+{
+  "vendor": "tencent",
+  "nodeType": "image",
+  "componentId": "#componentId",
+  "actions": [
+    "list",
+    "query"
+  ],
+  "credential":"new com.tencentcloudapi.common.Credential(#accessKey,#secret)",
+  "httpProfile": {
+    "class": "com.tencentcloudapi.common.profile.HttpProfile",
+    "endpoint": "cvm.tencentcloudapi.com"
+  },
+  "clientProfile": {
+    "class": "com.tencentcloudapi.common.profile.ClientProfile",
+    "httpProfile": "#httpProfile"
+  },
+  "list": {
+    "client": "org.prophetech.hyperone.vegaops.tencent.client.TencentImageClient",
+    "method": "DescribeImage",
+    "classProperties": {
+      "key": "#accessKey",
+      "secret": "#secret"
+    },
+    "argTypes": [
+      "org.prophetech.hyperone.vegaops.tencent.model.DescribeImagesParam"
+    ],
+    "argNames": [
+      "param"
+    ],
+    "param": {
+      "class": "org.prophetech.hyperone.vegaops.tencent.model.DescribeImagesParam",
+      "imageType": "#imageType",
+      "regionId": "#regionId",
+      "offset": "0",
+      "limit": "100"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "log": "false",
+      "loop": {
+        "condition": "#result.getImageSet().length != 0",
+        "appendList": [
+          "imagesList"
+        ],
+        "1": "#param.setOffset(#param.getOffset()+#param.getLimit())"
+      },
+      "[imagesList]:[#result.ImageSet]": {
+        "imageId": "#ImageId",
+        "providerId": "#ImageId",
+        "osName": "#OsName",
+        "imageSize": "#ImageSize",
+        "imageType": "#ImageType",
+        "createdTime": "#CreatedTime",
+        "imageState": "#ImageState",
+        "imageSource": "#ImageSource",
+        "imageName": "#imageName",
+        "imageDescription": "#ImageDescription",
+        "platform": "#Platform",
+        "architecture": "#Architecture",
+        "regionId": "#regionId"
+      }
+    }
+  },
+  "query": {
+    "client": "new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)",
+    "method": "DescribeImages",
+    "argTypes": [
+      "com.tencentcloudapi.cvm.v20170312.models.DescribeImagesRequest"
+    ],
+    "argNames": [
+      "request"
+    ],
+    "request": {
+      "imageIds": ["#imageId"]
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "[imagesList]:[#result.ImageSet]": {
+        "imageId": "#ImageId",
+        "osName": "#OsName",
+        "imageSize": "#ImageSize",
+        "imageType": "#ImageType",
+        "createdTime": "#CreatedTime",
+        "imageState": "#ImageState",
+        "imageSource": "#ImageSource",
+        "imageName": "#imageName",
+        "imageDescription": "#ImageDescription",
+        "platform": "#Platform",
+        "architecture": "#Architecture"
+      }
+    }
+  }
+}

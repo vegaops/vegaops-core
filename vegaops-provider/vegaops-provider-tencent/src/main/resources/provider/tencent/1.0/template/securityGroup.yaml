@@ -1,0 +1,143 @@
+vendor: tencent
+nodeType: securityGroup
+componentId: '#componentId'
+actions:
+- list
+- query
+- install-uninstall
+- bind-unbind
+credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
+httpProfile:
+  endpoint: vpc.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+httpProfile2:
+  endpoint: cvm.tencentcloudapi.com
+  class: com.tencentcloudapi.common.profile.HttpProfile
+clientProfile:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile'
+clientProfile2:
+  class: com.tencentcloudapi.common.profile.ClientProfile
+  httpProfile: '#httpProfile2'
+list:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DescribeSecurityGroupsRequest
+  output:
+    '[securityGroupList]:[#result.SecurityGroupSet]':
+      securityGroupId: '#SecurityGroupId'
+      securityGroupName: '#SecurityGroupName'
+      isDefault: '#IsDefault'
+      createTime: '#CreateTime'
+      regionId: '#regionId'
+      providerId: '#SecurityGroupId'
+      description: '#SecurityGroupDesc'
+      projectId: '#ProjectId'
+    log: 'false'
+    success: '#throwable eq null'
+    loop:
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
+      condition: '#result.getSecurityGroupSet().length != 0'
+      appendList:
+      - securityGroupList
+  request:
+    offset: '0'
+    limit: '100'
+    class: com.tencentcloudapi.vpc.v20170312.models.DescribeSecurityGroupsRequest
+  method: DescribeSecurityGroups
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+query:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DescribeSecurityGroupsRequest
+  output:
+    success: '#throwable eq null&&#result.totalCount eq 1'
+    '[securityGroup]:[#result.SecurityGroupSet]':
+      securityGroupId: '#SecurityGroupId'
+      securityGroupName: '#SecurityGroupName'
+      IsDefault: '#IsDefault'
+      createTime: '#CreateTime'
+      providerId: '#SecurityGroupId'
+      description: '#SecurityGroupDesc'
+      projectId: '#ProjectId'
+  request:
+    securityGroupIds:
+    - '#securityGroupId'
+  method: DescribeSecurityGroups
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+install:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.CreateSecurityGroupRequest
+  output:
+    securityGroupId: '#result.SecurityGroup.securityGroupId'
+    securityGroupName: '#result.SecurityGroup.securityGroupName'
+    isDefault: '#result.SecurityGroup.isDefault'
+    createTime: '#result.SecurityGroup.createdTime'
+    success: '#throwable eq null'
+    providerId: '#result.SecurityGroup.securityGroupId'
+    description: '#result.SecurityGroup.securityGroupDesc'
+    projectId: '#result.SecurityGroup.projectId'
+  request: 'T(org.prophetech.hyperone.vegaops.tencent.util.RequestBuilder).build().put("GroupName",
+    #name).put("GroupDescription", #description).build(T(Class).forName("com.tencentcloudapi.vpc.v20170312.models.CreateSecurityGroupRequest"))'
+  method: CreateSecurityGroup
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+uninstall:
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DeleteSecurityGroupRequest
+  output:
+    deleteProviderId: '#securityGroupId'
+    success: '#throwable eq null'
+  request: 'T(org.prophetech.hyperone.vegaops.tencent.util.RequestBuilder).build().put("SecurityGroupId",
+    #securityGroupId).build(T(Class).forName("com.tencentcloudapi.vpc.v20170312.models.DeleteSecurityGroupRequest"))'
+  method: DeleteSecurityGroup
+  argNames:
+  - request
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+bind:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.AssociateSecurityGroupsRequest
+  retryTimes: '3'
+  output:
+    success: '#throwable eq null'
+  request:
+    instanceIds:
+    - '#instanceIds'
+    securityGroupIds:
+    - '#securityGroupIds'
+  method: AssociateSecurityGroups
+  before:
+    output:
+      success: 'true'
+    input:
+      instanceId: '#instanceIds'
+    action: instance.stop
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile2)
+  waitInterval: '3000'
+unbind:
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.DisassociateSecurityGroupsRequest
+  retryTimes: '3'
+  output:
+    success: '#throwable eq null'
+  request:
+    instanceIds:
+    - '#instanceIds'
+    securityGroupIds:
+    - '#securityGroupIds'
+  method: DisassociateSecurityGroups
+  before:
+    output:
+      success: 'true'
+    input:
+      instanceId: '#instanceIds'
+    action: instance.stop
+  argNames:
+  - request
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile2)
+  waitInterval: '3000'
