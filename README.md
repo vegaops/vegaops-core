@@ -44,7 +44,7 @@ VegaOps是基于API的高效调度编排工具。
 针对Linux及MacOS，执行以下命令快速安装VegaOps
 
 ```
-curl https://github.com/vegaops/vegaops-core/releases/download/v0.1-rc/install | sh
+wget -q -O - https://github.com/vegaops/vegaops-core/releases/download/v0.1-rc/install | sh
 ```
 
 安装完成后，提供``vegaops``命令，通过``vegaops``进行编排体验！
