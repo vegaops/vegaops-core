@@ -4,19 +4,25 @@ version=v0.1-rc
 baseurl=https://github.com/vegaops/vegaops-core/releases/download/$version
 vegahome=/opt
 au=`uname  -a`
+long_bit=`getconf LONG_BIT`
 
 macos="Darwin"
 ost=linux
-rel="vegaops-$version-linux.tar.gz"
+rel="vegaops-$version-linux-x64.tar.gz"
 
 if [[ $au =~ $macos ]];then
     rel="vegaops-$version-macos.tar.gz"
     ost=macos
 fi
 
-echo "Downloading vegaops vegaops-$version-$ost.tar.gz ..."
+if [ "$long_bit" != "64" ]; then
+    echo "VegaOps only support x64 linux/mac."
+    exit 1
+fi
+
+echo "Downloading vegaops $rel ..."
 if [ ! -f $rel ]; then
-    curl -o $rel $baseurl/$rel
+    curl -L -o $rel $baseurl/$rel
 fi
 
 echo "Install vegaops to $vegahome/vegaops"
