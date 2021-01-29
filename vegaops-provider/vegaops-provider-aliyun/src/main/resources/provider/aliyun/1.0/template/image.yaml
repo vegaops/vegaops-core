@@ -27,12 +27,13 @@ list:
     success: '#throwable eq null'
     loop:
       '1': '#request.setPageNumber(#request.getPageNumber()+1)'
-      condition: '#result.getImages().size() != 0'
+      condition: '#result.getImages().size() != 0 && not(#listOnlyOne?:false)'
       appendList:
       - imagesList
   request:
     pageNumber: '1'
-    pageSize: '100'
+    instanceType: '#instanceType'
+    pageSize: '#pageSize?:100'
     class: com.aliyuncs.ecs.model.v20140526.DescribeImagesRequest
     imageOwnerAlias: '#self'
   method: getAcsResponse

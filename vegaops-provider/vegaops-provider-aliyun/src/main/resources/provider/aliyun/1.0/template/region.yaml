@@ -3,7 +3,7 @@ nodeType: region
 componentId: '#componentId'
 actions:
 - list
-profile: T(com.aliyuncs.profile.DefaultProfile).getProfile('cn-hangzhou',#accessKey,#secret)
+profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 list:
   output:
     log: 'false'

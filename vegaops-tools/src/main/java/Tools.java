@@ -17,9 +17,9 @@ public class Tools {
             if (args == null || args.length == 0) {
                 throw new RuntimeException("用法: Tools -action [args...]");
             }
-            String action = args[0].toLowerCase().replace("-", "");
+            String action = args[0].replace("-", "");
             List<Method> declaredMethods = Arrays.stream(Tools.class.getDeclaredMethods()).filter(m -> !m.getName().contains("$")).collect(Collectors.toList());
-            Optional<Method> methodOptional = declaredMethods.stream().filter(method -> Objects.equals(method.getName(), action)).findAny();
+            Optional<Method> methodOptional = declaredMethods.stream().filter(method -> method.getName().equalsIgnoreCase(action)).findAny();
             Method method = methodOptional.orElseThrow(() -> new RuntimeException("action只能取值于[" + String.join(",", declaredMethods.stream().map(m -> m.getName()).collect(Collectors.toList())) + "]"));
             method.setAccessible(true);
             if (method.getParameterTypes().length != args.length - 1) {
@@ -98,5 +98,22 @@ public class Tools {
             }
         }
         return execute.statusCode() + "";
+    }
+
+//    E:\\prophetech\\vegaops\\vegaops-provider\\vegaops-provider-aliyun\\src\\main\\resources\\provider\\aliyun\\1.0\\template
+//    E:\\prophetech\\vegaops\\vegaops-provider\\vegaops-provider-aws\\src\\main\\resources\\provider\\aws\\1.0\\template
+//    E:\\prophetech\\vegaops\\vegaops-provider\\vegaops-provider-ctyun\\src\\main\\resources\\provider\\ctyun\\1.0\\template
+//    E:\\prophetech\\vegaops\\vegaops-provider\\vegaops-provider-tencent\\src\\main\\resources\\provider\\tencent\\1.0\\template
+    private static String convertTemplate(String templateDir) throws IOException{
+        File dir=new File(templateDir);
+        File[] files = dir.listFiles((f, n) -> n.endsWith("json"));
+        for(File file:files){
+            HashMap map = JSON.parseObject(new FileInputStream(file), LinkedHashMap.class);
+            String dump = new Yaml().dumpAsMap(map);
+            try (FileOutputStream out = new FileOutputStream(new File(file.getPath().replace(".json",".yaml")))) {
+                out.write(dump.getBytes());
+            }
+        }
+        return files.length+"";
     }
 }

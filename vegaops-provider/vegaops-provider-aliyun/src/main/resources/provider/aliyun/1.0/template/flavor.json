@@ -3,9 +3,10 @@
   "nodeType": "flavor",
   "componentId": "#componentId",
   "actions": [
-    "list"
+    "list",
+    "available"
   ],
-  "profile":"T(com.aliyuncs.profile.DefaultProfile).getProfile('cn-hangzhou',#accessKey,#secret)",
+  "profile":"T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
   "list": {
     "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
     "method": "getAcsResponse",
@@ -31,6 +32,27 @@
         "localStorageCapacity": "#LocalStorageCapacity",
         "localStorageAmount": "#LocalStorageAmount",
         "instanceTypeId": "#InstanceTypeId"
+      }
+    }
+  },
+  "available": {
+    "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    "method": "getAcsResponse",
+    "request": {
+      "class": "com.aliyuncs.ecs.model.v20140526.DescribeAvailableResourceRequest",
+      "ioOptimized": "optimized",
+      "destinationResource": "InstanceType",
+      "zoneId": "#zoneId",
+      "cores": "#cpus",
+      "memory": "#memorySize"
+    },
+    "argValues":{
+      "request":"#request"
+    },
+    "output": {
+      "success": "#throwable eq null",
+      "[flavorList]:[#result.getAvailableZones().![getAvailableResources().![getSupportedResources().?[status=='Available']]]?.get(0)?.get(0)]": {
+        "instanceTypeId": "#value"
       }
     }
   }

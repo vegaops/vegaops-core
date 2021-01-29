@@ -8,9 +8,11 @@ import org.prophetech.hyperone.vegaops.engine.model.CloudAction;
 import org.prophetech.hyperone.vegaops.engine.model.CloudContainer;
 import org.prophetech.hyperone.vegaops.engine.model.CloudResourceNode;
 import org.prophetech.hyperone.vegaops.engine.model.CloudTemplate;
+import org.prophetech.hyperone.vegaops.engine.utils.ELUtils;
 import org.prophetech.hyperone.vegaops.engine.utils.RuntimeContext;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 @Slf4j(topic = "vegaops")
 public class ContainerParser {
@@ -92,11 +94,17 @@ public class ContainerParser {
                 String value = vars.get(key).trim();
                 if (value.startsWith("&")) {
                     String[] split = value.split("[.]");
+                    String varName=split[1].replaceAll("[^A-Za-z0-9]", "");
                     Map<String, Object> nodeOutput = container.getNodeOutput(split[0].substring(1));
-                    Object o = nodeOutput.get(split[1]);
+                    Object o = nodeOutput.get(varName);
                     if (o == null) {
                         vars.remove(key);
                     } else {
+                        if (split.length > 2) {
+                            Map tempVars = new HashMap();
+                            tempVars.put(varName, o);
+                            o = ELUtils.getSpelValue( "#" + value.substring(value.indexOf(".") + 1),tempVars);
+                        }
                         vars.put(key, o.toString());
                     }
                 }

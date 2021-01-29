@@ -31,6 +31,9 @@ public class Application {
 
     public static void main(String[] args) throws Exception {
         try {
+            if (args == null || args.length == 0) {
+                args = new String[]{"-h"};
+            }
             CommandLineParser parser = new BasicParser();
             Options options = new Options();
             InputConfig inputConfig = new InputConfig();

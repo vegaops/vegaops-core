@@ -6,7 +6,7 @@
         <file>vegaops.log</file>
         <encoder>
             <charset>UTF-8</charset>
-            <pattern>%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n </pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
@@ -19,18 +19,16 @@
             </then>
         </if>
         <encoder>
-            <pattern>%yellow(%date{HH:mm:ss.SSS}) %blue(%-5level) %cyan(%msg%n)</pattern>
+            <pattern>%yellow(%date{HH:mm:ss.SSS}) %blue(%-5level) %cyan(%msg%n) %ex{0}</pattern>
         </encoder>
         <!-- 只打印错误日志 -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
     </appender>
-    <logger name="vegaops" additivity="true" level="info">
-        <appender-ref ref="consoleAppender" />
-    </logger>
     <logger name="org.jboss.logging" additivity="true" level="off"/>
     <root level="info">
+        <appender-ref ref="consoleAppender" />
         <appender-ref ref="default" />
     </root>
 

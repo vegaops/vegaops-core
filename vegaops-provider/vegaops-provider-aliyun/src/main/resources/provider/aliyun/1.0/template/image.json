@@ -12,8 +12,9 @@
     "request": {
       "class": "com.aliyuncs.ecs.model.v20140526.DescribeImagesRequest",
       "imageOwnerAlias": "#self",
-      "pageSize": "100",
-      "pageNumber": "1"
+      "pageSize": "#pageSize?:100",
+      "pageNumber": "1",
+      "instanceType": "#instanceType"
     },
     "argValues":{
       "request":"#request"
@@ -21,7 +22,7 @@
     "output": {
       "success": "#throwable eq null",
       "loop": {
-        "condition": "#result.getImages().size() != 0",
+        "condition": "#result.getImages().size() != 0 && not(#listOnlyOne?:false)",
         "appendList": [
           "imagesList"
         ],

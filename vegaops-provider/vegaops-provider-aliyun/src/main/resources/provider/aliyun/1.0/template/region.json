@@ -5,7 +5,7 @@
   "actions": [
     "list"
   ],
-  "profile":"T(com.aliyuncs.profile.DefaultProfile).getProfile('cn-hangzhou',#accessKey,#secret)",
+  "profile":"T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
   "list": {
     "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
     "method": "getAcsResponse",
