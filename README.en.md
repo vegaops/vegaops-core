@@ -11,7 +11,7 @@
   <a href="./README.md">中文</a>
 </p>
 
-## 简介
+## Introduction
 
 VegaOps是基于API的高效调度编排工具。VegaOps旨在提供
 
@@ -28,7 +28,7 @@ VegaOps是基于API的高效调度编排工具。VegaOps旨在提供
 
 # Quick Start
 
-## 安装VegaOps
+## Installation
 
 ### Linux
 执行以下命令快速安装VegaOps
@@ -50,7 +50,7 @@ curl -L -o - https://gitee.com/openproclouder/vegaops-core/raw/master/quick_inst
 
 ### Windows
 
-## 运行样例
+## Running Example
 
 1. 通过``vegaops help``查看vegaops使用方法；
 2. 通过``vegaops aliyun-query.yaml``查询阿里云主机，``aliyun-query.yaml``如下：
@@ -76,19 +76,18 @@ credentials:
 * 多云资源采集
 * 多云监控采集
 
-# VegaOps设计
+# VegaOps Design
 
-## VegaOps设计图
+## VegaOps Architecture
 
-![VegaOps设计图](./vegaops.png)
+![VegaOps Architecture](./vegaops.png)
 
 ## Provider list
 
-* [阿里云](./vegaops-provider/vegaops-provider-aliyun)
-* [腾讯云](./vegaops-provider/vegaops-provider-tencent)
+* [Aliyun](./vegaops-provider/vegaops-provider-aliyun)
+* [Tencentcloud](./vegaops-provider/vegaops-provider-tencent)
 * [AWS](./vegaops-provider/vegaops-provider-aws)
-* [天翼云](./vegaops-provider/vegaops-provider-ctyun)
-
+* [CTyun](./vegaops-provider/vegaops-provider-ctyun)
 
 
 # Contribution
