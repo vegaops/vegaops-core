@@ -26,7 +26,7 @@ VegaOps是基于API的高效调度编排工具。VegaOps旨在提供
   - 提供provider中资源建模及资源对象继承能力。
   - 提供各类API Base产品（尤其是云产品）资源能力标准化资源接口及编排能力；
 
-# Quick Start
+# 快速开始
 
 ## 安装VegaOps
 
@@ -69,7 +69,7 @@ credentials:
   key: XXXX
 ```
 
-## Example list
+## 样例列表
 
 * [阿里云样例](https://github.com/vegaops/vegaops-example-aliyun)
 * 云资源编排
@@ -80,9 +80,11 @@ credentials:
 
 ## VegaOps设计图
 
+详细说明见[wiki](https://github.com/vegaops/vegaops-core/wiki)
+
 ![VegaOps设计图](./vegaops.png)
 
-## Provider list
+## Provider 列表
 
 * [阿里云](./vegaops-provider/vegaops-provider-aliyun)
 * [腾讯云](./vegaops-provider/vegaops-provider-tencent)
@@ -90,15 +92,25 @@ credentials:
 * [天翼云](./vegaops-provider/vegaops-provider-ctyun)
 
 
+# 贡献与交流
 
-# Contribution
+## 特别致谢
 
-Thank you to all the people who already contributed to VegaOps!
+- 感谢武汉大学计算机科学与技术学院周国富教授为VegaOps开源提供的宝贵建议！
+- 感谢湖北师范大学计算机科学与技术学院杨怿教授为VegaOps开源提供的宝贵建议！
+- 感谢香中国地址大学计算机科学与技术学院李旸博士为VegaOps开源提供的宝贵建议！
+- 感谢香港科技大学计算机科学与工程系张永康博士为VegaOps开源提供的宝贵建议！
+- 感谢武汉莱博信息技术有限公司技术总监张浩春同学为VegaOps开源提供的宝贵建议！
 
+## 交流
+
+加入微信交流群：
+
+![微信交流群](./weixin.jpeg)
 
 
 # License
 [Mozilla](./LICENSE)
 
-Copyright (c) 2013-present, OneProCloud(WUHAN) Co.,Ltd
+Copyright (c) 2019-present, OneProCloud(WUHAN) Co.,Ltd
 
