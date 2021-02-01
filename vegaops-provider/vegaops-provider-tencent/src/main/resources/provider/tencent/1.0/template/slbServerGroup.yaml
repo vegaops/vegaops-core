@@ -5,30 +5,30 @@ actions:
 - list
 credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
 httpProfile:
-  endpoint: clb.tencentcloudapi.com
   class: com.tencentcloudapi.common.profile.HttpProfile
+  endpoint: clb.tencentcloudapi.com
 clientProfile:
   class: com.tencentcloudapi.common.profile.ClientProfile
   httpProfile: '#httpProfile'
 list:
+  client: new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)
+  method: DescribeTargetGroupList
   argTypes:
   - com.tencentcloudapi.clb.v20180317.models.DescribeTargetGroupListRequest
+  argNames:
+  - request
+  request:
+    class: com.tencentcloudapi.clb.v20180317.models.DescribeTargetGroupListRequest
+    limit: '100'
+    offset: '0'
   output:
-    '[serverGroupList]:[#result.TargetGroupSet]':
-      providerId: '#getTargetGroupId'
-      name: '#getTargetGroupName'
-      loadBalanceId: ''
     success: '#throwable eq null'
     loop:
-      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
       condition: '#result.getTargetGroupSet().length != 0'
       appendList:
       - serverGroupList
-  request:
-    offset: '0'
-    limit: '100'
-    class: com.tencentcloudapi.clb.v20180317.models.DescribeTargetGroupListRequest
-  method: DescribeTargetGroupList
-  argNames:
-  - request
-  client: new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
+    '[serverGroupList]:[#result.TargetGroupSet]':
+      name: '#getTargetGroupName'
+      loadBalanceId: ''
+      providerId: '#getTargetGroupId'

@@ -7,142 +7,142 @@ actions:
 - query
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 install:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.r_kvstore.model.v20150101.CreateInstanceRequest
+    instanceName: '#name'
+    password: '#password'
+    capacity: '#capacity'
+    instanceClass: '#instanceClass'
+    zoneId: '#zoneId'
+    config: '#config'
+    chargeType: '#chargeType'
+    nodeType: '#nodeType'
+    networkType: '#networkType'
+    VSwitchId: '#vswitchId'
+    vpcId: '#vpcId'
+    period: '#period'
+    businessInfo: '#businessInfo'
+    couponNo: '#couponNo'
+    srcDBInstanceId: '#srcDBInstanceId'
+    backupId: '#backupId'
+    instanceType: '#instanceType'
+    engineVersion: '#engineVersion'
+    privateIpAddress: '#privateIpAddress'
+    autoUseCoupon: '#autoUseCoupon'
+    autoRenew: '#autoRenew'
+    autoRenewPeriod: '#autoRenewPeriod'
+    restoreTime: '#restoreTime'
+  argValues:
+    request: '#request'
   output:
-    instanceId: '#result.InstanceId'
     success: '#throwable eq null'
+    instanceId: '#result.InstanceId'
     after:
+      action: query
+      input:
+        instanceId: '#instanceId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#instanceStatus eq ''Creating'''
         mergeKeys: '*'
-      input:
-        instanceId: '#instanceId'
-      action: query
-      waitInterval: '3000'
-  request:
-    engineVersion: '#engineVersion'
-    period: '#period'
-    instanceName: '#name'
-    VSwitchId: '#vswitchId'
-    backupId: '#backupId'
-    instanceType: '#instanceType'
-    chargeType: '#chargeType'
-    instanceClass: '#instanceClass'
-    srcDBInstanceId: '#srcDBInstanceId'
-    couponNo: '#couponNo'
-    nodeType: '#nodeType'
-    privateIpAddress: '#privateIpAddress'
-    capacity: '#capacity'
-    businessInfo: '#businessInfo'
-    restoreTime: '#restoreTime'
-    password: '#password'
-    autoUseCoupon: '#autoUseCoupon'
-    autoRenewPeriod: '#autoRenewPeriod'
-    vpcId: '#vpcId'
-    zoneId: '#zoneId'
-    autoRenew: '#autoRenew'
-    networkType: '#networkType'
-    class: com.aliyuncs.r_kvstore.model.v20150101.CreateInstanceRequest
-    config: '#config'
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
 uninstall:
-  output:
-    deleteProviderId: '#instanceId'
-    success: '#throwable eq null'
-  request:
-    instanceId: '#instanceId'
-    class: com.aliyuncs.r_kvstore.model.v20150101.DeleteInstanceRequest
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.r_kvstore.model.v20150101.DeleteInstanceRequest
+    instanceId: '#instanceId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-list:
   output:
-    log: 'false'
+    success: '#throwable eq null'
+    deleteProviderId: '#instanceId'
+list:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.r_kvstore.model.v20150101.DescribeInstancesRequest
+    pageSize: '100'
+    pageNumber: '1'
+  argValues:
+    request: '#request'
+  output:
     success: '#throwable eq null'
     loop:
-      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
       condition: '#result.getInstances().size() != 0'
       appendList:
       - redisList
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
+    log: 'false'
     '[redisList]:[#result.Instances]':
-      architectureType: '#ArchitectureType'
-      instanceName: '#InstanceName'
-      privateIp: '#PrivateIp'
-      chargeType: '#ChargeType'
-      isRds: '#IsRds'
-      packageType: '#PackageType'
-      capacity: '#Capacity'
-      vswitchId: '#VSwitchId'
+      config: '#Config'
+      hasRenewChangeOrder: '#HasRenewChangeOrder'
       instanceId: '#InstanceId'
       providerId: '#InstanceId'
-      vpcId: '#VpcId'
-      zoneId: '#ZoneId'
-      networkType: '#NetworkType'
-      connections: '#Connections'
-      engineVersion: '#EngineVersion'
-      bandwidth: '#Bandwidth'
-      replacateId: '#ReplacateId'
-      instanceType: '#InstanceType'
-      instanceClass: '#InstanceClass'
       userName: '#UserName'
-      connectionDomain: '#ConnectionDomain'
-      nodeType: '#NodeType'
-      instanceStatus: '#instanceStatus'
+      zoneId: '#ZoneId'
+      architectureType: '#ArchitectureType'
+      privateIp: '#PrivateIp'
+      vswitchId: '#VSwitchId'
+      vpcId: '#VpcId'
+      networkType: '#NetworkType'
+      packageType: '#PackageType'
       qps: '#QPS'
+      isRds: '#IsRds'
+      engineVersion: '#EngineVersion'
+      connectionDomain: '#ConnectionDomain'
+      instanceName: '#InstanceName'
+      replacateId: '#ReplacateId'
+      bandwidth: '#Bandwidth'
+      chargeType: '#ChargeType'
+      instanceType: '#InstanceType'
+      instanceStatus: '#instanceStatus'
       port: '#Port'
+      instanceClass: '#InstanceClass'
+      nodeType: '#NodeType'
       regionId: '#RegionId'
       createTime: '#CreateTime'
-      hasRenewChangeOrder: '#HasRenewChangeOrder'
-      config: '#Config'
-  request:
-    pageNumber: '1'
-    pageSize: '100'
-    class: com.aliyuncs.r_kvstore.model.v20150101.DescribeInstancesRequest
+      capacity: '#Capacity'
+      connections: '#Connections'
+query:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.r_kvstore.model.v20150101.DescribeInstancesRequest
+    instanceIds: '#instanceId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-query:
   output:
-    architectureType: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getArchitectureType()'
+    success: '#throwable eq null'
     log: 'false'
-    instanceName: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceName()'
-    privateIp: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getPrivateIp()'
-    chargeType: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getChargeType()'
-    isRds: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getIsRds()'
-    packageType: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getPackageType()'
-    capacity: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getCapacity()'
-    vswitchId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getVSwitchId()'
+    config: '#Config'
+    hasRenewChangeOrder: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getHasRenewChangeOrder()'
     instanceId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceId()'
     providerId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceId()'
-    vpcId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getVpcId()'
-    zoneId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getZoneId()'
-    networkType: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getNetworkType()'
-    connections: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getConnections()'
-    engineVersion: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getEngineVersion()'
-    bandwidth: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getBandwidth()'
-    replacateId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getReplacateId()'
-    instanceType: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceType()'
-    instanceClass: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceClass()'
     userName: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getUserName()'
-    connectionDomain: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getConnectionDomain()'
-    nodeType: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getNodeType()'
-    instanceStatus: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceStatus()'
+    zoneId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getZoneId()'
+    architectureType: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getArchitectureType()'
+    privateIp: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getPrivateIp()'
+    vswitchId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getVSwitchId()'
+    vpcId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getVpcId()'
+    networkType: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getNetworkType()'
+    packageType: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getPackageType()'
     qps: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getQPS()'
+    isRds: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getIsRds()'
+    engineVersion: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getEngineVersion()'
+    connectionDomain: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getConnectionDomain()'
+    instanceName: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceName()'
+    replacateId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getReplacateId()'
+    bandwidth: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getBandwidth()'
+    chargeType: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getChargeType()'
+    instanceType: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceType()'
+    instanceStatus: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceStatus()'
     port: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getPort()'
+    instanceClass: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getInstanceClass()'
+    nodeType: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getNodeType()'
     regionId: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getRegionId()'
     createTime: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getCreateTime()'
-    success: '#throwable eq null'
-    hasRenewChangeOrder: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getHasRenewChangeOrder()'
-    config: '#Config'
-  request:
-    instanceIds: '#instanceId'
-    class: com.aliyuncs.r_kvstore.model.v20150101.DescribeInstancesRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+    capacity: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getCapacity()'
+    connections: '#result.getInstances().size() eq 0 ? null : #result.getInstances().get(0).getConnections()'

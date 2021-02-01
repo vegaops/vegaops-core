@@ -5,28 +5,28 @@ actions:
 - list
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 list:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DescribeSnapshotsRequest
+    pageSize: '100'
+    pageNumber: '1'
+  argValues:
+    request: '#request'
   output:
-    log: 'false'
     success: '#throwable eq null'
+    log: 'false'
     loop:
-      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
       condition: '#result.getSnapshots().size()!= 0'
       appendList:
       - SnapshotsList
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
     '[SnapshotsList]:[#result.Snapshots]':
-      creationTime: '#CreationTime'
-      regionId: '#regionId'
-      providerId: '#SnapshotId'
-      volumeId: '#SourceDiskId'
-      name: '#SnapshotName'
       progress: '#Progress'
+      volumeId: '#SourceDiskId'
+      regionId: '#regionId'
       zoneId: '#zoneId'
       status: '#Status'
-  request:
-    pageNumber: '1'
-    pageSize: '100'
-    class: com.aliyuncs.ecs.model.v20140526.DescribeSnapshotsRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+      providerId: '#SnapshotId'
+      name: '#SnapshotName'
+      creationTime: '#CreationTime'

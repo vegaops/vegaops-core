@@ -5,38 +5,38 @@ actions:
 - list
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 list:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DescribeImagesRequest
+    imageOwnerAlias: '#self'
+    pageSize: '#pageSize?:100'
+    pageNumber: '1'
+    instanceType: '#instanceType'
+  argValues:
+    request: '#request'
   output:
-    '[imagesList]:[#result.Images]':
-      imageVersion: '#ImageVersion'
-      imageId: '#ImageId'
-      creationTime: '#CreationTime'
-      description: '#Description'
-      platform: '#Platform'
-      oSName: '#OSNameEn'
-      size: '#Size'
-      regionId: '#regionId'
-      providerId: '#ImageId'
-      name: '#ImageName'
-      zoneId: '#zoneId'
-      progress: '#Progress'
-      oSType: '#OSType'
-      imageOwnerAlias: '#ImageOwnerAlias'
-      architecture: '#Architecture'
-      status: '#Status'
-    log: 'false'
     success: '#throwable eq null'
     loop:
-      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
       condition: '#result.getImages().size() != 0 && not(#listOnlyOne?:false)'
       appendList:
       - imagesList
-  request:
-    pageNumber: '1'
-    instanceType: '#instanceType'
-    pageSize: '#pageSize?:100'
-    class: com.aliyuncs.ecs.model.v20140526.DescribeImagesRequest
-    imageOwnerAlias: '#self'
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
+    log: 'false'
+    '[imagesList]:[#result.Images]':
+      regionId: '#regionId'
+      zoneId: '#zoneId'
+      imageId: '#ImageId'
+      providerId: '#ImageId'
+      oSName: '#OSNameEn'
+      oSType: '#OSType'
+      architecture: '#Architecture'
+      description: '#Description'
+      imageOwnerAlias: '#ImageOwnerAlias'
+      progress: '#Progress'
+      creationTime: '#CreationTime'
+      imageVersion: '#ImageVersion'
+      status: '#Status'
+      name: '#ImageName'
+      platform: '#Platform'
+      size: '#Size'

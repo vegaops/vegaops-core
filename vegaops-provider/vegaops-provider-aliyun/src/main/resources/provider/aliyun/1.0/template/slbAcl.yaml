@@ -5,24 +5,24 @@ actions:
 - list
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 list:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.slb.model.v20140515.DescribeAccessControlListsRequest
+    pageSize: '10'
+    pageNumber: '1'
+  argValues:
+    request: '#request'
   output:
-    '[slbAclList]:[#result.Acls]':
-      regionId: '#regionId'
-      providerId: '#AclId'
-      name: '#AclName'
-      addressIPVersion: '#AddressIPVersion'
-    log: 'false'
     success: '#throwable eq null'
+    log: 'false'
     loop:
-      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
       condition: '#result.getAcls().size() != 0'
       appendList:
       - slbAclList
-  request:
-    pageNumber: '1'
-    pageSize: '10'
-    class: com.aliyuncs.slb.model.v20140515.DescribeAccessControlListsRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
+    '[slbAclList]:[#result.Acls]':
+      providerId: '#AclId'
+      name: '#AclName'
+      addressIPVersion: '#AddressIPVersion'
+      regionId: '#regionId'

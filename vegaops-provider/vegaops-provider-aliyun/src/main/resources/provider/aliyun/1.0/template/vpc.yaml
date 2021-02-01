@@ -7,86 +7,86 @@ actions:
 - query
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 install:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.CreateVpcRequest
+    cidrBlock: '#cidrBlock'
+    ipv6CidrBlock: '#ipv6CidrBlock'
+    enableIpv6: '#enableIpv6'
+    vpcName: '#name'
+    description: '#description'
+    dryRun: '#dryRun'
+    userCidr: '#userCidr'
+    clientToken: '#clientToken'
+  argValues:
+    request: '#request'
   output:
-    regionId: '#RegionId'
     success: '#throwable eq null'
+    regionId: '#RegionId'
     vpcId: '#result.VpcId'
     after:
+      action: query
+      input:
+        vpcId: '#vpcId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#status eq ''Available'''
         mergeKeys: '*'
-      input:
-        vpcId: '#vpcId'
-      action: query
-      waitInterval: '3000'
-  request:
-    vpcName: '#name'
-    dryRun: '#dryRun'
-    clientToken: '#clientToken'
-    cidrBlock: '#cidrBlock'
-    enableIpv6: '#enableIpv6'
-    description: '#description'
-    userCidr: '#userCidr'
-    class: com.aliyuncs.ecs.model.v20140526.CreateVpcRequest
-    ipv6CidrBlock: '#ipv6CidrBlock'
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
 uninstall:
-  output:
-    deleteProviderId: '#vpcId'
-    success: '#throwable eq null'
-  request:
-    vpcId: '#vpcId'
-    class: com.aliyuncs.ecs.model.v20140526.DeleteVpcRequest
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DeleteVpcRequest
+    vpcId: '#vpcId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-list:
   output:
-    log: 'false'
     success: '#throwable eq null'
+    deleteProviderId: '#vpcId'
+list:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DescribeVpcsRequest
+    pageSize: '10'
+    pageNumber: '1'
+  argValues:
+    request: '#request'
+  output:
+    success: '#throwable eq null'
+    log: 'false'
     loop:
-      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
       condition: '#result.getVpcs().size() != 0'
       appendList:
       - vpcList
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
     '[vpcList]:[#result.vpcs]':
-      vpcName: '#VpcName'
-      creationTime: '#CreationTime'
-      regionId: '#RegionId'
-      providerId: '#VpcId'
       vpcId: '#VpcId'
-      cidrBlock: '#cidrBlock'
+      providerId: '#VpcId'
+      vpcName: '#VpcName'
       description: '#Description'
-      ipv6CidrBlock: '#Ipv6CidrBlock'
+      creationTime: '#CreationTime'
       status: '#status'
-  request:
-    pageNumber: '1'
-    pageSize: '10'
-    class: com.aliyuncs.ecs.model.v20140526.DescribeVpcsRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+      cidrBlock: '#cidrBlock'
+      regionId: '#RegionId'
+      ipv6CidrBlock: '#Ipv6CidrBlock'
 query:
-  output:
-    vpcName: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getVpcName()'
-    creationTime: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getCreationTime()'
-    regionId: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getRegionId()'
-    success: '#throwable eq null'
-    providerId: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getVpcId()'
-    vpcId: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getVpcId()'
-    cidrBlock: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getCidrBlock()'
-    description: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getDescription()'
-    status: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getStatus()'
-  request:
-    vpcId: '#vpcId'
-    class: com.aliyuncs.ecs.model.v20140526.DescribeVpcsRequest
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DescribeVpcsRequest
+    vpcId: '#vpcId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  output:
+    success: '#throwable eq null'
+    vpcId: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getVpcId()'
+    providerId: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getVpcId()'
+    vpcName: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getVpcName()'
+    description: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getDescription()'
+    creationTime: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getCreationTime()'
+    status: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getStatus()'
+    cidrBlock: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getCidrBlock()'
+    regionId: '#result.getVpcs().size() eq 0 ? null: #result.getVpcs().get(0).getRegionId()'

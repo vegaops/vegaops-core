@@ -7,83 +7,83 @@ actions:
 - install-uninstall
 credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
 httpProfile:
-  endpoint: vpc.tencentcloudapi.com
   class: com.tencentcloudapi.common.profile.HttpProfile
+  endpoint: vpc.tencentcloudapi.com
 clientProfile:
   class: com.tencentcloudapi.common.profile.ClientProfile
   httpProfile: '#httpProfile'
 list:
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+  method: DescribeRouteTables
   argTypes:
   - com.tencentcloudapi.vpc.v20170312.models.DescribeRouteTablesRequest
+  argNames:
+  - request
+  request:
+    class: com.tencentcloudapi.vpc.v20170312.models.DescribeRouteTablesRequest
+    limit: '100'
+    offset: '0'
   output:
-    '[routeTableList]:[#result.RouteTableSet]':
-      regionId: '#regionId'
-      vpcId: '#VpcId'
-      routeTableId: '#RouteTableId'
-      routeTableName: '#RouteTableName'
-      createdTime: '#CreatedTime'
-      main: '#Main'
     success: '#throwable eq null'
     loop:
-      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
       condition: '#result.getRouteTableSet().length != 0'
       appendList:
       - routeTableList
-  request:
-    offset: '0'
-    limit: '100'
-    class: com.tencentcloudapi.vpc.v20170312.models.DescribeRouteTablesRequest
-  method: DescribeRouteTables
-  argNames:
-  - request
-  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
-query:
-  argTypes:
-  - com.tencentcloudapi.vpc.v20170312.models.DescribeRouteTablesRequest
-  output:
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
     '[routeTableList]:[#result.RouteTableSet]':
-      regionId: '#regionId'
       vpcId: '#VpcId'
       routeTableId: '#RouteTableId'
       routeTableName: '#RouteTableName'
-      createdTime: '#CreatedTime'
       main: '#Main'
-    success: '#throwable eq null&&#result.totalCount eq 1'
+      createdTime: '#CreatedTime'
+      regionId: '#regionId'
+query:
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+  method: DescribeRouteTables
+  argTypes:
+  - com.tencentcloudapi.vpc.v20170312.models.DescribeRouteTablesRequest
+  argNames:
+  - request
   request:
     routeTableIds:
     - '#routeTableId'
-  method: DescribeRouteTables
-  argNames:
-  - request
-  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+  output:
+    success: '#throwable eq null&&#result.totalCount eq 1'
+    '[routeTableList]:[#result.RouteTableSet]':
+      vpcId: '#VpcId'
+      routeTableId: '#RouteTableId'
+      routeTableName: '#RouteTableName'
+      main: '#Main'
+      createdTime: '#CreatedTime'
+      regionId: '#regionId'
 install:
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+  method: CreateRouteTable
   argTypes:
   - com.tencentcloudapi.vpc.v20170312.models.CreateRouteTableRequest
-  output:
-    output:
-      regionId: '#regionId'
-      vpcId: '#result.getRouteTable().getVpcId()'
-      routeTableId: '#result.getRouteTable().getRouteTableId()'
-      routeTableName: '#result.getRouteTable().getRouteTableName()'
-      createdTime: '#result.getRouteTable().getCreatedTime()'
-      main: '#result.getRouteTable().getMain()'
-    success: '#throwable eq null'
+  argNames:
+  - request
   request:
     routeTableName: '#routeTableName'
     vpcId: '#vpcId'
-  method: CreateRouteTable
-  argNames:
-  - request
-  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+  output:
+    success: '#throwable eq null'
+    output:
+      vpcId: '#result.getRouteTable().getVpcId()'
+      routeTableId: '#result.getRouteTable().getRouteTableId()'
+      routeTableName: '#result.getRouteTable().getRouteTableName()'
+      main: '#result.getRouteTable().getMain()'
+      createdTime: '#result.getRouteTable().getCreatedTime()'
+      regionId: '#regionId'
 uninstall:
+  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+  method: DeleteRouteTable
   argTypes:
   - com.tencentcloudapi.vpc.v20170312.models.DeleteRouteTableRequest
-  output:
-    deleteProviderId: '#routeTableId'
-    success: '#throwable eq null'
-  request:
-    routeTableId: '#routeTableId'
-  method: DeleteRouteTable
   argNames:
   - request
-  client: new com.tencentcloudapi.vpc.v20170312.VpcClient(#credential,#regionId,#clientProfile)
+  request:
+    routeTableId: '#routeTableId'
+  output:
+    success: '#throwable eq null'
+    deleteProviderId: '#routeTableId'

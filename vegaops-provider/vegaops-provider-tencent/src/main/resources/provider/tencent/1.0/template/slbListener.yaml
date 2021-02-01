@@ -5,32 +5,32 @@ actions:
 - list
 credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
 httpProfile:
-  endpoint: clb.tencentcloudapi.com
   class: com.tencentcloudapi.common.profile.HttpProfile
+  endpoint: clb.tencentcloudapi.com
 clientProfile:
   class: com.tencentcloudapi.common.profile.ClientProfile
   httpProfile: '#httpProfile'
 list:
+  client: new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)
+  method: DescribeListeners
   argTypes:
   - com.tencentcloudapi.clb.v20180317.models.DescribeListenersRequest
+  argNames:
+  - request
+  request:
+    class: com.tencentcloudapi.clb.v20180317.models.DescribeListenersRequest
+    loadBalancerId: '#load_balancer_id'
   output:
     success: '#throwable eq null'
     '[listenerList]:[#result.Listeners]':
+      providerId: '#ListenerId'
+      lbId: '#loadBalancerId'
+      listenerPort: '#Port'
+      protocol: '#Protocol'
+      establishedTimeout: '#SessionExpireTime'
+      healthCheckDomain: '#HealthCheck.HttpCheckDomain'
+      healthCheckHttpCode: '#HealthCheck.HttpCode'
+      healthCheckInterval: '#HealthCheck.IntervalTime'
       healthCheckUri: '#HealthCheck.HttpCheckPath'
       scheduler: '#Scheduler'
-      protocol: '#Protocol'
-      lbId: '#loadBalancerId'
-      healthCheckDomain: '#HealthCheck.HttpCheckDomain'
-      providerId: '#ListenerId'
-      healthCheckHttpCode: '#HealthCheck.HttpCode'
       sslCertificateId: '#Certificate'
-      establishedTimeout: '#SessionExpireTime'
-      listenerPort: '#Port'
-      healthCheckInterval: '#HealthCheck.IntervalTime'
-  request:
-    loadBalancerId: '#load_balancer_id'
-    class: com.tencentcloudapi.clb.v20180317.models.DescribeListenersRequest
-  method: DescribeListeners
-  argNames:
-  - request
-  client: new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)

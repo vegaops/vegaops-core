@@ -1,38 +1,96 @@
 {
+  /**
+   *一个驱动模板中顶级属性必需包括以下的内容，其他内容都是自定义变量，自定义变量可以被它后面的所有表达式引用
+   * vendor
+   * nodeType
+   * componentId
+   * actions
+   * [actions]中的每一个操作
+  **/
+  //申明当前驱动模板的厂商是aliyun
   "vendor": "aliyun",
+  //申明当前驱动模板的驱动节点对象类型是instance
   "nodeType": "instance",
+  //申明当前的驱动对象的componentId，值取自用户输入配置中的componentId
   "componentId": "#componentId",
+  //申明当前驱动模板的可用操作
   "actions": [
+    //查询符合条件的云主机列表
     "list",
+    //查询指定条件的云主机
     "query",
+    //申请-卸载云主机，这两个操作是对立操作所以用-连接起来，便于后面可以直接将install转化成uninstall
     "install-uninstall",
+    //开机和关机
     "start-stop",
+    //重启
     "reboot",
+    //修改云主机的相关属性
     "update",
+    //续费
     "renew"
   ],
+  //不在驱动模板的必须属性中，它是自定义变量,T(packgexxxx)表示引用packgexxxx类，下面的表达式意思是调用com.aliyuncs.profile.DefaultProfile的静态方法getProfile
   "profile": "T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)",
+  //定义action为list的操作过程
   "list": {
+    /**
+     * 每一个action的必填属性包括以下内容，其他内容都是自己申请的临时变量
+     * client 申明当前操作要调用的类实例
+     * method 申明当前操作要调用实例中的方法名
+     * argValues 【数组】申明调用方法中需要的参数
+     * output 申明当前操作的输出结果
+    */
+    //申明当前操作要调用的类实例，下面的表达式表示新建com.aliyuncs.DefaultAcsClient对象
     "client": "new com.aliyuncs.DefaultAcsClient(#profile)",
+    //申明当前操作要调用实例中的方法名
     "method": "getAcsResponse",
+    //自定义一个request变量并用class指定类型为：com.aliyuncs.ecs.model.v20140526.DescribeInstancesRequest
     "request": {
+      //申明request变量的类型为：com.aliyuncs.ecs.model.v20140526.DescribeInstancesRequest
       "class": "com.aliyuncs.ecs.model.v20140526.DescribeInstancesRequest",
+      //指定request中的pageSize属性为100
       "pageSize": "100",
+      //指定request中的pageNumber属性为1
       "pageNumber": "1"
     },
+    //申明调用方法中需要的参数
     "argValues": {
+      //当前调用的方法中需要一个request参数
       "request": "#request"
     },
+    //申明当前操作的输出结果
     "output": {
+      /**
+       * output申明的属性有以下内容,除此之外的其他属性都是自定义的输出内容
+       * success 【必填】 判断成功的依据
+       * log 【非必填】 如果结果是list内容是否打印所有，防止一些大的查询打的日志太多
+       * loop 【非必填】是否循环查询，适用于一些分页查询，要把所有页码遍历到的场景
+       * resultType 【非必填】申明返回结果在哪个变量中是list还是object
+       * result 【系统内置】 执行client中的方法返回的结果
+       * throwable 【系统内置】执行client中的方法抛出的异常
+      */
+      //当前操作的判断依据是success==true即方法抛出的异常为空
       "success": "#throwable eq null",
+      //不打印列表的日志
       "log": "false",
+      //定义循环查询的flow
       "loop": {
+        /**
+         * loop中必填属性是以下内容，其他都是自定义内容
+         * condition 循环条件
+         * appendList 将查询到的结果集追加到哪个列表中
+         */
+        //循环查询的条件是：查到的结果集大小不为0，（如果翻到最后一页+1必然返回结果为空）
         "condition": "#result.getInstances().size() != 0",
+        //将查询到的结果添加到instanceList变量中
         "appendList": [
           "instanceList"
         ],
+        //自定义变量，效果是对页码+1
         "1": "#request.setPageNumber(#request.getPageNumber()+1)"
       },
+      //申明output中的resultType是一个集合并存储在instanceList变量中
       "[instanceList]:[#result.instances]": {
         "providerId": "#instanceId",
         "name": "#instanceName",
@@ -67,7 +125,9 @@
     "method": "getAcsResponse",
     "request": {
       "class": "com.aliyuncs.ecs.model.v20140526.DescribeInstancesRequest",
-      "instanceIdArray": ["#instanceId"],
+      "instanceIdArray": [
+        "#instanceId"
+      ],
       "instanceIds": "T(com.alibaba.fastjson.JSON).toJSONString(#instanceIdArray)"
     },
     "argValues": {
@@ -178,7 +238,7 @@
       "accessKey": "#accessKey",
       "secret": "#secret"
     },
-    "argValues":{
+    "argValues": {
       "param": "#param"
     },
     "output": {
@@ -292,7 +352,7 @@
       "internetMaxBandwidthOut": "#internetMaxBandwidthOut",
       "internetMaxBandwidthIn": "#internetMaxBandwidthIn"
     },
-    "argValues":{
+    "argValues": {
       "param": "#param"
     },
     "output": {

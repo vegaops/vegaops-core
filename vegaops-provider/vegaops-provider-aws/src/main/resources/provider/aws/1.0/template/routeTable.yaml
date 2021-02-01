@@ -9,45 +9,45 @@ credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).crea
 awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
 ec2Client: T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
 install:
+  client: '#ec2Client'
+  method: createRouteTable
   argTypes:
   - software.amazon.awssdk.services.ec2.model.CreateRouteTableRequest
-  output:
-    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
-    providerId: '#result.routeTable().routeTableId()'
-    vpcId: '#result.routeTable().vpcId()'
-    routeTableId: '#result.routeTable().routeTableId()'
-    close: '#ec2Client.close()'
-  request: T(software.amazon.awssdk.services.ec2.model.CreateRouteTableRequest).builder().vpcId(#vpcId).build()
-  method: createRouteTable
   argNames:
   - request
-  client: '#ec2Client'
+  request: T(software.amazon.awssdk.services.ec2.model.CreateRouteTableRequest).builder().vpcId(#vpcId).build()
+  output:
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    close: '#ec2Client.close()'
+    vpcId: '#result.routeTable().vpcId()'
+    providerId: '#result.routeTable().routeTableId()'
+    routeTableId: '#result.routeTable().routeTableId()'
 list:
+  client: '#ec2Client'
+  method: describeRouteTables
   argTypes:
   - software.amazon.awssdk.services.ec2.model.DescribeRouteTablesRequest
+  argNames:
+  - request
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeRouteTablesRequest).builder().build()
   output:
-    '[routeTable]:[#result.routeTables()]':
-      providerId: '#me.routeTableId()'
-      routeTableId: '#me.routeTableId()'
-      vpcId: '#me.vpcId()'
-      tags: '#me.tags()'
-    log: 'false'
     success: 'true'
     close: '#ec2Client.close()'
-  request: T(software.amazon.awssdk.services.ec2.model.DescribeRouteTablesRequest).builder().build()
-  method: describeRouteTables
-  argNames:
-  - request
-  client: '#ec2Client'
+    log: 'false'
+    '[routeTable]:[#result.routeTables()]':
+      routeTableId: '#me.routeTableId()'
+      providerId: '#me.routeTableId()'
+      vpcId: '#me.vpcId()'
+      tags: '#me.tags()'
 uninstall:
+  client: '#ec2Client'
+  method: deleteRouteTable
   argTypes:
   - software.amazon.awssdk.services.ec2.model.DeleteRouteTableRequest
-  output:
-    deleteProviderId: '#routeTableId'
-    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
-    close: '#ec2Client.close()'
-  request: T(software.amazon.awssdk.services.ec2.model.DeleteRouteTableRequest).builder().routeTableId(#routeTableId).build()
-  method: deleteRouteTable
   argNames:
   - request
-  client: '#ec2Client'
+  request: T(software.amazon.awssdk.services.ec2.model.DeleteRouteTableRequest).builder().routeTableId(#routeTableId).build()
+  output:
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    close: '#ec2Client.close()'
+    deleteProviderId: '#routeTableId'

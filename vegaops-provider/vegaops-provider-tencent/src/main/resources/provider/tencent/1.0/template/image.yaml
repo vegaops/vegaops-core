@@ -6,70 +6,70 @@ actions:
 - query
 credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
 httpProfile:
-  endpoint: cvm.tencentcloudapi.com
   class: com.tencentcloudapi.common.profile.HttpProfile
+  endpoint: cvm.tencentcloudapi.com
 clientProfile:
   class: com.tencentcloudapi.common.profile.ClientProfile
   httpProfile: '#httpProfile'
 list:
+  client: org.prophetech.hyperone.vegaops.tencent.client.TencentImageClient
+  method: DescribeImage
+  classProperties:
+    key: '#accessKey'
+    secret: '#secret'
   argTypes:
   - org.prophetech.hyperone.vegaops.tencent.model.DescribeImagesParam
+  argNames:
+  - param
+  param:
+    class: org.prophetech.hyperone.vegaops.tencent.model.DescribeImagesParam
+    imageType: '#imageType'
+    regionId: '#regionId'
+    offset: '0'
+    limit: '100'
   output:
-    '[imagesList]:[#result.ImageSet]':
-      imageState: '#ImageState'
-      imageId: '#ImageId'
-      imageName: '#imageName'
-      osName: '#OsName'
-      platform: '#Platform'
-      imageSource: '#ImageSource'
-      regionId: '#regionId'
-      providerId: '#ImageId'
-      imageDescription: '#ImageDescription'
-      createdTime: '#CreatedTime'
-      imageSize: '#ImageSize'
-      imageType: '#ImageType'
-      architecture: '#Architecture'
-    log: 'false'
     success: '#throwable eq null'
+    log: 'false'
     loop:
-      '1': '#param.setOffset(#param.getOffset()+#param.getLimit())'
       condition: '#result.getImageSet().length != 0'
       appendList:
       - imagesList
-  classProperties:
-    secret: '#secret'
-    key: '#accessKey'
-  method: DescribeImage
-  param:
-    offset: '0'
-    regionId: '#regionId'
-    limit: '100'
-    class: org.prophetech.hyperone.vegaops.tencent.model.DescribeImagesParam
-    imageType: '#imageType'
-  argNames:
-  - param
-  client: org.prophetech.hyperone.vegaops.tencent.client.TencentImageClient
-query:
-  argTypes:
-  - com.tencentcloudapi.cvm.v20170312.models.DescribeImagesRequest
-  output:
+      '1': '#param.setOffset(#param.getOffset()+#param.getLimit())'
     '[imagesList]:[#result.ImageSet]':
+      imageId: '#ImageId'
+      providerId: '#ImageId'
+      osName: '#OsName'
+      imageSize: '#ImageSize'
+      imageType: '#ImageType'
+      createdTime: '#CreatedTime'
       imageState: '#ImageState'
       imageSource: '#ImageSource'
-      imageId: '#ImageId'
       imageName: '#imageName'
       imageDescription: '#ImageDescription'
-      createdTime: '#CreatedTime'
-      imageSize: '#ImageSize'
-      osName: '#OsName'
-      imageType: '#ImageType'
       platform: '#Platform'
       architecture: '#Architecture'
-    success: '#throwable eq null'
+      regionId: '#regionId'
+query:
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+  method: DescribeImages
+  argTypes:
+  - com.tencentcloudapi.cvm.v20170312.models.DescribeImagesRequest
+  argNames:
+  - request
   request:
     imageIds:
     - '#imageId'
-  method: DescribeImages
-  argNames:
-  - request
-  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+  output:
+    success: '#throwable eq null'
+    '[imagesList]:[#result.ImageSet]':
+      imageId: '#ImageId'
+      osName: '#OsName'
+      imageSize: '#ImageSize'
+      imageType: '#ImageType'
+      createdTime: '#CreatedTime'
+      imageState: '#ImageState'
+      imageSource: '#ImageSource'
+      imageName: '#imageName'
+      imageDescription: '#ImageDescription'
+      platform: '#Platform'
+      architecture: '#Architecture'

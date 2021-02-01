@@ -7,70 +7,70 @@ actions:
 - query
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 list:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.vpc.model.v20160428.DescribeRouteTablesRequest
+    pageSize: '10'
+    pageNumber: '1'
+  argValues:
+    request: '#request'
   output:
-    log: 'false'
     success: '#throwable eq null'
+    log: 'false'
     loop:
-      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
       condition: '#result.getRouteTables().size() != 0'
       appendList:
       - routeTableList
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
     '[routeTableList]:[#result.RouteTables]':
-      regionId: '#regionId'
       providerId: '#RouteTableId'
       type: '#RouteTableType'
-  request:
-    pageNumber: '1'
-    pageSize: '10'
-    class: com.aliyuncs.vpc.model.v20160428.DescribeRouteTablesRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+      regionId: '#regionId'
 query:
-  output:
-    vRouterId: '#result.getRouteTables().size() eq 0 ? null: #result.getRouteTables().get(0).getVRouterId()'
-    creationTime: '#result.getRouteTables().size() eq 0 ? null: #result.getRouteTables().get(0).getCreationTime()'
-    routeTableType: '#result.getRouteTables().size() eq 0 ? null: #result.getRouteTables().get(0).getRouteTableType()'
-    success: '#throwable eq null'
-    providerId: '#result.getRouteTables().size() eq 0 ? null: #result.getRouteTables().get(0).getRouteTableId()'
-  request:
-    routeTableId: '#routeTableId'
-    class: com.aliyuncs.vpc.model.v20160428.DescribeRouteTablesRequest
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.vpc.model.v20160428.DescribeRouteTablesRequest
+    routeTableId: '#routeTableId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  output:
+    success: '#throwable eq null'
+    creationTime: '#result.getRouteTables().size() eq 0 ? null: #result.getRouteTables().get(0).getCreationTime()'
+    providerId: '#result.getRouteTables().size() eq 0 ? null: #result.getRouteTables().get(0).getRouteTableId()'
+    routeTableType: '#result.getRouteTables().size() eq 0 ? null: #result.getRouteTables().get(0).getRouteTableType()'
+    vRouterId: '#result.getRouteTables().size() eq 0 ? null: #result.getRouteTables().get(0).getVRouterId()'
 install:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.vpc.model.v20160428.CreateRouteTableRequest
+    vpcId: '#vpcId'
+    routeTableName: '#name'
+    description: '#description'
+  argValues:
+    request: '#request'
   output:
     success: '#throwable eq null'
     routeTableId: result.routeTableId
     after:
+      action: query
+      input:
+        routeTableId: '#routeTableId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#throwable eq null'
         mergeKeys: '*'
-      input:
-        routeTableId: '#routeTableId'
-      action: query
-      waitInterval: '3000'
-  request:
-    vpcId: '#vpcId'
-    routeTableName: '#name'
-    description: '#description'
-    class: com.aliyuncs.vpc.model.v20160428.CreateRouteTableRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
 uninstall:
-  output:
-    deleteProviderId: '#routeTableId'
-    success: '#throwable eq null'
-  request:
-    routeTableId: '#routeTableId'
-    class: com.aliyuncs.vpc.model.v20160428.DeleteRouteTableRequest
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.vpc.model.v20160428.DeleteRouteTableRequest
+    routeTableId: '#routeTableId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  output:
+    success: '#throwable eq null'
+    deleteProviderId: '#routeTableId'

@@ -4,23 +4,23 @@ componentId: '#componentId'
 actions:
 - list
 list:
-  output:
-    success: '#throwable eq null'
-    '[routeTableList]:[#result]':
-      instanceId: '#GatewayId'
-      regionId: '#regionId'
-      providerId: '#RouteId'
-      cidrBlock: '#DestinationCidrBlock'
-      nextHopType: '#GatewayType'
-      routeTableId: '#RouteTableId'
-      type: '#RouteType'
-      RouteDescription: '#RouteDescription'
-      status: '#Enabled'
-  classProperties:
-    secret: '#secret'
-    key: '#accessKey'
+  client: org.prophetech.hyperone.vegaops.tencent.client.TencentRouteTableEntryClient
   method: queryRouteTbleEntry
+  classProperties:
+    key: '#accessKey'
+    secret: '#secret'
   argValues:
     regionId: '#regionId'
     routeTableId: '#route_table_id'
-  client: org.prophetech.hyperone.vegaops.tencent.client.TencentRouteTableEntryClient
+  output:
+    success: '#throwable eq null'
+    '[routeTableList]:[#result]':
+      cidrBlock: '#DestinationCidrBlock'
+      nextHopType: '#GatewayType'
+      instanceId: '#GatewayId'
+      providerId: '#RouteId'
+      RouteDescription: '#RouteDescription'
+      status: '#Enabled'
+      type: '#RouteType'
+      routeTableId: '#RouteTableId'
+      regionId: '#regionId'

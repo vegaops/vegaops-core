@@ -10,83 +10,83 @@ maskKeys:
 - privateKey
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 install:
-  output:
-    privateKey: '#result.privateKeyBody'
-    regionId: '#RegionId'
-    success: '#throwable eq null'
-    name: '#result.KeyPairName'
-    keyPairId: '#result.KeyPairName'
-    fingerPrint: '#result.KeyPairFingerPrint'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
   request:
     class: com.aliyuncs.ecs.model.v20140526.CreateKeyPairRequest
     keyPairName: '#name'
-  method: getAcsResponse
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  output:
+    success: '#throwable eq null'
+    regionId: '#RegionId'
+    name: '#result.KeyPairName'
+    keyPairId: '#result.KeyPairName'
+    fingerPrint: '#result.KeyPairFingerPrint'
+    privateKey: '#result.privateKeyBody'
 uninstall:
-  output:
-    deleteProviderId: '#name'
-    success: '#throwable eq null'
-  request:
-    keyPairNames: new String('["'+#name+'"]')
-    class: com.aliyuncs.ecs.model.v20140526.DeleteKeyPairsRequest
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DeleteKeyPairsRequest
+    keyPairNames: new String('["'+#name+'"]')
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-list:
   output:
-    log: 'false'
     success: '#throwable eq null'
-    '[keyPairList]:[#result.KeyPairs]':
-      creationTime: '#CreationTime'
-      providerId: '#KeyPairName'
-      name: '#KeyPairName'
-      keyPairId: '#KeyPairName'
-      fingerPrint: '#KeyPairFingerPrint'
+    deleteProviderId: '#name'
+list:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
   request:
+    class: com.aliyuncs.ecs.model.v20140526.DescribeKeyPairsRequest
     PageSize: '10'
     PageNumber: '1'
-    class: com.aliyuncs.ecs.model.v20140526.DescribeKeyPairsRequest
-  method: getAcsResponse
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  output:
+    success: '#throwable eq null'
+    log: 'false'
+    '[keyPairList]:[#result.KeyPairs]':
+      name: '#KeyPairName'
+      keyPairId: '#KeyPairName'
+      providerId: '#KeyPairName'
+      creationTime: '#CreationTime'
+      fingerPrint: '#KeyPairFingerPrint'
 query:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DescribeKeyPairsRequest
+    keyPairName: '#name'
+  argValues:
+    request: '#request'
   output:
     success: '#throwable eq null'
     name: '#result.getKeyPairs().size() eq 0 ? null : #result.getKeyPairs().get(0).getKeyPairName()'
     keyPairId: '#result.getKeyPairs().size() eq 0 ? null : #result.getKeyPairs().get(0).getKeyPairName()'
     fingerPrint: '#result.getKeyPairs().size() eq 0 ? null : #result.getKeyPairs().get(0).getKeyPairFingerPrint()'
-  request:
-    class: com.aliyuncs.ecs.model.v20140526.DescribeKeyPairsRequest
-    keyPairName: '#name'
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
 bind:
-  output:
-    instanceId: '#result.getResults().get(0).getInstanceId()'
-    success: '#result.getResults().get(0).getSuccess() eq ''true'''
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
   request:
-    instanceIds: new String('["'+#instanceId+'"]')
     class: com.aliyuncs.ecs.model.v20140526.AttachKeyPairRequest
-    keyPairName: '#name'
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-unbind:
-  output:
-    instanceId: '#result.getResults().get(0).getInstanceId()'
-    success: '#result.getResults().get(0).getSuccess() eq ''true'''
-  request:
     instanceIds: new String('["'+#instanceId+'"]')
-    class: com.aliyuncs.ecs.model.v20140526.DetachKeyPairRequest
     keyPairName: '#name'
-  method: getAcsResponse
   argValues:
     request: '#request'
+  output:
+    success: '#result.getResults().get(0).getSuccess() eq ''true'''
+    instanceId: '#result.getResults().get(0).getInstanceId()'
+unbind:
   client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DetachKeyPairRequest
+    instanceIds: new String('["'+#instanceId+'"]')
+    keyPairName: '#name'
+  argValues:
+    request: '#request'
+  output:
+    success: '#result.getResults().get(0).getSuccess() eq ''true'''
+    instanceId: '#result.getResults().get(0).getInstanceId()'

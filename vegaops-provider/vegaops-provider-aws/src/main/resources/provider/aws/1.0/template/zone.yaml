@@ -8,21 +8,21 @@ credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).crea
 awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
 ec2Client: T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
 list:
+  client: '#ec2Client'
+  method: describeAvailabilityZones
   argTypes:
   - software.amazon.awssdk.services.ec2.model.DescribeAvailabilityZonesRequest
-  output:
-    log: 'false'
-    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
-    '[zoneList]:[#result.availabilityZones()]':
-      groupName: '#me.groupName()'
-      networkBorderGroup: '#me.networkBorderGroup()'
-      regionName: '#me.regionName()'
-      optInStatus: '#me.optInStatus()'
-      zoneId: '#me.zoneId()'
-      state: '#me.state()'
-      zoneName: '#me.zoneName()'
-  request: T(software.amazon.awssdk.services.ec2.model.DescribeAvailabilityZonesRequest).builder().build()
-  method: describeAvailabilityZones
   argNames:
   - request
-  client: '#ec2Client'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeAvailabilityZonesRequest).builder().build()
+  output:
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    log: 'false'
+    '[zoneList]:[#result.availabilityZones()]':
+      state: '#me.state()'
+      optInStatus: '#me.optInStatus()'
+      regionName: '#me.regionName()'
+      zoneName: '#me.zoneName()'
+      zoneId: '#me.zoneId()'
+      groupName: '#me.groupName()'
+      networkBorderGroup: '#me.networkBorderGroup()'

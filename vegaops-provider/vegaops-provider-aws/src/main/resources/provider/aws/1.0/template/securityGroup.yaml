@@ -10,71 +10,71 @@ credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).crea
 awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
 ec2Client: T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
 list:
+  client: '#ec2Client'
+  method: describeSecurityGroups
   argTypes:
   - software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest
+  argNames:
+  - request
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest).builder().groupIds(#groupIds).groupNames(#groupNames).build()
   output:
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    close: '#ec2Client.close()'
+    log: 'false'
     '[securityGroups]:[#result.securityGroups()]':
-      regionId: '#regionId'
+      description: '#me.description()'
+      name: '#me.groupName()'
       providerId: '#me.groupId()'
       vpcId: '#me.vpcId()'
-      name: '#me.groupName()'
-      description: '#me.description()'
+      regionId: '#regionId'
       zoneId: '#zoneId'
-    log: 'false'
-    success: '#result.sdkHttpResponse().statusCode() eq 200'
-    close: '#ec2Client.close()'
-  request: T(software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest).builder().groupIds(#groupIds).groupNames(#groupNames).build()
-  method: describeSecurityGroups
-  argNames:
-  - request
-  client: '#ec2Client'
 query:
+  client: '#ec2Client'
+  method: describeSecurityGroups
   argTypes:
   - software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest
-  output:
-    securityGroupId: '#result.securityGroups()[0]?.groupId()'
-    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
-    providerId: '#result.securityGroups()[0]?.groupId()'
-    vpcId: '#result.securityGroups()[0]?.vpcId()'
-    name: '#result.securityGroups()[0]?.groupName()'
-    description: '#result.securityGroups()[0]?.description()'
-    close: '#ec2Client.close()'
-  request: T(software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest).builder().groupIds(#groupId).groupNames(#groupNames).build()
-  method: describeSecurityGroups
   argNames:
   - request
-  client: '#ec2Client'
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest).builder().groupIds(#groupId).groupNames(#groupNames).build()
+  output:
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    close: '#ec2Client.close()'
+    description: '#result.securityGroups()[0]?.description()'
+    name: '#result.securityGroups()[0]?.groupName()'
+    providerId: '#result.securityGroups()[0]?.groupId()'
+    securityGroupId: '#result.securityGroups()[0]?.groupId()'
+    vpcId: '#result.securityGroups()[0]?.vpcId()'
 install:
+  client: '#ec2Client'
+  method: createSecurityGroup
   argTypes:
   - software.amazon.awssdk.services.ec2.model.CreateSecurityGroupRequest
+  argNames:
+  - request
+  request: T(software.amazon.awssdk.services.ec2.model.CreateSecurityGroupRequest).builder().groupName(#groupName).description(#groupDesc).vpcId(#vpcId).build()
   output:
     success: '#result.sdkHttpResponse().statusCode() eq 200'
+    close: '#ec2Client.close()'
     groupId: '#result.groupId()'
     after:
+      action: query
+      input:
+        groupId: '#groupId'
+      waitInterval: '3000'
       retryTimes: '3'
       output:
         success: 'true'
         mergeKeys: '*'
-      input:
-        groupId: '#groupId'
-      action: query
-      waitInterval: '3000'
-    close: '#ec2Client.close()'
-  request: T(software.amazon.awssdk.services.ec2.model.CreateSecurityGroupRequest).builder().groupName(#groupName).description(#groupDesc).vpcId(#vpcId).build()
-  method: createSecurityGroup
-  argNames:
-  - request
-  client: '#ec2Client'
 uninstall:
+  client: '#ec2Client'
+  method: deleteSecurityGroup
   argTypes:
   - software.amazon.awssdk.services.ec2.model.DeleteSecurityGroupRequest
+  argNames:
+  - request
+  request: T(software.amazon.awssdk.services.ec2.model.DeleteSecurityGroupRequest).builder().groupId(#securityGroupId).build()
   output:
-    deleteProviderId: '#securityGroupId'
     success: '#result?.sdkHttpResponse()?.statusCode() eq 200||#throwable.getMessage().contains(''not
       exist'')'
     close: '#ec2Client.close()'
-  request: T(software.amazon.awssdk.services.ec2.model.DeleteSecurityGroupRequest).builder().groupId(#securityGroupId).build()
-  method: deleteSecurityGroup
-  argNames:
-  - request
-  client: '#ec2Client'
+    deleteProviderId: '#securityGroupId'

@@ -5,15 +5,15 @@ actions:
 - list
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 list:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DescribeRegionsRequest
+  argValues:
+    request: '#request'
   output:
-    log: 'false'
     success: '#throwable eq null'
+    log: 'false'
     '[regionList]:[#result.Regions]':
       regionId: '#RegionId'
       name: '#LocalName'
-  request:
-    class: com.aliyuncs.ecs.model.v20140526.DescribeRegionsRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)

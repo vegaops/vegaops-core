@@ -4,18 +4,18 @@ componentId: '#componentId'
 actions:
 - list
 list:
+  client: org.prophetech.hyperone.vegaops.tencent.client.TencentSlbRuleClient
+  method: querySlbRule
+  classProperties:
+    key: '#accessKey'
+    secret: '#secret'
+  argValues:
+    regionId: '#regionId'
+    slbId: '#load_balancer_id'
   output:
     success: '#throwable eq null'
     '[ruleList]:[#result]':
-      providerId: '#LocationId'
       domain: '#Domain'
-      serverGroupId: '#TargetGroup.TargetGroupId'
       url: '#Url'
-  classProperties:
-    secret: '#secret'
-    key: '#accessKey'
-  method: querySlbRule
-  argValues:
-    slbId: '#load_balancer_id'
-    regionId: '#regionId'
-  client: org.prophetech.hyperone.vegaops.tencent.client.TencentSlbRuleClient
+      serverGroupId: '#TargetGroup.TargetGroupId'
+      providerId: '#LocationId'

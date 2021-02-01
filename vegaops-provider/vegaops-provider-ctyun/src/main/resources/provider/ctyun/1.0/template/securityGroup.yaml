@@ -6,82 +6,82 @@ actions:
 - query
 - list
 ctyunAccount:
+  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
   accessKey: '#accessKey'
   secret: '#secret'
-  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
 install:
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunSecurityGroupClient
+  method: createSg
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
   argTypes:
   - org.prophetech.hyperone.vegaops.ctyun.model.CreateSgRequest
+  argNames:
+  - request
+  request:
+    name: '#name'
+    vpcId: '#vpcId'
+    regionId: '#regionId'
   output:
-    securityGroupId: '#result.id'
     success: 'true'
+    description: '#result.description'
+    name: '#result.name'
     providerId: '#result.id'
     vpcId: '#result.vpcId'
-    name: '#result.name'
-    description: '#result.description'
+    securityGroupId: '#result.id'
     trigger:
-      input:
-        securityGroupId: '#securityGroupId'
       action: list
       nodeType: securityGroupRule
-  request:
-    regionId: '#regionId'
-    vpcId: '#vpcId'
-    name: '#name'
+      input:
+        securityGroupId: '#securityGroupId'
+query:
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunSecurityGroupClient
+  method: getSecurityGroupDetail
   classProperties:
     ctyunAccount: '#ctyunAccount'
-  method: createSg
-  argNames:
-  - request
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunSecurityGroupClient
-query:
+  argValues:
+    regionId: '#regionId'
+    securityGroupId: '#securityGroupId'
   output:
+    success: 'true'
+    description: ''
+    name: '#result.name'
     securityGroupId: '#result.resSecurityGroupId'
     regionId: '#result.regionId'
-    success: 'true'
     vpcId: '#result.vpcId'
-    name: '#result.name'
-    description: ''
-    zoneId: '#result.zoneId'
     zoneName: '#result.zoneName'
+    zoneId: '#result.zoneId'
+list:
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunSecurityGroupClient
+  method: getAllSecurityGroups
   classProperties:
     ctyunAccount: '#ctyunAccount'
-  method: getSecurityGroupDetail
   argValues:
-    securityGroupId: '#securityGroupId'
     regionId: '#regionId'
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunSecurityGroupClient
-list:
   output:
-    log: 'false'
     success: 'true'
+    log: 'false'
     '[securityGroupList]:[#result]':
-      regionId: '#regionId'
-      providerId: '#resSecurityGroupId'
-      vpcId: '#vpcId'
-      name: '#name'
       description: ''
+      name: '#name'
+      providerId: '#resSecurityGroupId'
+      regionId: '#regionId'
+      vpcId: '#vpcId'
       zoneId: '#zoneId'
       zoneName: '#zoneName'
+uninstall:
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+  method: getCtyunResponse
   classProperties:
     ctyunAccount: '#ctyunAccount'
-  method: getAllSecurityGroups
-  argValues:
-    regionId: '#regionId'
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunSecurityGroupClient
-uninstall:
   argTypes:
   - org.prophetech.hyperone.vegaops.ctyun.model.DeleteSecurityGroupRequest
-  output:
-    deleteProviderId: '#securityGroupId'
-    success: '#result.statusCode?.equals(800)||#result.message?.contains(''does not
-      exist'')'
-  request:
-    securityGroupId: '#securityGroupId'
-    regionId: '#regionId'
-  classProperties:
-    ctyunAccount: '#ctyunAccount'
-  method: getCtyunResponse
   argNames:
   - request
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+  request:
+    regionId: '#regionId'
+    securityGroupId: '#securityGroupId'
+  output:
+    success: '#result.statusCode?.equals(800)||#result.message?.contains(''does not
+      exist'')'
+    deleteProviderId: '#securityGroupId'

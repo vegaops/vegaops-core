@@ -4,28 +4,28 @@ componentId: '#componentId'
 actions:
 - list
 ctyunAccount:
+  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
   accessKey: '#accessKey'
   secret: '#secret'
-  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
 list:
-  output:
-    log: 'false'
-    success: 'true'
-    '[imagesList]:[#result]':
-      virtual: '#virtual'
-      regionId: '#regionId'
-      minRam: '#minRam'
-      osType: '#osType'
-      name: '#name'
-      osBit: '#osBit'
-      id: '#id'
-      minDisk: '#minDisk'
-      imageType: '#imageType'
-      platform: '#platform'
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunImageClient
+  method: getAllImage
   classProperties:
     ctyunAccount: '#ctyunAccount'
-  method: getAllImage
   argValues:
     regionId: '#regionId'
     imageType: '#imageType'
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunImageClient
+  output:
+    success: 'true'
+    log: 'false'
+    '[imagesList]:[#result]':
+      id: '#id'
+      osType: '#osType'
+      platform: '#platform'
+      name: '#name'
+      osBit: '#osBit'
+      virtual: '#virtual'
+      minRam: '#minRam'
+      minDisk: '#minDisk'
+      imageType: '#imageType'
+      regionId: '#regionId'

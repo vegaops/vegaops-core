@@ -1,4 +1,5 @@
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.parser.Feature;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -108,7 +109,7 @@ public class Tools {
         File dir=new File(templateDir);
         File[] files = dir.listFiles((f, n) -> n.endsWith("json"));
         for(File file:files){
-            HashMap map = JSON.parseObject(new FileInputStream(file), LinkedHashMap.class);
+            HashMap map = JSON.parseObject(new FileInputStream(file), LinkedHashMap.class, Feature.OrderedField);
             String dump = new Yaml().dumpAsMap(map);
             try (FileOutputStream out = new FileOutputStream(new File(file.getPath().replace(".json",".yaml")))) {
                 out.write(dump.getBytes());

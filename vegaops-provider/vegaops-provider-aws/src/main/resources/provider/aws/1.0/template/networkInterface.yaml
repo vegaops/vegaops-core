@@ -12,145 +12,145 @@ credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).crea
 awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
 ec2Client: T(software.amazon.awssdk.services.ec2.Ec2Client).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
 install:
+  client: '#ec2Client'
+  method: createNetworkInterface
   argTypes:
   - software.amazon.awssdk.services.ec2.model.CreateNetworkInterfaceRequest
+  argNames:
+  - request
+  request: T(software.amazon.awssdk.services.ec2.model.CreateNetworkInterfaceRequest).builder().description(#description).groups(#groups).ipv6AddressCount(#ipv6AddressCount).privateIpAddress(#privateIpAddress).secondaryPrivateIpAddressCount(#secondaryPrivateIpAddressCount).interfaceType(#interfaceType).subnetId(#vswitchId).build()
   output:
-    networkInterfaceId: '#result.networkInterface().networkInterfaceId()'
     success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    close: '#ec2Client.close()'
+    networkInterfaceId: '#result.networkInterface().networkInterfaceId()'
     after:
-      retryTimes: '3'
-      output:
-        success: '#status.toString() eq ''available'''
-        mergeKeys: '*'
+      action: tag
       input:
         resourceId: '#networkInterfaceId'
         name: '#name'
-      action: tag
       waitInterval: '3000'
-    close: '#ec2Client.close()'
-  request: T(software.amazon.awssdk.services.ec2.model.CreateNetworkInterfaceRequest).builder().description(#description).groups(#groups).ipv6AddressCount(#ipv6AddressCount).privateIpAddress(#privateIpAddress).secondaryPrivateIpAddressCount(#secondaryPrivateIpAddressCount).interfaceType(#interfaceType).subnetId(#vswitchId).build()
-  method: createNetworkInterface
-  argNames:
-  - request
-  client: '#ec2Client'
-tag:
-  argTypes:
-  - software.amazon.awssdk.services.ec2.model.CreateTagsRequest
-  output:
-    success: '#result.sdkHttpResponse().statusCode() eq 200'
-    after:
       retryTimes: '3'
       output:
         success: '#status.toString() eq ''available'''
         mergeKeys: '*'
-      input:
-        networkInterfaceId: '#resourceId'
-      action: query
-      waitInterval: '3000'
-    close: '#ec2Client.close()'
-  request: T(software.amazon.awssdk.services.ec2.model.CreateTagsRequest).builder().resources(#resourceId).tags(T(software.amazon.awssdk.services.ec2.model.Tag).builder().key("Name").value(#name).build()).build()
+tag:
+  client: '#ec2Client'
   method: createTags
+  argTypes:
+  - software.amazon.awssdk.services.ec2.model.CreateTagsRequest
   argNames:
   - request
-  client: '#ec2Client'
+  request: T(software.amazon.awssdk.services.ec2.model.CreateTagsRequest).builder().resources(#resourceId).tags(T(software.amazon.awssdk.services.ec2.model.Tag).builder().key("Name").value(#name).build()).build()
+  output:
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    close: '#ec2Client.close()'
+    after:
+      action: query
+      input:
+        networkInterfaceId: '#resourceId'
+      waitInterval: '3000'
+      retryTimes: '3'
+      output:
+        success: '#status.toString() eq ''available'''
+        mergeKeys: '*'
 list:
+  client: '#ec2Client'
+  method: describeNetworkInterfaces
   argTypes:
   - software.amazon.awssdk.services.ec2.model.DescribeNetworkInterfacesRequest
+  argNames:
+  - request
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeNetworkInterfacesRequest).builder().networkInterfaceIds(#networkInterfaceIds).build()
   output:
     success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
     close: '#ec2Client.close()'
     '[networkInterfacesList]:[#result.networkInterfaces()]':
-      type: '#me.attachment()?.deleteOnTermination()'
-      availabilityZone: '#me.availabilityZone()'
+      macAddr: '#me.macAddress()'
+      providerId: '#me.networkInterfaceId()'
       ipAddr: '#me.privateIpAddress()'
       vswitchId: '#me.subnetId()'
+      vpcId: '#me.vpcId()'
+      status: '#me.status()'
       tagSet: '#me.tagSet()'
-      interfaceType: '#me.interfaceType()'
+      attachmentId: '#me.attachment()?.attachmentId()'
       instanceId: '#me.attachment()?.instanceId()'
       regionId: '#regionId'
-      providerId: '#me.networkInterfaceId()'
-      vpcId: '#me.vpcId()'
+      type: '#me.attachment()?.deleteOnTermination()'
       zoneId: '#zoneId'
-      attachmentId: '#me.attachment()?.attachmentId()'
-      macAddr: '#me.macAddress()'
-      status: '#me.status()'
-  request: T(software.amazon.awssdk.services.ec2.model.DescribeNetworkInterfacesRequest).builder().networkInterfaceIds(#networkInterfaceIds).build()
-  method: describeNetworkInterfaces
-  argNames:
-  - request
-  client: '#ec2Client'
+      interfaceType: '#me.interfaceType()'
+      availabilityZone: '#me.availabilityZone()'
 query:
+  client: '#ec2Client'
+  method: describeNetworkInterfaces
   argTypes:
   - software.amazon.awssdk.services.ec2.model.DescribeNetworkInterfacesRequest
+  argNames:
+  - request
+  request: T(software.amazon.awssdk.services.ec2.model.DescribeNetworkInterfacesRequest).builder().networkInterfaceIds(#networkInterfaceId).build()
   output:
-    type: '#result.networkInterfaces()[0]?.attachment()?.deleteOnTermination()'
-    availabilityZone: '#result.networkInterfaces()[0]?.availabilityZone()'
-    ipAddr: '#result.networkInterfaces()[0]?.privateIpAddress()'
-    vswitchId: '#result.networkInterfaces()[0]?.subnetId()'
-    tagSet: '#result.networkInterfaces()[0]?.tagSet()'
-    interfaceType: '#result.networkInterfaces()[0]?.interfaceType()'
-    instanceId: '#result.networkInterfaces()[0]?.attachment()?.instanceId()'
     success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
-    providerId: '#result.networkInterfaces()[0]?.networkInterfaceId()'
-    vpcId: '#result.networkInterfaces()[0]?.vpcId()'
-    attachmentId: '#result.networkInterfaces()[0]?.attachment()?.attachmentId()'
     close: '#ec2Client.close()'
     macAddr: '#result.networkInterfaces()[0]?.macAddress()'
+    providerId: '#result.networkInterfaces()[0]?.networkInterfaceId()'
+    ipAddr: '#result.networkInterfaces()[0]?.privateIpAddress()'
+    vswitchId: '#result.networkInterfaces()[0]?.subnetId()'
     status: '#result.networkInterfaces()[0]?.status()'
-  request: T(software.amazon.awssdk.services.ec2.model.DescribeNetworkInterfacesRequest).builder().networkInterfaceIds(#networkInterfaceId).build()
-  method: describeNetworkInterfaces
-  argNames:
-  - request
-  client: '#ec2Client'
+    tagSet: '#result.networkInterfaces()[0]?.tagSet()'
+    attachmentId: '#result.networkInterfaces()[0]?.attachment()?.attachmentId()'
+    instanceId: '#result.networkInterfaces()[0]?.attachment()?.instanceId()'
+    type: '#result.networkInterfaces()[0]?.attachment()?.deleteOnTermination()'
+    vpcId: '#result.networkInterfaces()[0]?.vpcId()'
+    interfaceType: '#result.networkInterfaces()[0]?.interfaceType()'
+    availabilityZone: '#result.networkInterfaces()[0]?.availabilityZone()'
 uninstall:
+  client: '#ec2Client'
+  method: deleteNetworkInterface
   argTypes:
   - software.amazon.awssdk.services.ec2.model.DeleteNetworkInterfaceRequest
-  output:
-    deleteProviderId: '#networkInterfaceId'
-    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
-    close: '#ec2Client.close()'
-  request: T(software.amazon.awssdk.services.ec2.model.DeleteNetworkInterfaceRequest).builder().networkInterfaceId(#networkInterfaceId).build()
-  method: deleteNetworkInterface
   argNames:
   - request
-  client: '#ec2Client'
+  request: T(software.amazon.awssdk.services.ec2.model.DeleteNetworkInterfaceRequest).builder().networkInterfaceId(#networkInterfaceId).build()
+  output:
+    success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    close: '#ec2Client.close()'
+    deleteProviderId: '#networkInterfaceId'
 bind:
+  client: '#ec2Client'
+  method: attachNetworkInterface
   argTypes:
   - software.amazon.awssdk.services.ec2.model.AttachNetworkInterfaceRequest
+  argNames:
+  - request
+  request: T(software.amazon.awssdk.services.ec2.model.AttachNetworkInterfaceRequest).builder().deviceIndex(#deviceIndex).networkInterfaceId(#networkInterfaceId).instanceId(#instanceId).build()
   output:
     success: '#result?.sdkHttpResponse()?.statusCode() eq 200 || #throwable.toString().contains(''is
       already attached to an instance'')'
+    close: '#ec2Client.close()'
     after:
-      retryTimes: '10'
-      output:
-        instanceId: '#instanceId'
-        success: '#attachmentId ne null'
-        mergeKeys: '*'
+      action: query
       input:
         networkInterfaceId: '#networkInterfaceId'
-      action: query
       waitInterval: '3000'
-    close: '#ec2Client.close()'
-  request: T(software.amazon.awssdk.services.ec2.model.AttachNetworkInterfaceRequest).builder().deviceIndex(#deviceIndex).networkInterfaceId(#networkInterfaceId).instanceId(#instanceId).build()
-  method: attachNetworkInterface
-  argNames:
-  - request
-  client: '#ec2Client'
+      retryTimes: '10'
+      output:
+        success: '#attachmentId ne null'
+        instanceId: '#instanceId'
+        mergeKeys: '*'
 unbind:
+  client: org.prophetech.hyperone.vegaops.aws.client.AwsNetworkInterfaceClient
+  method: detachNetworkInterface
+  argValues:
+    ec2Client: '#ec2Client'
+    networkInterfaceId: '#networkInterfaceId'
   output:
     success: '#result?.sdkHttpResponse()?.statusCode() eq 200'
+    close: '#ec2Client.close()'
     after:
+      action: query
+      input:
+        networkInterfaceId: '#networkInterfaceId'
+      waitInterval: '5000'
       retryTimes: '30'
       output:
         success: '#instanceId eq null'
         mergeKeys: '*'
-      input:
-        networkInterfaceId: '#networkInterfaceId'
-      action: query
-      waitInterval: '5000'
-    close: '#ec2Client.close()'
-  method: detachNetworkInterface
-  argValues:
-    networkInterfaceId: '#networkInterfaceId'
-    ec2Client: '#ec2Client'
-  client: org.prophetech.hyperone.vegaops.aws.client.AwsNetworkInterfaceClient

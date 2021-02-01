@@ -11,98 +11,98 @@ credentials: T(software.amazon.awssdk.auth.credentials.AwsBasicCredentials).crea
 awsCredentialsProvider: T(software.amazon.awssdk.auth.credentials.StaticCredentialsProvider).create(#credentials)
 directConnectClient: T(software.amazon.awssdk.services.directconnect.DirectConnectClient).builder().credentialsProvider(#awsCredentialsProvider).region(#awsRegion).build()
 list:
+  client: '#directConnectClient'
+  method: describeConnections
   argTypes:
   - software.amazon.awssdk.services.directconnect.model.DescribeConnectionsRequest
-  output:
-    log: 'false'
-    success: '#result.sdkHttpResponse().statusCode() eq 200'
-    close: '#directConnectClient.close()'
-    '[connections]:[#result.connections()]':
-      bandwidth: '#me.bandwidth()'
-      partnerName: '#me.partnerName()'
-      awsDevice: '#me.awsDevice()'
-      connectionState: '#me.connectionState()'
-      ownerAccount: '#me.ownerAccount()'
-      loaIssueTime: '#me.loaIssueTime()'
-      awsDeviceV2: '#me.awsDeviceV2()'
-      tags: '#me.tags()'
-      lagId: '#me.lagId()'
-      vlan: '#me.vlan()'
-      jumboFrameCapable: '#me.jumboFrameCapable()'
-      providerId: '#me.connectionId()'
-      location: '#me.location()'
-      connectionName: '#me.connectionName()'
-      region: '#me.region()'
-      hasLogicalRedundancy: '#me.hasLogicalRedundancy()'
-      providerName: '#me.providerName()'
-  request: T(software.amazon.awssdk.services.directconnect.model.DescribeConnectionsRequest).builder().build()
-  method: describeConnections
   argNames:
   - request
-  client: '#directConnectClient'
+  request: T(software.amazon.awssdk.services.directconnect.model.DescribeConnectionsRequest).builder().build()
+  output:
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    close: '#directConnectClient.close()'
+    log: 'false'
+    '[connections]:[#result.connections()]':
+      ownerAccount: '#me.ownerAccount()'
+      providerId: '#me.connectionId()'
+      connectionName: '#me.connectionName()'
+      connectionState: '#me.connectionState()'
+      region: '#me.region()'
+      location: '#me.location()'
+      bandwidth: '#me.bandwidth()'
+      vlan: '#me.vlan()'
+      partnerName: '#me.partnerName()'
+      loaIssueTime: '#me.loaIssueTime()'
+      lagId: '#me.lagId()'
+      awsDevice: '#me.awsDevice()'
+      jumboFrameCapable: '#me.jumboFrameCapable()'
+      awsDeviceV2: '#me.awsDeviceV2()'
+      hasLogicalRedundancy: '#me.hasLogicalRedundancy()'
+      tags: '#me.tags()'
+      providerName: '#me.providerName()'
 location:
+  client: '#directConnectClient'
+  method: describeLocations
   argTypes:
   - software.amazon.awssdk.services.directconnect.model.DescribeLocationsRequest
+  argNames:
+  - request
+  request: T(software.amazon.awssdk.services.directconnect.model.DescribeLocationsRequest).builder().build()
   output:
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    close: '#directConnectClient.close()'
     log: 'false'
     '[locations]:[#result.locations()]':
-      locationName: '#me.locationName()'
       locationCode: '#me.locationCode()'
+      locationName: '#me.locationName()'
       region: '#me.region()'
-    success: '#result.sdkHttpResponse().statusCode() eq 200'
-    close: '#directConnectClient.close()'
-  request: T(software.amazon.awssdk.services.directconnect.model.DescribeLocationsRequest).builder().build()
-  method: describeLocations
-  argNames:
-  - request
-  client: '#directConnectClient'
 install:
+  client: '#directConnectClient'
+  method: createConnection
   argTypes:
   - software.amazon.awssdk.services.directconnect.model.CreateConnectionRequest
-  output:
-    bandwidth: '#result.bandwidth()'
-    partnerName: '#result.partnerName()'
-    awsDevice: '#result.awsDevice()'
-    connectionState: '#result.connectionState()'
-    ownerAccount: '#result.ownerAccount()'
-    loaIssueTime: '#result.loaIssueTime()'
-    awsDeviceV2: '#result.awsDeviceV2()'
-    tags: '#result.tags()'
-    lagId: '#result.lagId()'
-    vlan: '#result.vlan()'
-    jumboFrameCapable: '#result.jumboFrameCapable()'
-    success: '#result.sdkHttpResponse().statusCode() eq 200'
-    providerId: '#result.connectionId()'
-    location: '#result.location()'
-    connectionName: '#result.connectionName()'
-    region: '#result.region()'
-    close: '#directConnectClient.close()'
-    hasLogicalRedundancy: '#result.hasLogicalRedundancy()'
-    providerName: '#result.providerName()'
-  request: T(software.amazon.awssdk.services.directconnect.model.CreateConnectionRequest).builder().location(#location).bandwidth(#bandwidth).connectionName(#name).lagId(#lagId).providerName(#providerName).build()
-  method: createConnection
   argNames:
   - request
-  client: '#directConnectClient'
+  request: T(software.amazon.awssdk.services.directconnect.model.CreateConnectionRequest).builder().location(#location).bandwidth(#bandwidth).connectionName(#name).lagId(#lagId).providerName(#providerName).build()
+  output:
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    close: '#directConnectClient.close()'
+    ownerAccount: '#result.ownerAccount()'
+    providerId: '#result.connectionId()'
+    connectionName: '#result.connectionName()'
+    connectionState: '#result.connectionState()'
+    region: '#result.region()'
+    location: '#result.location()'
+    bandwidth: '#result.bandwidth()'
+    vlan: '#result.vlan()'
+    partnerName: '#result.partnerName()'
+    loaIssueTime: '#result.loaIssueTime()'
+    lagId: '#result.lagId()'
+    awsDevice: '#result.awsDevice()'
+    jumboFrameCapable: '#result.jumboFrameCapable()'
+    awsDeviceV2: '#result.awsDeviceV2()'
+    hasLogicalRedundancy: '#result.hasLogicalRedundancy()'
+    tags: '#result.tags()'
+    providerName: '#result.providerName()'
 confirm:
+  client: '#directConnectClient'
+  method: confirmConnection
   argTypes:
   - software.amazon.awssdk.services.directconnect.model.ConfirmConnectionRequest
-  output:
-    success: '#result.sdkHttpResponse().statusCode() eq 200'
-  request: T(software.amazon.awssdk.services.directconnect.model.ConfirmConnectionRequest).builder().connectionId(#connectionId).build()
-  method: confirmConnection
   argNames:
   - request
-  client: '#directConnectClient'
+  request: T(software.amazon.awssdk.services.directconnect.model.ConfirmConnectionRequest).builder().connectionId(#connectionId).build()
+  output:
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
 uninstall:
+  client: '#directConnectClient'
+  method: deleteConnection
   argTypes:
   - software.amazon.awssdk.services.directconnect.model.DeleteConnectionRequest
-  output:
-    deleteProviderId: '#connectionId'
-    success: '#result.sdkHttpResponse().statusCode() eq 200'
-    close: '#directConnectClient.close()'
-  request: T(software.amazon.awssdk.services.directconnect.model.DeleteConnectionRequest).builder().connectionId(#connectionId).build()
-  method: deleteConnection
   argNames:
   - request
-  client: '#directConnectClient'
+  request: T(software.amazon.awssdk.services.directconnect.model.DeleteConnectionRequest).builder().connectionId(#connectionId).build()
+  output:
+    success: '#result.sdkHttpResponse().statusCode() eq 200'
+    close: '#directConnectClient.close()'
+    deleteProviderId: '#connectionId'

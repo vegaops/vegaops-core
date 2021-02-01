@@ -7,78 +7,78 @@ actions:
 - query
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 install:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.CreateSecurityGroupRequest
+    description: '#description'
+    vpcId: '#vpcId'
+    securityGroupName: '#name'
+    securityGroupType: '#securityGroupType'
+  argValues:
+    request: '#request'
   output:
-    securityGroupId: '#result.SecurityGroupId'
     success: '#throwable eq null'
+    securityGroupId: '#result.SecurityGroupId'
     after:
+      action: query
+      input:
+        securityGroupId: '#securityGroupId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#throwable eq null'
         mergeKeys: '*'
-      input:
-        securityGroupId: '#securityGroupId'
-      action: query
-      waitInterval: '3000'
-  request:
-    securityGroupName: '#name'
-    securityGroupType: '#securityGroupType'
-    vpcId: '#vpcId'
-    description: '#description'
-    class: com.aliyuncs.ecs.model.v20140526.CreateSecurityGroupRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
 uninstall:
-  output:
-    deleteProviderId: '#securityGroupId'
-    success: '#throwable eq null'
-  request:
-    securityGroupId: '#securityGroupId'
-    class: com.aliyuncs.ecs.model.v20140526.DeleteSecurityGroupRequest
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DeleteSecurityGroupRequest
+    securityGroupId: '#securityGroupId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-list:
   output:
-    '[securityGroupsList]:[#result.SecurityGroups]':
-      securityGroupId: '#SecurityGroupId'
-      creationTime: '#CreationTime'
-      regionId: '#regionId'
-      providerId: '#SecurityGroupId'
-      vpcId: '#VpcId'
-      name: '#SecurityGroupName'
-      description: '#Description'
-    log: 'false'
+    success: '#throwable eq null'
+    deleteProviderId: '#securityGroupId'
+list:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DescribeSecurityGroupsRequest
+    pageSize: '100'
+    pageNumber: '1'
+  argValues:
+    request: '#request'
+  output:
     success: '#throwable eq null'
     loop:
-      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
       condition: '#result.getSecurityGroups().size() != 0'
       appendList:
       - securityGroupsList
-  request:
-    pageNumber: '1'
-    pageSize: '100'
-    class: com.aliyuncs.ecs.model.v20140526.DescribeSecurityGroupsRequest
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
+    log: 'false'
+    '[securityGroupsList]:[#result.SecurityGroups]':
+      securityGroupId: '#SecurityGroupId'
+      providerId: '#SecurityGroupId'
+      vpcId: '#VpcId'
+      creationTime: '#CreationTime'
+      regionId: '#regionId'
+      description: '#Description'
+      name: '#SecurityGroupName'
+query:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DescribeSecurityGroupsRequest
+    securityGroupId: '#securityGroupId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-query:
   output:
-    securityGroupId: '#result.getSecurityGroups().size() eq 0 ? null:#result.getSecurityGroups().get(0).getSecurityGroupId()'
-    creationTime: '#result.getSecurityGroups().size() eq 0 ? null:#result.getSecurityGroups().get(0).getCreationTime()'
-    regionId: '#result.getSecurityGroups().size() eq 0 ? null:#result.regionId'
     success: '#throwable eq null'
+    securityGroupId: '#result.getSecurityGroups().size() eq 0 ? null:#result.getSecurityGroups().get(0).getSecurityGroupId()'
     providerId: '#result.getSecurityGroups().size() eq 0 ? null:#result.getSecurityGroups().get(0).getSecurityGroupId()'
     vpcId: '#result.getSecurityGroups().size() eq 0 ? null:#result.getSecurityGroups().get(0).getVpcId()'
-    name: '#result.getSecurityGroups().size() eq 0 ? null:#result.getSecurityGroups().get(0).getSecurityGroupName()'
+    creationTime: '#result.getSecurityGroups().size() eq 0 ? null:#result.getSecurityGroups().get(0).getCreationTime()'
+    regionId: '#result.getSecurityGroups().size() eq 0 ? null:#result.regionId'
     description: '#result.getSecurityGroups().size() eq 0 ? null:#result.getSecurityGroups().get(0).getDescription()'
-  request:
-    securityGroupId: '#securityGroupId'
-    class: com.aliyuncs.ecs.model.v20140526.DescribeSecurityGroupsRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+    name: '#result.getSecurityGroups().size() eq 0 ? null:#result.getSecurityGroups().get(0).getSecurityGroupName()'

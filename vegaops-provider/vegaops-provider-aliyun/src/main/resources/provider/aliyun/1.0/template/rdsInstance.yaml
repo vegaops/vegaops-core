@@ -7,159 +7,159 @@ actions:
 - query
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 install:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.rds.model.v20140815.CreateDBInstanceRequest
+    engine: '#engine'
+    engineVersion: '#engineVersion'
+    DBInstanceClass: '#dBInstanceClass'
+    DBInstanceStorage: '#dBInstanceStorage'
+    DBInstanceNetType: '#dBInstanceNetType'
+    securityIPList: '#securityIPList'
+    payType: '#payType'
+    DBInstanceDescription: '#name'
+    zoneId: '#zoneId'
+    instanceNetworkType: '#instanceNetworkType'
+    VPCId: '#vpcId'
+    VSwitchId: '#vswitchId'
+    privateIpAddress: '#privateIpAddress'
+    period: '#period'
+    DBInstanceStorageType: '#dBInstanceStorageType'
+    encryptionKey: '#encryptionKey'
+    roleARN: '#roleARN'
+    autoRenew: '#autoRenew'
+    category: '#category'
+    dedicatedHostGroupId: '#dedicatedHostGroupId'
+    targetDedicatedHostIdForMaster: '#targetDedicatedHostIdForMaster'
+    targetDedicatedHostIdForSlave: '#targetDedicatedHostIdForMaster'
+    targetDedicatedHostIdForLog: '#targetDedicatedHostIdForLog'
+    dBParamGroupId: '#dBParamGroupId'
+    dBTimeZone: '#dBTimeZone'
+    dBIsIgnoreCase: '#dBIsIgnoreCase'
+    readTimeout: '300000'
+  argValues:
+    request: '#request'
   output:
     success: '#throwable eq null || #result.DBInstanceId ne null || #throwable.toString().contains(''SDK.ReadTimeout'')'
+    dBInstanceId: '#result.DBInstanceId'
     after:
+      action: query
+      input:
+        dBInstanceId: '#dBInstanceId'
+      waitInterval: '3000'
       retryTimes: '50'
       output:
         success: '#dbInstanceStatus eq ''Creating'''
         mergeKeys: '*'
-      input:
-        dBInstanceId: '#dBInstanceId'
-      action: query
-      waitInterval: '3000'
-    dBInstanceId: '#result.DBInstanceId'
-  request:
-    DBInstanceNetType: '#dBInstanceNetType'
-    dBTimeZone: '#dBTimeZone'
-    encryptionKey: '#encryptionKey'
-    payType: '#payType'
-    targetDedicatedHostIdForMaster: '#targetDedicatedHostIdForMaster'
-    engine: '#engine'
-    roleARN: '#roleARN'
-    DBInstanceStorage: '#dBInstanceStorage'
-    zoneId: '#zoneId'
-    autoRenew: '#autoRenew'
-    instanceNetworkType: '#instanceNetworkType'
-    class: com.aliyuncs.rds.model.v20140815.CreateDBInstanceRequest
-    DBInstanceDescription: '#name'
-    engineVersion: '#engineVersion'
-    period: '#period'
-    dedicatedHostGroupId: '#dedicatedHostGroupId'
-    DBInstanceClass: '#dBInstanceClass'
-    VPCId: '#vpcId'
-    dBParamGroupId: '#dBParamGroupId'
-    targetDedicatedHostIdForLog: '#targetDedicatedHostIdForLog'
-    VSwitchId: '#vswitchId'
-    targetDedicatedHostIdForSlave: '#targetDedicatedHostIdForMaster'
-    securityIPList: '#securityIPList'
-    DBInstanceStorageType: '#dBInstanceStorageType'
-    privateIpAddress: '#privateIpAddress'
-    readTimeout: '300000'
-    category: '#category'
-    dBIsIgnoreCase: '#dBIsIgnoreCase'
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
 uninstall:
-  output:
-    deleteProviderId: '#dBInstanceId'
-    success: '#throwable eq null'
-  request:
-    DBInstanceId: '#dBInstanceId'
-    class: com.aliyuncs.rds.model.v20140815.DeleteDBInstanceRequest
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.rds.model.v20140815.DeleteDBInstanceRequest
+    DBInstanceId: '#dBInstanceId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  output:
+    success: '#throwable eq null'
+    deleteProviderId: '#dBInstanceId'
 list:
+  client: org.prophetech.hyperone.vegaops.alicloud.client.AliyunRdsClient
+  method: getRdsInstanceList
+  argNames:
+  - param
   argTypes:
   - org.prophetech.hyperone.vegaops.alicloud.model.CreateRdsInstanceRequest
+  param:
+    regionId: '#regionId'
+    accessKey: '#accessKey'
+    secret: '#secret'
+  argValues:
+    param: '#param'
   output:
-    log: 'false'
     success: 'true'
+    log: 'false'
     '[rdsList]:[#result]':
-      dbInstanceClass: '#dbInstanceClass'
-      guardInstanceId: '#guardInstanceId'
-      dbInstanceClassType: '#dbInstanceClassType'
+      dBInstanceId: '#dBInstanceId'
+      providerId: '#dBInstanceId'
+      dbType: '#dbType'
       chargeType: '#chargeType'
-      autoUpgradeMinorVersion: '#autoUpgradeMinorVersion'
-      dbInstanceStorageType: '#dbInstanceStorageType'
-      dbInstanceStatus: '#dbInstanceStatus'
+      engineVersion: '#engineVersion'
+      regionId: '#regionId'
+      engine: '#engine'
+      name: '#name'
+      netType: '#netType'
+      connectionMode: '#connectionMode'
+      instanceType: '#instanceType'
+      guardInstanceId: '#guardInstanceId'
+      tempInstanceId: '#tempInstanceId'
+      readonlyInstanceIds: '#readonlyInstanceIds'
+      vpcId: '#vpcId'
       vswitchId: '#vswitchId'
       masterInstanceId: '#masterInstanceId'
-      connectionMode: '#connectionMode'
-      readonlyInstanceIds: '#readonlyInstanceIds'
-      maxiops: '#maxiops'
-      engine: '#engine'
-      providerId: '#dBInstanceId'
-      vpcId: '#vpcId'
-      zoneId: '#zoneId'
-      instanceNetworkType: '#instanceNetworkType'
-      maxConnections: '#maxConnections'
-      dbInstanceStorage: '#dbInstanceStorage'
-      engineVersion: '#engineVersion'
-      mutriOrsignle: '#mutriOrsignle'
-      netType: '#netType'
-      instanceType: '#instanceType'
-      dbType: '#dbType'
+      dbInstanceStatus: '#dbInstanceStatus'
       dbInstanceMemory: '#dbInstanceMemory'
-      expireTime: '#expireTime'
-      regionId: '#regionId'
-      port: '#port'
-      createTime: '#createTime'
-      name: '#name'
-      dbInstanceCpu: '#dbInstanceCpu'
-      tempInstanceId: '#tempInstanceId'
+      instanceNetworkType: '#instanceNetworkType'
+      autoUpgradeMinorVersion: '#autoUpgradeMinorVersion'
       category: '#category'
-      dBInstanceId: '#dBInstanceId'
+      dbInstanceClass: '#dbInstanceClass'
+      dbInstanceStorageType: '#dbInstanceStorageType'
+      mutriOrsignle: '#mutriOrsignle'
+      maxiops: '#maxiops'
+      zoneId: '#zoneId'
+      maxConnections: '#maxConnections'
+      dbInstanceCpu: '#dbInstanceCpu'
+      port: '#port'
+      dbInstanceStorage: '#dbInstanceStorage'
+      dbInstanceClassType: '#dbInstanceClassType'
+      createTime: '#createTime'
+      expireTime: '#expireTime'
+query:
+  client: org.prophetech.hyperone.vegaops.alicloud.client.AliyunRdsClient
   method: getRdsInstanceList
-  param:
-    regionId: '#regionId'
-    accessKey: '#accessKey'
-    secret: '#secret'
   argNames:
   - param
-  argValues:
-    param: '#param'
-  client: org.prophetech.hyperone.vegaops.alicloud.client.AliyunRdsClient
-query:
   argTypes:
   - org.prophetech.hyperone.vegaops.alicloud.model.CreateRdsInstanceRequest
-  output:
-    dbInstanceClass: '#result.size() eq 0 ? null :#result.get(0).dbInstanceClass'
-    guardInstanceId: '#result.size() eq 0 ? null :#result.get(0).guardInstanceId'
-    dbInstanceClassType: '#result.size() eq 0 ? null :#result.get(0).dbInstanceClassType'
-    chargeType: '#result.size() eq 0 ? null : #result.get(0).chargeType'
-    autoUpgradeMinorVersion: '#result.size() eq 0 ? null :#result.get(0).autoUpgradeMinorVersion'
-    dbInstanceStorageType: '#result.size() eq 0 ? null :#result.get(0).dbInstanceStorageType'
-    dbInstanceStatus: '#result.size() eq 0 ? null :#result.get(0).dbInstanceStatus'
-    vswitchId: '#result.size() eq 0 ? null :#result.get(0).vswitchId'
-    masterInstanceId: '#result.size() eq 0 ? null :#result.get(0).masterInstanceId'
-    connectionMode: '#result.size() eq 0 ? null :#result.get(0).connectionMode'
-    readonlyInstanceIds: '#result.size() eq 0 ? null :#result.get(0).readonlyInstanceIds'
-    maxiops: '#result.size() eq 0 ? null :#result.get(0).maxiops'
-    engine: '#result.size() eq 0 ? null :#result.get(0).engine'
-    providerId: '#result.size() eq 0 ? null : #result.get(0).dBInstanceId'
-    vpcId: '#result.size() eq 0 ? null :#result.get(0).vpcId'
-    zoneId: '#result.size() eq 0 ? null :#result.get(0).zoneId'
-    instanceNetworkType: '#result.size() eq 0 ? null :#result.get(0).instanceNetworkType'
-    maxConnections: '#result.size() eq 0 ? null :#result.get(0).maxConnections'
-    dbInstanceStorage: '#result.size() eq 0 ? null :#result.get(0).dbInstanceStorage'
-    engineVersion: '#result.size() eq 0 ? null :#result.get(0).engineVersion'
-    mutriOrsignle: '#result.size() eq 0 ? null :#result.get(0).mutriOrsignle'
-    netType: '#result.size() eq 0 ? null :#result.get(0).netType'
-    instanceType: '#result.size() eq 0 ? null :#result.get(0).instanceType'
-    dbInstanceMemory: '#result.size() eq 0 ? null :#result.get(0).dbInstanceMemory'
-    expireTime: '#result.size() eq 0 ? null :#result.get(0).expireTime'
-    regionId: '#result.size() eq 0 ? null :#result.get(0).regionId'
-    port: '#result.size() eq 0 ? null :#result.get(0).port'
-    createTime: '#result.size() eq 0 ? null :#result.get(0).createTime'
-    success: '#throwable eq null'
-    name: '#result.size() eq 0 ? null :#result.get(0).name'
-    dbInstanceCpu: '#result.size() eq 0 ? null :#result.get(0).dbInstanceCpu'
-    tempInstanceId: '#result.size() eq 0 ? null :#result.get(0).tempInstanceId'
-    category: '#result.size() eq 0 ? null :#result.get(0).category'
-    dBInstanceId: '#result.size() eq 0 ? null : #result.get(0).dBInstanceId'
-  method: getRdsInstanceList
   param:
     regionId: '#regionId'
     accessKey: '#accessKey'
-    dbInstanceId: '#dBInstanceId'
     secret: '#secret'
-  argNames:
-  - param
+    dbInstanceId: '#dBInstanceId'
   argValues:
     param: '#param'
-  client: org.prophetech.hyperone.vegaops.alicloud.client.AliyunRdsClient
+  output:
+    success: '#throwable eq null'
+    dBInstanceId: '#result.size() eq 0 ? null : #result.get(0).dBInstanceId'
+    providerId: '#result.size() eq 0 ? null : #result.get(0).dBInstanceId'
+    chargeType: '#result.size() eq 0 ? null : #result.get(0).chargeType'
+    engineVersion: '#result.size() eq 0 ? null :#result.get(0).engineVersion'
+    regionId: '#result.size() eq 0 ? null :#result.get(0).regionId'
+    engine: '#result.size() eq 0 ? null :#result.get(0).engine'
+    name: '#result.size() eq 0 ? null :#result.get(0).name'
+    netType: '#result.size() eq 0 ? null :#result.get(0).netType'
+    dbInstanceMemory: '#result.size() eq 0 ? null :#result.get(0).dbInstanceMemory'
+    connectionMode: '#result.size() eq 0 ? null :#result.get(0).connectionMode'
+    instanceType: '#result.size() eq 0 ? null :#result.get(0).instanceType'
+    guardInstanceId: '#result.size() eq 0 ? null :#result.get(0).guardInstanceId'
+    tempInstanceId: '#result.size() eq 0 ? null :#result.get(0).tempInstanceId'
+    readonlyInstanceIds: '#result.size() eq 0 ? null :#result.get(0).readonlyInstanceIds'
+    vpcId: '#result.size() eq 0 ? null :#result.get(0).vpcId'
+    vswitchId: '#result.size() eq 0 ? null :#result.get(0).vswitchId'
+    masterInstanceId: '#result.size() eq 0 ? null :#result.get(0).masterInstanceId'
+    dbInstanceStatus: '#result.size() eq 0 ? null :#result.get(0).dbInstanceStatus'
+    instanceNetworkType: '#result.size() eq 0 ? null :#result.get(0).instanceNetworkType'
+    autoUpgradeMinorVersion: '#result.size() eq 0 ? null :#result.get(0).autoUpgradeMinorVersion'
+    category: '#result.size() eq 0 ? null :#result.get(0).category'
+    dbInstanceClass: '#result.size() eq 0 ? null :#result.get(0).dbInstanceClass'
+    dbInstanceStorageType: '#result.size() eq 0 ? null :#result.get(0).dbInstanceStorageType'
+    mutriOrsignle: '#result.size() eq 0 ? null :#result.get(0).mutriOrsignle'
+    maxiops: '#result.size() eq 0 ? null :#result.get(0).maxiops'
+    zoneId: '#result.size() eq 0 ? null :#result.get(0).zoneId'
+    maxConnections: '#result.size() eq 0 ? null :#result.get(0).maxConnections'
+    dbInstanceCpu: '#result.size() eq 0 ? null :#result.get(0).dbInstanceCpu'
+    port: '#result.size() eq 0 ? null :#result.get(0).port'
+    dbInstanceStorage: '#result.size() eq 0 ? null :#result.get(0).dbInstanceStorage'
+    dbInstanceClassType: '#result.size() eq 0 ? null :#result.get(0).dbInstanceClassType'
+    createTime: '#result.size() eq 0 ? null :#result.get(0).createTime'
+    expireTime: '#result.size() eq 0 ? null :#result.get(0).expireTime'

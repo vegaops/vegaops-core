@@ -4,21 +4,21 @@ componentId: '#componentId'
 actions:
 - list
 ctyunAccount:
+  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
   accessKey: '#accessKey'
   secret: '#secret'
-  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
 list:
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+  method: getCtyunResponse
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
   argTypes:
   - org.prophetech.hyperone.vegaops.ctyun.model.GetListenersv4Request
+  argNames:
+  - request
+  request:
+    regionId: '#regionId'
+    loadBalancerId: '#load_balancer_id'
   output:
     success: '#result.statusCode.equals(800)'
     '[listeners]:[#result.returnObj.listeners]': {}
-  request:
-    loadBalancerId: '#load_balancer_id'
-    regionId: '#regionId'
-  classProperties:
-    ctyunAccount: '#ctyunAccount'
-  method: getCtyunResponse
-  argNames:
-  - request
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient

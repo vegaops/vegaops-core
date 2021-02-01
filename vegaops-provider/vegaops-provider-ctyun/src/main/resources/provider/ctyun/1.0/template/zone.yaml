@@ -4,18 +4,18 @@ componentId: '#componentId'
 actions:
 - list
 ctyunAccount:
+  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
   accessKey: '#accessKey'
   secret: '#secret'
-  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
 list:
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunRegionZoneClient
+  method: getAllZones
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
   output:
+    success: 'true'
     '[regionList]:[#result]':
+      name: '#name'
       regionId: '#zoneRegionId'
       vendor: '#vendor'
       providerId: '#providerId'
-      name: '#name'
-    success: 'true'
-  classProperties:
-    ctyunAccount: '#ctyunAccount'
-  method: getAllZones
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunRegionZoneClient

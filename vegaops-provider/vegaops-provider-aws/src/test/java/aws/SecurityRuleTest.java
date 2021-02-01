@@ -23,7 +23,7 @@ public class SecurityRuleTest {
         try {
             IpPermission permission = IpPermission.builder().fromPort(3).toPort(5).ipProtocol("tcp").ipRanges(IpRange.builder().build()).build();
             AuthorizeSecurityGroupIngressRequest requestIngress = AuthorizeSecurityGroupIngressRequest.builder().groupId("sg-0c667bae465280144")
-                   .ipPermissions(permission)
+                    .ipPermissions(permission)
                     .build();
             AuthorizeSecurityGroupEgressRequest requestEgress = AuthorizeSecurityGroupEgressRequest.builder().groupId("sg-0c667bae465280144")
                     .ipPermissions(permission)

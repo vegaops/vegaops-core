@@ -8,147 +8,147 @@ actions:
 - modify
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 install:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.vpc.model.v20160428.CreateVirtualBorderRouterRequest
+    physicalConnectionId: '#physicalConnectionId'
+    vlanId: '#vlanId'
+    vbrOwnerId: '#vbrOwnerId'
+    circuitCode: '#circuitCode'
+    localGatewayIp: '#localGatewayIp'
+    peerGatewayIp: '#peerGatewayIp'
+    peeringSubnetMask: '#peeringSubnetMask'
+    description: '#description'
+    name: '#name'
+    localIpv6GatewayIp: '#localIpv6GatewayIp'
+    peerIpv6GatewayIp: '#peerIpv6GatewayIp'
+    enableIpv6: '#enableIpv6'
+  argValues:
+    request: '#request'
   output:
-    regionId: '#regionId'
     success: '#throwable eq null'
+    regionId: '#regionId'
+    vbrId: '#result.VbrId'
     after:
+      action: query
+      input:
+        vbrId: '#vbrId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#throwable eq null'
         mergeKeys: '*'
-      input:
-        vbrId: '#vbrId'
-      action: query
-      waitInterval: '3000'
-    vbrId: '#result.VbrId'
-  request:
-    physicalConnectionId: '#physicalConnectionId'
-    peerIpv6GatewayIp: '#peerIpv6GatewayIp'
-    peerGatewayIp: '#peerGatewayIp'
-    vlanId: '#vlanId'
-    vbrOwnerId: '#vbrOwnerId'
-    peeringSubnetMask: '#peeringSubnetMask'
-    description: '#description'
-    localGatewayIp: '#localGatewayIp'
-    circuitCode: '#circuitCode'
-    name: '#name'
-    localIpv6GatewayIp: '#localIpv6GatewayIp'
-    enableIpv6: '#enableIpv6'
-    class: com.aliyuncs.vpc.model.v20160428.CreateVirtualBorderRouterRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
 uninstall:
-  output:
-    deleteProviderId: '#vbrId'
-    success: '#throwable eq null'
-  request:
-    vbrId: '#vbrId'
-    class: com.aliyuncs.vpc.model.v20160428.DeleteVirtualBorderRouterRequest
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.vpc.model.v20160428.DeleteVirtualBorderRouterRequest
+    vbrId: '#vbrId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-list:
   output:
-    log: 'false'
     success: '#throwable eq null'
+    deleteProviderId: '#vbrId'
+list:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.vpc.model.v20160428.DescribeVirtualBorderRoutersRequest
+    pageSize: '10'
+    pageNumber: '1'
+  argValues:
+    request: '#request'
+  output:
+    success: '#throwable eq null'
+    log: 'false'
     loop:
-      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
       condition: '#result.getVirtualBorderRouterSet().size() != 0'
       appendList:
       - vbrList
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
     '[vbrList]:[#result.VirtualBorderRouterSet]':
-      physicalConnectionId: '#PhysicalConnectionId'
+      localGatewayIp: '#LocalGatewayIp'
       peerGatewayIp: '#PeerGatewayIp'
-      creationTime: '#CreationTime'
+      physicalConnectionOwnerUid: '#PhysicalConnectionOwnerUid'
       vlanId: '#VlanId'
       physicalConnectionStatus: '#PhysicalConnectionStatus'
-      physicalConnectionBusinessStatus: '#PhysicalConnectionBusinessStatus'
-      accessPointId: '#AccessPointId'
-      peeringSubnetMask: '#PeeringSubnetMask'
-      localGatewayIp: '#LocalGatewayIp'
-      vbrId: '#VbrId'
-      vlanInterfaceId: '#VlanInterfaceId'
-      providerId: '#VbrId'
+      physicalConnectionId: '#PhysicalConnectionId'
       routeTableId: '#RouteTableId'
-      physicalConnectionOwnerUid: '#PhysicalConnectionOwnerUid'
+      peeringSubnetMask: '#PeeringSubnetMask'
+      creationTime: '#CreationTime'
       activationTime: '#ActivationTime'
       ipv6CidrBlock: '#Ipv6CidrBlock'
       status: '#Status'
-  request:
-    pageNumber: '1'
-    pageSize: '10'
-    class: com.aliyuncs.vpc.model.v20160428.DescribeVirtualBorderRoutersRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+      physicalConnectionBusinessStatus: '#PhysicalConnectionBusinessStatus'
+      vlanInterfaceId: '#VlanInterfaceId'
+      accessPointId: '#AccessPointId'
+      vbrId: '#VbrId'
+      providerId: '#VbrId'
 query:
+  client: org.prophetech.hyperone.vegaops.alicloud.client.AliyunVbrClient
+  method: getVbr
+  argNames:
+  - param
   argTypes:
   - org.prophetech.hyperone.vegaops.alicloud.model.DescribeVbrRequest
-  output:
-    physicalConnectionId: '#result ?.PhysicalConnectionId'
-    peerGatewayIp: '#result ?.PeerGatewayIp'
-    creationTime: '#result ?.CreationTime'
-    vlanId: '#result ?.VlanId'
-    physicalConnectionStatus: '#result ?.PhysicalConnectionStatus'
-    physicalConnectionBusinessStatus: '#result ?.PhysicalConnectionBusinessStatus'
-    accessPointId: '#result ?.AccessPointId'
-    peeringSubnetMask: '#result ?.PeeringSubnetMask'
-    localGatewayIp: '#result ?.LocalGatewayIp'
-    vbrId: '#result ?.VbrId'
-    success: '#throwable eq null'
-    vlanInterfaceId: '#result ?.VlanInterfaceId'
-    providerId: '#result ?.VbrId'
-    routeTableId: '#result ?.RouteTableId'
-    physicalConnectionOwnerUid: '#result ?.PhysicalConnectionOwnerUid'
-    activationTime: '#result ?.ActivationTime'
-    ipv6CidrBlock: '#result ?.Ipv6CidrBlock'
-    status: '#result ?.Status'
-  method: getVbr
   param:
     regionId: '#regionId'
     accessKey: '#accessKey'
     secret: '#secret'
     vbrId: '#vbrId'
-  argNames:
-  - param
   argValues:
     param: '#param'
-  client: org.prophetech.hyperone.vegaops.alicloud.client.AliyunVbrClient
+  output:
+    success: '#throwable eq null'
+    localGatewayIp: '#result ?.LocalGatewayIp'
+    peerGatewayIp: '#result ?.PeerGatewayIp'
+    physicalConnectionOwnerUid: '#result ?.PhysicalConnectionOwnerUid'
+    vlanId: '#result ?.VlanId'
+    physicalConnectionStatus: '#result ?.PhysicalConnectionStatus'
+    physicalConnectionId: '#result ?.PhysicalConnectionId'
+    routeTableId: '#result ?.RouteTableId'
+    peeringSubnetMask: '#result ?.PeeringSubnetMask'
+    creationTime: '#result ?.CreationTime'
+    activationTime: '#result ?.ActivationTime'
+    ipv6CidrBlock: '#result ?.Ipv6CidrBlock'
+    status: '#result ?.Status'
+    physicalConnectionBusinessStatus: '#result ?.PhysicalConnectionBusinessStatus'
+    vlanInterfaceId: '#result ?.VlanInterfaceId'
+    accessPointId: '#result ?.AccessPointId'
+    vbrId: '#result ?.VbrId'
+    providerId: '#result ?.VbrId'
 modify:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.vpc.model.v20160428.ModifyVirtualBorderRouterAttributeRequest
+    vbrId: '#vbrId'
+    vlanId: '#vlanId'
+    circuitCode: '#circuitCode'
+    localGatewayIp: '#localGatewayIp'
+    peerGatewayIp: '#peerGatewayIp'
+    peeringSubnetMask: '#peeringSubnetMask'
+    minTxInterval: '#minTxInterval'
+    minRxInterval: '#minRxInterval'
+    detectMultiplier: '#detectMultiplier'
+    description: '#description'
+    name: '#name'
+    peeringIpv6SubnetMask: '#peeringIpv6SubnetMask'
+    localIpv6GatewayIp: '#localIpv6GatewayIp'
+    peerIpv6GatewayIp: '#peerIpv6GatewayIp'
+    enableIpv6: '#enableIpv6'
+    associatedPhysicalConnections: '#associatedPhysicalConnections'
+  argValues:
+    request: '#request'
   output:
     success: '#throwable eq null'
     after:
+      action: query
+      input:
+        vpcId: '#vpcId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#throwable eq null'
         mergeKeys: '*'
-      input:
-        vpcId: '#vpcId'
-      action: query
-      waitInterval: '3000'
-  request:
-    peerIpv6GatewayIp: '#peerIpv6GatewayIp'
-    associatedPhysicalConnections: '#associatedPhysicalConnections'
-    peerGatewayIp: '#peerGatewayIp'
-    minRxInterval: '#minRxInterval'
-    vlanId: '#vlanId'
-    peeringSubnetMask: '#peeringSubnetMask'
-    minTxInterval: '#minTxInterval'
-    description: '#description'
-    localGatewayIp: '#localGatewayIp'
-    vbrId: '#vbrId'
-    detectMultiplier: '#detectMultiplier'
-    peeringIpv6SubnetMask: '#peeringIpv6SubnetMask'
-    circuitCode: '#circuitCode'
-    name: '#name'
-    localIpv6GatewayIp: '#localIpv6GatewayIp'
-    enableIpv6: '#enableIpv6'
-    class: com.aliyuncs.vpc.model.v20160428.ModifyVirtualBorderRouterAttributeRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)

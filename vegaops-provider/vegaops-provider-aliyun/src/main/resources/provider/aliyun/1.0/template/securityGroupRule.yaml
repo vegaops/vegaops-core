@@ -6,78 +6,78 @@ actions:
 - list
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 install:
+  client: org.prophetech.hyperone.vegaops.alicloud.client.AliyunSecurityGroupRuleClient
+  method: createScGroupRule
+  argNames:
+  - param
   argTypes:
   - org.prophetech.hyperone.vegaops.alicloud.model.CreateSecurityGroupRuleRequest
+  param:
+    regionId: '#regionId'
+    accessKey: '#accessKey'
+    secret: '#secret'
+    ipProtocol: '#ipProtocol'
+    portRange: '#portRange'
+    description: '#description'
+    policy: '#policy'
+    direction: '#direction'
+    securityGroupId: '#securityGroupId'
+    destCidrIp: '#destCidrIp'
+    sourceCidrIp: '#sourceCidrIp'
+    priority: '#priority'
+  argValues:
+    param: '#param'
   output:
-    portRange: '#result.getPortRange()'
-    securityGroupId: '#result.getSecurityGroupId()'
     success: '#throwable eq null'
-    description: '#result.getDescription()'
-    cidr: '#result.getDestCidrIp() eq null ? #result.getSourceCidrIp() : #result.getDestCidrIp()'
     ipProtocol: '#result.getIpProtocol()'
+    portRange: '#result.getPortRange()'
+    description: '#result.getDescription()'
     policy: '#result.getPolicy()'
     direction: '#result.getDirection()'
-  method: createScGroupRule
-  param:
-    portRange: '#portRange'
-    securityGroupId: '#securityGroupId'
-    sourceCidrIp: '#sourceCidrIp'
-    regionId: '#regionId'
-    accessKey: '#accessKey'
-    destCidrIp: '#destCidrIp'
-    description: '#description'
-    secret: '#secret'
-    ipProtocol: '#ipProtocol'
-    priority: '#priority'
-    policy: '#policy'
-    direction: '#direction'
+    securityGroupId: '#result.getSecurityGroupId()'
+    cidr: '#result.getDestCidrIp() eq null ? #result.getSourceCidrIp() : #result.getDestCidrIp()'
+uninstall:
+  client: org.prophetech.hyperone.vegaops.alicloud.client.AliyunSecurityGroupRuleClient
+  method: deleteScGroupRule
   argNames:
   - param
-  argValues:
-    param: '#param'
-  client: org.prophetech.hyperone.vegaops.alicloud.client.AliyunSecurityGroupRuleClient
-uninstall:
   argTypes:
   - org.prophetech.hyperone.vegaops.alicloud.model.CreateSecurityGroupRuleRequest
-  output:
-    deleteProviderId: '#providerId'
-    success: '#throwable eq null'
-  method: deleteScGroupRule
   param:
-    portRange: '#portRange'
-    securityGroupId: '#securityGroupId'
-    sourceCidrIp: '#sourceCidrIp'
     regionId: '#regionId'
     accessKey: '#accessKey'
-    destCidrIp: '#destCidrIp'
-    description: '#description'
     secret: '#secret'
     ipProtocol: '#ipProtocol'
+    portRange: '#portRange'
     policy: '#policy'
+    description: '#description'
     direction: '#direction'
-  argNames:
-  - param
+    securityGroupId: '#securityGroupId'
+    destCidrIp: '#destCidrIp'
+    sourceCidrIp: '#sourceCidrIp'
   argValues:
     param: '#param'
-  client: org.prophetech.hyperone.vegaops.alicloud.client.AliyunSecurityGroupRuleClient
-list:
   output:
-    log: 'false'
     success: '#throwable eq null'
-    '[securityGroupRuleList]:[#result.Permissions]':
-      securityGroupId: '#securityGroupId'
-      portRange: '#PortRange'
-      vpcId: '#VpcId'
-      zoneId: '#zoneId'
-      description: '#Description'
-      cidr: '#SourceCidrIp eq '''' ? #DestCidrIp:#SourceCidrIp'
-      ipProtocol: '#IpProtocol'
-      policy: '#Policy'
-      direction: '#Direction'
-  request:
-    securityGroupId: '#securityGroupId'
-    class: com.aliyuncs.ecs.model.v20140526.DescribeSecurityGroupAttributeRequest
+    deleteProviderId: '#providerId'
+list:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DescribeSecurityGroupAttributeRequest
+    securityGroupId: '#securityGroupId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  output:
+    success: '#throwable eq null'
+    log: 'false'
+    '[securityGroupRuleList]:[#result.Permissions]':
+      securityGroupId: '#securityGroupId'
+      zoneId: '#zoneId'
+      vpcId: '#VpcId'
+      ipProtocol: '#IpProtocol'
+      description: '#Description'
+      policy: '#Policy'
+      cidr: '#SourceCidrIp eq '''' ? #DestCidrIp:#SourceCidrIp'
+      portRange: '#PortRange'
+      direction: '#Direction'

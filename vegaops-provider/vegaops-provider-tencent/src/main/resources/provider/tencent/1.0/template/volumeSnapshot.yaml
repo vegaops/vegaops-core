@@ -5,36 +5,36 @@ actions:
 - list
 credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
 httpProfile:
-  endpoint: cbs.tencentcloudapi.com
   class: com.tencentcloudapi.common.profile.HttpProfile
+  endpoint: cbs.tencentcloudapi.com
 clientProfile:
   class: com.tencentcloudapi.common.profile.ClientProfile
   httpProfile: '#httpProfile'
 list:
+  client: new com.tencentcloudapi.cbs.v20170312.CbsClient(#credential,#regionId,#clientProfile)
+  method: DescribeSnapshots
   argTypes:
   - com.tencentcloudapi.cbs.v20170312.models.DescribeSnapshotsRequest
+  argNames:
+  - request
+  request:
+    class: com.tencentcloudapi.cbs.v20170312.models.DescribeSnapshotsRequest
+    limit: '100'
+    offset: '0'
   output:
-    '[volumeSnapshotList]:[#result.SnapshotSet]':
-      regionId: '#regionId'
-      providerId: '#SnapshotId'
-      name: '#SnapshotName'
-      volumeId: '#DiskId'
-      progress: '#Percent'
-      zoneId: '#Placement?.Zone'
-      createAt: '#CreateTime'
-      status: '#SnapshotState'
-    log: 'false'
     success: '#throwable eq null'
+    log: 'false'
     loop:
-      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
       condition: '#result.getSnapshotSet().length != 0'
       appendList:
       - volumeSnapshotList
-  request:
-    offset: '0'
-    limit: '100'
-    class: com.tencentcloudapi.cbs.v20170312.models.DescribeSnapshotsRequest
-  method: DescribeSnapshots
-  argNames:
-  - request
-  client: new com.tencentcloudapi.cbs.v20170312.CbsClient(#credential,#regionId,#clientProfile)
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
+    '[volumeSnapshotList]:[#result.SnapshotSet]':
+      regionId: '#regionId'
+      name: '#SnapshotName'
+      progress: '#Percent'
+      volumeId: '#DiskId'
+      zoneId: '#Placement?.Zone'
+      status: '#SnapshotState'
+      providerId: '#SnapshotId'
+      createAt: '#CreateTime'

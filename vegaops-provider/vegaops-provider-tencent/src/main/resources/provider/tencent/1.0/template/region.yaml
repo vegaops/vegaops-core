@@ -5,23 +5,23 @@ actions:
 - list
 credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
 httpProfile:
-  endpoint: cvm.tencentcloudapi.com
   class: com.tencentcloudapi.common.profile.HttpProfile
+  endpoint: cvm.tencentcloudapi.com
 clientProfile:
   class: com.tencentcloudapi.common.profile.ClientProfile
   httpProfile: '#httpProfile'
 list:
+  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+  method: DescribeRegions
   argTypes:
   - com.tencentcloudapi.cvm.v20170312.models.DescribeRegionsRequest
-  output:
-    log: 'false'
-    '[regionList]:[#result.RegionSet]':
-      name: '#regionName'
-      regionState: '#regionState'
-      id: '#region'
-    success: '#throwable eq null'
-  request: {}
-  method: DescribeRegions
   argNames:
   - request
-  client: new com.tencentcloudapi.cvm.v20170312.CvmClient(#credential,#regionId,#clientProfile)
+  request: {}
+  output:
+    success: '#throwable eq null'
+    log: 'false'
+    '[regionList]:[#result.RegionSet]':
+      id: '#region'
+      name: '#regionName'
+      regionState: '#regionState'

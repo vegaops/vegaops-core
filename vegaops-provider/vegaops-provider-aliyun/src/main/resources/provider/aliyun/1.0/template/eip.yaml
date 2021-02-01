@@ -10,171 +10,171 @@ actions:
 - updateName
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 install:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.vpc.model.v20160428.AllocateEipAddressRequest
+    bandwidth: '#bandwidth'
+    ISP: '#isp'
+    period: '#period'
+    pricingCycle: '#pricingCycle'
+    name: '#name'
+    internetChargeType: '#internetChargeType'
+  argValues:
+    request: '#request'
   output:
     success: '#throwable eq null'
     allocationId: '#result.AllocationId'
     after:
+      action: updateName
+      input:
+        allocationId: '#allocationId'
+        name: '#name'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#throwable eq null'
         mergeKeys: '*'
-      input:
-        name: '#name'
-        allocationId: '#allocationId'
-      action: updateName
-      waitInterval: '3000'
-  request:
-    period: '#period'
-    internetChargeType: '#internetChargeType'
-    bandwidth: '#bandwidth'
-    ISP: '#isp'
-    name: '#name'
-    pricingCycle: '#pricingCycle'
-    class: com.aliyuncs.vpc.model.v20160428.AllocateEipAddressRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
 uninstall:
-  output:
-    deleteProviderId: '#allocationId'
-    success: '#throwable eq null'
-  request:
-    allocationId: '#allocationId'
-    class: com.aliyuncs.ecs.model.v20140526.ReleaseEipAddressRequest
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.ReleaseEipAddressRequest
+    allocationId: '#allocationId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-list:
   output:
-    log: 'false'
     success: '#throwable eq null'
+    deleteProviderId: '#allocationId'
+list:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.vpc.model.v20160428.DescribeEipAddressesRequest
+    pageSize: '10'
+    pageNumber: '1'
+  argValues:
+    request: '#request'
+  output:
+    success: '#throwable eq null'
+    log: 'false'
     loop:
-      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
       condition: '#result.getEipAddresses().size() != 0'
       appendList:
       - eipList
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
     '[eipList]:[#result.EipAddresses]':
       instanceId: '#InstanceId'
       internetChargeType: '#InternetChargeType'
       bandwidth: '#Bandwidth'
-      regionId: '#RegionId'
-      instanceType: '#InstanceType'
       chargeType: '#ChargeType'
+      allocationTime: '#AllocationTime'
       ipAddress: '#IpAddress'
       name: '#Name'
       allocationId: '#AllocationId'
-      allocationTime: '#AllocationTime'
-      expiredTime: '#ExpiredTime'
+      instanceType: '#InstanceType'
       status: '#Status'
-  request:
-    pageNumber: '1'
-    pageSize: '10'
-    class: com.aliyuncs.vpc.model.v20160428.DescribeEipAddressesRequest
+      regionId: '#RegionId'
+      expiredTime: '#ExpiredTime'
+query:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.vpc.model.v20160428.DescribeEipAddressesRequest
+    allocationId: '#allocationId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-query:
   output:
+    success: '#throwable eq null'
+    instanceId: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getInstanceId()'
+    name: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getName()'
+    internetChargeType: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getInternetChargeType()'
     bandwidth: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getBandwidth()'
-    instanceType: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getInstanceType()'
     chargeType: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getChargeType()'
+    allocationTime: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getAllocationTime()'
     ipAddress: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getIpAddress()'
     allocationId: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getAllocationId()'
-    expiredTime: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getExpiredTime()'
-    instanceId: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getInstanceId()'
-    internetChargeType: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getInternetChargeType()'
-    regionId: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getRegionId()'
-    success: '#throwable eq null'
-    name: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getName()'
-    allocationTime: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getAllocationTime()'
+    instanceType: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getInstanceType()'
     status: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getStatus()'
-  request:
-    allocationId: '#allocationId'
-    class: com.aliyuncs.vpc.model.v20160428.DescribeEipAddressesRequest
+    regionId: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getRegionId()'
+    expiredTime: '#result.getEipAddresses().size() eq 0? null : #result.getEipAddresses().get(0).getExpiredTime()'
+bind:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.AssociateEipAddressRequest
+    allocationId: '#allocationId'
+    instanceId: '#instanceId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-bind:
   output:
     success: '#throwable eq null'
     after:
+      action: query
+      input:
+        AllocationId: '#allocationId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#instanceId ne null'
         mergeKeys: '*'
-      input:
-        AllocationId: '#allocationId'
-      action: query
-      waitInterval: '3000'
-  request:
-    instanceId: '#instanceId'
-    allocationId: '#allocationId'
-    class: com.aliyuncs.ecs.model.v20140526.AssociateEipAddressRequest
+update:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.ModifyEipAddressAttributeRequest
+    bandwidth: '#bandwidth'
+    allocationId: '#allocationId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-update:
   output:
     success: '#throwable eq null'
     after:
+      action: query
+      input:
+        AllocationId: '#allocationId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#throwable eq null'
         mergeKeys: '*'
-      input:
-        AllocationId: '#allocationId'
-      action: query
-      waitInterval: '3000'
-  request:
-    bandwidth: '#bandwidth'
-    allocationId: '#allocationId'
-    class: com.aliyuncs.ecs.model.v20140526.ModifyEipAddressAttributeRequest
+unbind:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.UnassociateEipAddressRequest
+    allocationId: '#allocationId'
+    instanceId: '#instanceId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-unbind:
   output:
     success: '#throwable eq null'
     after:
+      action: query
+      input:
+        AllocationId: '#allocationId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#status eq ''Available'''
         mergeKeys: '*'
-      input:
-        AllocationId: '#allocationId'
-      action: query
-      waitInterval: '3000'
-  request:
-    instanceId: '#instanceId'
-    allocationId: '#allocationId'
-    class: com.aliyuncs.ecs.model.v20140526.UnassociateEipAddressRequest
+updateName:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.vpc.model.v20160428.ModifyEipAddressAttributeRequest
+    name: '#name'
+    allocationId: '#allocationId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-updateName:
   output:
     success: '#throwable eq null'
     after:
+      action: query
+      input:
+        AllocationId: '#allocationId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#name ne null'
         mergeKeys: '*'
-      input:
-        AllocationId: '#allocationId'
-      action: query
-      waitInterval: '3000'
-  request:
-    name: '#name'
-    allocationId: '#allocationId'
-    class: com.aliyuncs.vpc.model.v20160428.ModifyEipAddressAttributeRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)

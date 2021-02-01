@@ -7,112 +7,112 @@ actions:
 - install-uninstall
 credential: new com.tencentcloudapi.common.Credential(#accessKey,#secret)
 httpProfile:
-  endpoint: clb.tencentcloudapi.com
   class: com.tencentcloudapi.common.profile.HttpProfile
+  endpoint: clb.tencentcloudapi.com
 clientProfile:
   class: com.tencentcloudapi.common.profile.ClientProfile
   httpProfile: '#httpProfile'
 list:
+  client: new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)
+  method: DescribeLoadBalancers
   argTypes:
   - com.tencentcloudapi.clb.v20180317.models.DescribeLoadBalancersRequest
+  argNames:
+  - request
+  request:
+    class: com.tencentcloudapi.clb.v20180317.models.DescribeLoadBalancersRequest
+    limit: '100'
+    offset: '0'
   output:
     success: '#throwable eq null'
     loop:
-      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
       condition: '#result.getLoadBalancerSet().length != 0'
       appendList:
       - loadBalancerList
+      '1': '#request.setOffset(#request.getOffset()+#request.getLimit())'
     '[loadBalancerList]:[#result.LoadBalancerSet]':
-      forward: '#Forward'
-      addressIpVersion: '#AddressIPVersion'
+      providerId: '#LoadBalancerId'
       ipAddress: '#LoadBalancerVips'
-      createAt: '#CreateTime'
+      name: '#LoadBalancerName'
+      forward: '#Forward'
+      vpcId: '#VpcId'
+      projectId: '#ProjectId'
+      addressIpVersion: '#AddressIPVersion'
+      status: '#Status'
       vswitchId: '#SubnetId'
+      createAt: '#CreateTime'
+      internetType: '#LoadBalancerType'
       payType: '#ChargeType'
       internetChargeType: '#NetworkAttributes?.InternetChargeType'
-      providerId: '#LoadBalancerId'
-      vpcId: '#VpcId'
-      name: '#LoadBalancerName'
-      internetType: '#LoadBalancerType'
-      projectId: '#ProjectId'
-      status: '#Status'
-  request:
-    offset: '0'
-    limit: '100'
-    class: com.tencentcloudapi.clb.v20180317.models.DescribeLoadBalancersRequest
-  method: DescribeLoadBalancers
-  argNames:
-  - request
-  client: new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)
 query:
+  client: new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)
+  method: DescribeLoadBalancers
   argTypes:
   - com.tencentcloudapi.clb.v20180317.models.DescribeLoadBalancersRequest
-  output:
-    forward: '#result.LoadBalancerSet[0].Forward'
-    addressIpVersion: '#result.LoadBalancerSet[0].AddressIPVersion'
-    ipAddress: '#result.LoadBalancerSet[0].LoadBalancerVips'
-    createAt: '#result.LoadBalancerSet[0].CreateTime'
-    vswitchId: '#result.LoadBalancerSet[0].SubnetId'
-    payType: '#result.LoadBalancerSet[0].ChargeType'
-    internetChargeType: '#result.LoadBalancerSet[0].NetworkAttributes?.InternetChargeType'
-    success: '#throwable eq null'
-    providerId: '#result.LoadBalancerSet[0].LoadBalancerId'
-    vpcId: '#result.LoadBalancerSet[0].VpcId'
-    name: '#result.LoadBalancerSet[0].LoadBalancerName'
-    internetType: '#result.LoadBalancerSet[0].LoadBalancerType'
-    projectId: '#result.LoadBalancerSet[0].ProjectId'
-    status: '#result.LoadBalancerSet[0].Status'
+  argNames:
+  - request
   request:
     loadBalancerIds:
     - '#slbId'
-  method: DescribeLoadBalancers
-  argNames:
-  - request
-  client: new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)
+  output:
+    success: '#throwable eq null'
+    providerId: '#result.LoadBalancerSet[0].LoadBalancerId'
+    ipAddress: '#result.LoadBalancerSet[0].LoadBalancerVips'
+    name: '#result.LoadBalancerSet[0].LoadBalancerName'
+    forward: '#result.LoadBalancerSet[0].Forward'
+    vpcId: '#result.LoadBalancerSet[0].VpcId'
+    projectId: '#result.LoadBalancerSet[0].ProjectId'
+    addressIpVersion: '#result.LoadBalancerSet[0].AddressIPVersion'
+    status: '#result.LoadBalancerSet[0].Status'
+    vswitchId: '#result.LoadBalancerSet[0].SubnetId'
+    createAt: '#result.LoadBalancerSet[0].CreateTime'
+    internetType: '#result.LoadBalancerSet[0].LoadBalancerType'
+    payType: '#result.LoadBalancerSet[0].ChargeType'
+    internetChargeType: '#result.LoadBalancerSet[0].NetworkAttributes?.InternetChargeType'
 install:
+  client: new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)
+  method: CreateLoadBalancer
   argTypes:
   - com.tencentcloudapi.clb.v20180317.models.CreateLoadBalancerRequest
+  argNames:
+  - request
+  internetAccessible:
+    class: com.tencentcloudapi.clb.v20180317.models.InternetAccessible
+    bandwidthpkgSubType: '#bandwidthpkgSubType'
+    internetChargeType: '#internetChargeType'
+    internetMaxBandwidthOut: '#internetMaxBandwidthOut'
+  request:
+    addressIPVersion: '#ipVersion'
+    forward: '1'
+    internetAccessible: '#internetAccessible'
+    loadBalancerName: '#name'
+    loadBalancerType: '#type'
+    number: '#goodsNum'
+    projectId: '#projectId'
+    subnetId: '#vswitchId'
+    vipIsp: '#vipIsp'
+    vpcId: '#vpcId'
+    zoneId: '#zoneId'
   output:
-    slbId: '#result.LoadBalancerIds[0]'
     success: '#throwable eq null'
+    slbId: '#result.LoadBalancerIds[0]'
     after:
+      action: query
+      input:
+        slbId: '#slbId'
       output:
         success: '#status eq 1'
         mergeKeys: '*'
-      input:
-        slbId: '#slbId'
-      action: query
-  request:
-    subnetId: '#vswitchId'
-    number: '#goodsNum'
-    loadBalancerType: '#type'
-    forward: '1'
-    loadBalancerName: '#name'
-    vpcId: '#vpcId'
-    addressIPVersion: '#ipVersion'
-    zoneId: '#zoneId'
-    internetAccessible: '#internetAccessible'
-    projectId: '#projectId'
-    vipIsp: '#vipIsp'
-  method: CreateLoadBalancer
-  argNames:
-  - request
-  client: new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)
-  internetAccessible:
-    internetChargeType: '#internetChargeType'
-    internetMaxBandwidthOut: '#internetMaxBandwidthOut'
-    class: com.tencentcloudapi.clb.v20180317.models.InternetAccessible
-    bandwidthpkgSubType: '#bandwidthpkgSubType'
 uninstall:
+  client: new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)
+  method: DeleteLoadBalancer
   argTypes:
   - com.tencentcloudapi.clb.v20180317.models.DeleteLoadBalancerRequest
-  output:
-    deleteProviderId: '#slbId'
-    success: '#throwable eq null'
+  argNames:
+  - request
   request:
     loadBalancerIds:
     - '#slbId'
-  method: DeleteLoadBalancer
-  argNames:
-  - request
-  client: new com.tencentcloudapi.clb.v20180317.ClbClient(#credential,#regionId,#clientProfile)
+  output:
+    success: '#throwable eq null'
+    deleteProviderId: '#slbId'

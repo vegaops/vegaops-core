@@ -6,41 +6,41 @@ actions:
 - available
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 list:
-  output:
-    log: 'false'
-    success: '#throwable eq null'
-    '[flavorList]:[#result.InstanceTypes]':
-      memorySize: '#MemorySize'
-      localStorageCapacity: '#LocalStorageCapacity'
-      regionId: '#regionId'
-      cpus: '#CpuCoreCount'
-      eniQuantity: '#EniQuantity'
-      instanceTypeId: '#InstanceTypeId'
-      gpus: '#GPUAmount'
-      localStorageCategory: '#LocalStorageCategory'
-      familyLevel: '#InstanceFamilyLevel'
-      localStorageAmount: '#LocalStorageAmount'
-      family: '#InstanceTypeFamily'
-      gpuSpec: '#GPUSpec'
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
   request:
     class: com.aliyuncs.ecs.model.v20140526.DescribeInstanceTypesRequest
-  method: getAcsResponse
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  output:
+    success: '#throwable eq null'
+    log: 'false'
+    '[flavorList]:[#result.InstanceTypes]':
+      eniQuantity: '#EniQuantity'
+      regionId: '#regionId'
+      memorySize: '#MemorySize'
+      family: '#InstanceTypeFamily'
+      cpus: '#CpuCoreCount'
+      gpus: '#GPUAmount'
+      gpuSpec: '#GPUSpec'
+      familyLevel: '#InstanceFamilyLevel'
+      localStorageCategory: '#LocalStorageCategory'
+      localStorageCapacity: '#LocalStorageCapacity'
+      localStorageAmount: '#LocalStorageAmount'
+      instanceTypeId: '#InstanceTypeId'
 available:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DescribeAvailableResourceRequest
+    ioOptimized: optimized
+    destinationResource: InstanceType
+    zoneId: '#zoneId'
+    cores: '#cpus'
+    memory: '#memorySize'
+  argValues:
+    request: '#request'
   output:
     success: '#throwable eq null'
     ? '[flavorList]:[#result.getAvailableZones().![getAvailableResources().![getSupportedResources().?[status==''Available'']]]?.get(0)?.get(0)]'
     : instanceTypeId: '#value'
-  request:
-    cores: '#cpus'
-    memory: '#memorySize'
-    ioOptimized: optimized
-    zoneId: '#zoneId'
-    destinationResource: InstanceType
-    class: com.aliyuncs.ecs.model.v20140526.DescribeAvailableResourceRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)

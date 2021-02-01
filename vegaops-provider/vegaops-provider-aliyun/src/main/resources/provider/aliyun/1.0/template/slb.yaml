@@ -7,108 +7,108 @@ actions:
 - query
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 install:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.slb.model.v20140515.CreateLoadBalancerRequest
+    addressType: '#addressType'
+    internetChargeType: '#internetChargeType'
+    bandwidth: '#bandwidth'
+    loadBalancerName: '#name'
+    vpcId: '#vpcId'
+    VSwitchId: '#vswitchId'
+    masterZoneId: '#masterZoneId'
+    slaveZoneId: '#slaveZoneId'
+    loadBalancerSpec: '#loadBalancerSpec'
+    payType: '#payType'
+    pricingCycle: '#pricingCycle'
+    duration: '#duration'
+    autoPay: '#autoPay'
+    addressIPVersion: '#addressIPVersion'
+    address: '#address'
+    deleteProtection: '#deleteProtection'
+  argValues:
+    request: '#request'
   output:
-    loadBalancerId: '#result.LoadBalancerId'
     success: '#throwable eq null'
+    loadBalancerId: '#result.LoadBalancerId'
     after:
+      action: query
+      input:
+        loadBalancerId: '#loadBalancerId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#throwable eq null'
         mergeKeys: '*'
-      input:
-        loadBalancerId: '#loadBalancerId'
-      action: query
-      waitInterval: '3000'
-  request:
-    autoPay: '#autoPay'
-    loadBalancerSpec: '#loadBalancerSpec'
-    address: '#address'
-    bandwidth: '#bandwidth'
-    masterZoneId: '#masterZoneId'
-    addressType: '#addressType'
-    VSwitchId: '#vswitchId'
-    addressIPVersion: '#addressIPVersion'
-    deleteProtection: '#deleteProtection'
-    duration: '#duration'
-    internetChargeType: '#internetChargeType'
-    payType: '#payType'
-    slaveZoneId: '#slaveZoneId'
-    loadBalancerName: '#name'
-    vpcId: '#vpcId'
-    pricingCycle: '#pricingCycle'
-    class: com.aliyuncs.slb.model.v20140515.CreateLoadBalancerRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
 uninstall:
-  output:
-    deleteProviderId: '#loadBalancerId'
-    success: '#throwable eq null'
-  request:
-    loadBalancerId: '#loadBalancerId'
-    class: com.aliyuncs.slb.model.v20140515.DeleteLoadBalancerRequest
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.slb.model.v20140515.DeleteLoadBalancerRequest
+    loadBalancerId: '#loadBalancerId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-list:
   output:
-    log: 'false'
+    success: '#throwable eq null'
+    deleteProviderId: '#loadBalancerId'
+list:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  method: getAcsResponse
+  request:
+    class: com.aliyuncs.slb.model.v20140515.DescribeLoadBalancersRequest
+    pageSize: '100'
+    pageNumber: '1'
+  argValues:
+    request: '#request'
+  output:
     success: '#throwable eq null'
     loop:
-      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
       condition: '#result.getLoadBalancers().size() != 0'
       appendList:
       - slbList
+      '1': '#request.setPageNumber(#request.getPageNumber()+1)'
+    log: 'false'
     '[slbList]:[#result.LoadBalancers]':
-      loadBalancerId: '#LoadBalancerId'
-      address: '#Address'
-      masterZoneId: '#MasterZoneId'
-      addressType: '#AddressType'
+      name: '#LoadBalancerName'
+      regionId: '#RegionId'
       addressIPVersion: '#AddressIPVersion'
+      loadBalancerId: '#LoadBalancerId'
+      providerId: '#LoadBalancerId'
       vswitchId: '#VSwitchId'
       internetChargeType: '#InternetChargeType'
-      payType: '#PayType'
-      slaveZoneId: '#SlaveZoneId'
-      regionId: '#RegionId'
-      createTime: '#CreateTime'
-      providerId: '#LoadBalancerId'
       vpcId: '#VpcId'
-      name: '#LoadBalancerName'
+      slaveZoneId: '#SlaveZoneId'
       networkType: '#NetworkType'
+      createTime: '#CreateTime'
+      masterZoneId: '#MasterZoneId'
+      address: '#Address'
+      addressType: '#AddressType'
       status: '#LoadBalancerStatus'
-  request:
-    pageNumber: '1'
-    pageSize: '100'
-    class: com.aliyuncs.slb.model.v20140515.DescribeLoadBalancersRequest
+      payType: '#PayType'
+query:
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.slb.model.v20140515.DescribeLoadBalancersRequest
+    loadBalancerId: '#loadBalancerId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
-query:
   output:
-    loadBalancerId: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getLoadBalancerId()'
-    address: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getAddress()'
-    masterZoneId: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getMasterZoneId()'
-    addressType: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getAddressType()'
+    success: '#throwable eq null'
+    name: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getLoadBalancerName()'
+    providerId: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getLoadBalancerId()'
+    regionId: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getRegionId()'
     addressIPVersion: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getAddressIPVersion()'
+    loadBalancerId: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getLoadBalancerId()'
     vswitchId: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getVSwitchId()'
     internetChargeType: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getInternetChargeType()'
-    payType: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getPayType()'
-    slaveZoneId: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getSlaveZoneId()'
-    regionId: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getRegionId()'
-    createTime: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getCreateTime()'
-    success: '#throwable eq null'
-    providerId: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getLoadBalancerId()'
     vpcId: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getVpcId()'
-    name: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getLoadBalancerName()'
+    slaveZoneId: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getSlaveZoneId()'
     networkType: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getNetworkType()'
+    createTime: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getCreateTime()'
+    masterZoneId: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getMasterZoneId()'
+    address: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getAddress()'
+    addressType: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getAddressType()'
     status: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getLoadBalancerStatus()'
-  request:
-    loadBalancerId: '#loadBalancerId'
-    class: com.aliyuncs.slb.model.v20140515.DescribeLoadBalancersRequest
-  method: getAcsResponse
-  argValues:
-    request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+    payType: '#result.getLoadBalancers().size() eq 0 ? null: #result.getLoadBalancers().get(0).getPayType()'

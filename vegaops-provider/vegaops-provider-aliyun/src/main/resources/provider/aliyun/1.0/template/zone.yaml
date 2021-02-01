@@ -5,17 +5,17 @@ actions:
 - list
 profile: T(com.aliyuncs.profile.DefaultProfile).getProfile(#regionId,#accessKey,#secret)
 list:
-  output:
-    '[regionList]:[#result.Zones]':
-      regionId: '#regionId'
-      name: '#LocalName'
-      zoneId: '#ZoneId'
-    log: 'false'
-    success: '#throwable eq null'
-  request:
-    regionId: '#regionId'
-    class: com.aliyuncs.ecs.model.v20140526.DescribeZonesRequest
+  client: new com.aliyuncs.DefaultAcsClient(#profile)
   method: getAcsResponse
+  request:
+    class: com.aliyuncs.ecs.model.v20140526.DescribeZonesRequest
+    regionId: '#regionId'
   argValues:
     request: '#request'
-  client: new com.aliyuncs.DefaultAcsClient(#profile)
+  output:
+    success: '#throwable eq null'
+    log: 'false'
+    '[regionList]:[#result.Zones]':
+      regionId: '#regionId'
+      zoneId: '#ZoneId'
+      name: '#LocalName'

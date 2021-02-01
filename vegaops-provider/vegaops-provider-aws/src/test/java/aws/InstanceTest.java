@@ -263,8 +263,5 @@ public class InstanceTest {
         }
     }
 
-    public void code12(){
-
-    }
 
 }

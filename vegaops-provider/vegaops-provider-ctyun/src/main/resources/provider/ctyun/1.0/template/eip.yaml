@@ -10,310 +10,310 @@ actions:
 - bind-unbind
 - update
 ctyunAccount:
+  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
   accessKey: '#accessKey'
   secret: '#secret'
-  class: org.prophetech.hyperone.vegaops.ctyun.model.CtyunAccount
 install:
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+  method: getCtyunResponse
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+    timeout: 30
   argTypes:
   - org.prophetech.hyperone.vegaops.ctyun.model.CreateIPRequest
-  output:
-    publicIpAddress: '#result.returnObj.public_ip_address'
-    createTime: '#result.returnObj.create_time'
+  argNames:
+  - request
+  request:
     regionId: '#regionId'
+    zoneId: '#zoneId'
+    name: '#name'
+    type: '#type'
+    size: '#size'
+    ipVersion: '#ipVersion'
+    shareType: '#shareType'
+    chargeMode: '#chargeMode'
+  output:
     success: '#result.statusCode.equals(800)'
-    providerId: '#result.returnObj.id'
-    bandwidthSize: '#result.returnObj.bandwidth_size'
     bandwidthId: '#result.returnObj.bandwidthId'
+    publicIpAddress: '#result.returnObj.public_ip_address'
+    type: '#result.returnObj.type'
+    status: '#result.returnObj.status'
+    createTime: '#result.returnObj.create_time'
     id: '#result.returnObj.id'
+    bandwidthSize: '#result.returnObj.bandwidth_size'
+    regionId: '#regionId'
+    providerId: '#result.returnObj.id'
     after:
+      action: query
+      input:
+        publicIpId: '#providerId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#status eq ''DOWN'''
         mergeKeys: '*'
-      input:
-        publicIpId: '#providerId'
-      action: query
-      waitInterval: '3000'
-    type: '#result.returnObj.type'
-    status: '#result.returnObj.status'
-  request:
-    ipVersion: '#ipVersion'
-    size: '#size'
-    chargeMode: '#chargeMode'
-    regionId: '#regionId'
-    name: '#name'
-    zoneId: '#zoneId'
-    type: '#type'
-    shareType: '#shareType'
-  classProperties:
-    ctyunAccount: '#ctyunAccount'
-    timeout: 30
-  method: getCtyunResponse
-  argNames:
-  - request
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
 query:
-  argTypes:
-  - org.prophetech.hyperone.vegaops.ctyun.model.QueryIPsRequest
-  output:
-    enterpriseProjectId: '#result.returnObj.publicips.get(0).getEnterprise_project_id()'
-    productId: '#result.returnObj.publicips.get(0).getProfile()?.getProduct_id()'
-    publicIpAddress: '#result.returnObj.publicips.get(0).getPublic_ip_address()'
-    workOrderResourceId: '#result.returnObj.publicips.get(0).getWorkOrderResourceId()'
-    orderId: '#result.returnObj.publicips.get(0).getProfile()?.getOrder_id()'
-    bandwidthSize: '#result.returnObj.publicips.get(0).getBandwidth_size()'
-    bandwidthName: '#result.returnObj.publicips.get(0).getBandwidth_name()'
-    bandwidthId: '#result.returnObj.publicips.get(0).getBandwidth_id()'
-    type: '#result.returnObj.publicips.get(0).getType()'
-    portId: '#result.returnObj.publicips.get(0).getPort_id()'
-    userId: '#result.returnObj.publicips.get(0).getProfile()?.getUser_id()'
-    privateIpAddress: '#result.returnObj.publicips.get(0).getPrivate_ip_address()'
-    masterOrderId: '#result.returnObj.publicips.get(0).getMasterOrderId()'
-    isFreeze: '#result.returnObj.publicips.get(0).getIsFreeze()'
-    expireTime: '#result.returnObj.publicips.get(0).getExpireTime()'
-    createTime: '#result.returnObj.publicips.get(0).getCreate_time()'
-    success: '#result.statusCode.equals(800)'
-    bandwidthShareType: '#result.returnObj.publicips.get(0).getBandwidth_share_type()'
-    tenantId: '#result.returnObj.publicips.get(0).getTenant_id()'
-    name: '#result.returnObj.publicips.get(0).getBandwidth_name()'
-    id: '#result.returnObj.publicips.get(0).getId()'
-    category: '#result.returnObj.publicips.get(0).getIp_version()'
-    status: '#result.returnObj.publicips.get(0).getStatus()'
-  request:
-    publicIpId: '#publicIpId'
-    regionId: '#regionId'
-    marker: '#marker'
-    limit: '#limit'
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+  method: getCtyunResponse
   classProperties:
     ctyunAccount: '#ctyunAccount'
-  method: getCtyunResponse
-  argNames:
-  - request
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
-queryBind:
   argTypes:
   - org.prophetech.hyperone.vegaops.ctyun.model.QueryIPsRequest
+  argNames:
+  - request
+  request:
+    regionId: '#regionId'
+    publicIpId: '#publicIpId'
+    limit: '#limit'
+    marker: '#marker'
   output:
+    success: '#result.statusCode.equals(800)'
+    category: '#result.returnObj.publicips.get(0).getIp_version()'
+    bandwidthShareType: '#result.returnObj.publicips.get(0).getBandwidth_share_type()'
+    type: '#result.returnObj.publicips.get(0).getType()'
+    privateIpAddress: '#result.returnObj.publicips.get(0).getPrivate_ip_address()'
     enterpriseProjectId: '#result.returnObj.publicips.get(0).getEnterprise_project_id()'
-    productId: '#result.returnObj.publicips.get(0).getProfile()?.getProduct_id()'
+    status: '#result.returnObj.publicips.get(0).getStatus()'
     publicIpAddress: '#result.returnObj.publicips.get(0).getPublic_ip_address()'
-    workOrderResourceId: '#result.returnObj.publicips.get(0).getWorkOrderResourceId()'
-    orderId: '#result.returnObj.publicips.get(0).getProfile()?.getOrder_id()'
-    bandwidthSize: '#result.returnObj.publicips.get(0).getBandwidth_size()'
+    id: '#result.returnObj.publicips.get(0).getId()'
+    tenantId: '#result.returnObj.publicips.get(0).getTenant_id()'
     bandwidthName: '#result.returnObj.publicips.get(0).getBandwidth_name()'
     bandwidthId: '#result.returnObj.publicips.get(0).getBandwidth_id()'
-    type: '#result.returnObj.publicips.get(0).getType()'
     portId: '#result.returnObj.publicips.get(0).getPort_id()'
-    userId: '#result.returnObj.publicips.get(0).getProfile()?.getUser_id()'
-    privateIpAddress: '#result.returnObj.publicips.get(0).getPrivate_ip_address()'
-    masterOrderId: '#result.returnObj.publicips.get(0).getMasterOrderId()'
-    isFreeze: '#result.returnObj.publicips.get(0).getIsFreeze()'
-    expireTime: '#result.returnObj.publicips.get(0).getExpireTime()'
+    bandwidthSize: '#result.returnObj.publicips.get(0).getBandwidth_size()'
     createTime: '#result.returnObj.publicips.get(0).getCreate_time()'
+    masterOrderId: '#result.returnObj.publicips.get(0).getMasterOrderId()'
+    workOrderResourceId: '#result.returnObj.publicips.get(0).getWorkOrderResourceId()'
+    expireTime: '#result.returnObj.publicips.get(0).getExpireTime()'
+    isFreeze: '#result.returnObj.publicips.get(0).getIsFreeze()'
+    name: '#result.returnObj.publicips.get(0).getBandwidth_name()'
+    orderId: '#result.returnObj.publicips.get(0).getProfile()?.getOrder_id()'
+    userId: '#result.returnObj.publicips.get(0).getProfile()?.getUser_id()'
+    productId: '#result.returnObj.publicips.get(0).getProfile()?.getProduct_id()'
+queryBind:
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+  method: getCtyunResponse
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.QueryIPsRequest
+  argNames:
+  - request
+  request:
+    regionId: '#regionId'
+    publicIpId: '#publicIpId'
+    limit: '#limit'
+    marker: '#marker'
+  output:
     success: '#result.returnObj.publicips.get(0).getPrivate_ip_address() ne null &&
       #result.returnObj.publicips.get(0).getPrivate_ip_address() ne ''[]'''
+    category: '#result.returnObj.publicips.get(0).getIp_version()'
     bandwidthShareType: '#result.returnObj.publicips.get(0).getBandwidth_share_type()'
-    tenantId: '#result.returnObj.publicips.get(0).getTenant_id()'
-    name: '#result.returnObj.publicips.get(0).getBandwidth_name()'
+    type: '#result.returnObj.publicips.get(0).getType()'
+    privateIpAddress: '#result.returnObj.publicips.get(0).getPrivate_ip_address()'
+    enterpriseProjectId: '#result.returnObj.publicips.get(0).getEnterprise_project_id()'
+    status: '#result.returnObj.publicips.get(0).getStatus()'
+    publicIpAddress: '#result.returnObj.publicips.get(0).getPublic_ip_address()'
     id: '#result.returnObj.publicips.get(0).getId()'
+    tenantId: '#result.returnObj.publicips.get(0).getTenant_id()'
+    bandwidthName: '#result.returnObj.publicips.get(0).getBandwidth_name()'
+    bandwidthId: '#result.returnObj.publicips.get(0).getBandwidth_id()'
+    portId: '#result.returnObj.publicips.get(0).getPort_id()'
+    bandwidthSize: '#result.returnObj.publicips.get(0).getBandwidth_size()'
+    createTime: '#result.returnObj.publicips.get(0).getCreate_time()'
+    masterOrderId: '#result.returnObj.publicips.get(0).getMasterOrderId()'
+    workOrderResourceId: '#result.returnObj.publicips.get(0).getWorkOrderResourceId()'
+    expireTime: '#result.returnObj.publicips.get(0).getExpireTime()'
+    isFreeze: '#result.returnObj.publicips.get(0).getIsFreeze()'
+    name: '#result.returnObj.publicips.get(0).getBandwidth_name()'
+    orderId: '#result.returnObj.publicips.get(0).getProfile()?.getOrder_id()'
+    userId: '#result.returnObj.publicips.get(0).getProfile()?.getUser_id()'
+    productId: '#result.returnObj.publicips.get(0).getProfile()?.getProduct_id()'
     after:
+      action: instance.query
+      input:
+        instanceId: '#instanceId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#floatingIp ne null && #floatingIp ne ''[]'''
-      input:
-        instanceId: '#instanceId'
-      action: instance.query
-      waitInterval: '3000'
-    category: '#result.returnObj.publicips.get(0).getIp_version()'
-    status: '#result.returnObj.publicips.get(0).getStatus()'
-  request:
-    publicIpId: '#publicIpId'
-    regionId: '#regionId'
-    marker: '#marker'
-    limit: '#limit'
+queryUnBind:
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+  method: getCtyunResponse
   classProperties:
     ctyunAccount: '#ctyunAccount'
-  method: getCtyunResponse
-  argNames:
-  - request
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
-queryUnBind:
   argTypes:
   - org.prophetech.hyperone.vegaops.ctyun.model.QueryIPsRequest
+  argNames:
+  - request
+  request:
+    regionId: '#regionId'
+    publicIpId: '#publicIpId'
+    limit: '#limit'
+    marker: '#marker'
   output:
-    enterpriseProjectId: '#result.returnObj.publicips.get(0).getEnterprise_project_id()'
-    productId: '#result.returnObj.publicips.get(0).getProfile()?.getProduct_id()'
-    publicIpAddress: '#result.returnObj.publicips.get(0).getPublic_ip_address()'
-    workOrderResourceId: '#result.returnObj.publicips.get(0).getWorkOrderResourceId()'
-    orderId: '#result.returnObj.publicips.get(0).getProfile()?.getOrder_id()'
-    bandwidthSize: '#result.returnObj.publicips.get(0).getBandwidth_size()'
-    bandwidthName: '#result.returnObj.publicips.get(0).getBandwidth_name()'
-    bandwidthId: '#result.returnObj.publicips.get(0).getBandwidth_id()'
-    type: '#result.returnObj.publicips.get(0).getType()'
-    portId: '#result.returnObj.publicips.get(0).getPort_id()'
-    userId: '#result.returnObj.publicips.get(0).getProfile()?.getUser_id()'
-    privateIpAddress: '#result.returnObj.publicips.get(0).getPrivate_ip_address()'
-    masterOrderId: '#result.returnObj.publicips.get(0).getMasterOrderId()'
-    isFreeze: '#result.returnObj.publicips.get(0).getIsFreeze()'
-    expireTime: '#result.returnObj.publicips.get(0).getExpireTime()'
-    createTime: '#result.returnObj.publicips.get(0).getCreate_time()'
     success: '#result.returnObj.publicips.get(0).getPrivate_ip_address() eq null ||
       #result.returnObj.publicips.get(0).getPrivate_ip_address() eq ''[]'''
+    category: '#result.returnObj.publicips.get(0).getIp_version()'
     bandwidthShareType: '#result.returnObj.publicips.get(0).getBandwidth_share_type()'
-    tenantId: '#result.returnObj.publicips.get(0).getTenant_id()'
-    name: '#result.returnObj.publicips.get(0).getBandwidth_name()'
+    type: '#result.returnObj.publicips.get(0).getType()'
+    privateIpAddress: '#result.returnObj.publicips.get(0).getPrivate_ip_address()'
+    enterpriseProjectId: '#result.returnObj.publicips.get(0).getEnterprise_project_id()'
+    status: '#result.returnObj.publicips.get(0).getStatus()'
+    publicIpAddress: '#result.returnObj.publicips.get(0).getPublic_ip_address()'
     id: '#result.returnObj.publicips.get(0).getId()'
+    tenantId: '#result.returnObj.publicips.get(0).getTenant_id()'
+    bandwidthName: '#result.returnObj.publicips.get(0).getBandwidth_name()'
+    bandwidthId: '#result.returnObj.publicips.get(0).getBandwidth_id()'
+    portId: '#result.returnObj.publicips.get(0).getPort_id()'
+    bandwidthSize: '#result.returnObj.publicips.get(0).getBandwidth_size()'
+    createTime: '#result.returnObj.publicips.get(0).getCreate_time()'
+    masterOrderId: '#result.returnObj.publicips.get(0).getMasterOrderId()'
+    workOrderResourceId: '#result.returnObj.publicips.get(0).getWorkOrderResourceId()'
+    expireTime: '#result.returnObj.publicips.get(0).getExpireTime()'
+    isFreeze: '#result.returnObj.publicips.get(0).getIsFreeze()'
+    name: '#result.returnObj.publicips.get(0).getBandwidth_name()'
+    orderId: '#result.returnObj.publicips.get(0).getProfile()?.getOrder_id()'
+    userId: '#result.returnObj.publicips.get(0).getProfile()?.getUser_id()'
+    productId: '#result.returnObj.publicips.get(0).getProfile()?.getProduct_id()'
     after:
+      action: instance.query
+      input:
+        instanceId: '#instanceId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#floatingIp eq null || #floatingIp eq ''[]'''
-      input:
-        instanceId: '#instanceId'
-      action: instance.query
-      waitInterval: '3000'
-    category: '#result.returnObj.publicips.get(0).getIp_version()'
-    status: '#result.returnObj.publicips.get(0).getStatus()'
-  request:
-    publicIpId: '#publicIpId'
-    regionId: '#regionId'
-    marker: '#marker'
-    limit: '#limit'
+list:
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+  method: getCtyunResponse
   classProperties:
     ctyunAccount: '#ctyunAccount'
-  method: getCtyunResponse
-  argNames:
-  - request
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
-list:
   argTypes:
   - org.prophetech.hyperone.vegaops.ctyun.model.QueryIPsRequest
-  output:
-    log: 'false'
-    success: '#result.statusCode.equals(800)'
-    '[publicips]:[#result.returnObj.publicips]':
-      enterpriseProjectId: '#enterprise_project_id'
-      productId: '#profile?.product_id'
-      publicIpAddress: '#public_ip_address'
-      workOrderResourceId: '#workOrderResourceId'
-      orderId: '#profile?.order_id'
-      bandwidthSize: '#bandwidth_size'
-      bandwidthId: '#bandwidth_id'
-      type: '#type'
-      portId: '#port_id'
-      userId: '#profile?.user_id'
-      privateIpAddress: '#private_ip_address'
-      masterOrderId: '#masterOrderId'
-      isFreeze: '#isFreeze'
-      ipVersion: '#ip_version'
-      expireTime: '#expireTime'
-      createTime: '#create_time'
-      regionId: '#regionId'
-      bandwidthShareType: '#bandwidth_share_type'
-      tenantId: '#tenant_id'
-      name: '#bandwidth_name'
-      id: '#id'
-      status: '#status'
-  request:
-    publicIpId: '#publicIpId'
-    regionId: '#regionId'
-    marker: '#marker'
-    limit: '#limit'
-  classProperties:
-    ctyunAccount: '#ctyunAccount'
-  method: getCtyunResponse
   argNames:
   - request
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+  request:
+    regionId: '#regionId'
+    publicIpId: '#publicIpId'
+    limit: '#limit'
+    marker: '#marker'
+  output:
+    success: '#result.statusCode.equals(800)'
+    log: 'false'
+    '[publicips]:[#result.returnObj.publicips]':
+      ipVersion: '#ip_version'
+      bandwidthShareType: '#bandwidth_share_type'
+      type: '#type'
+      privateIpAddress: '#private_ip_address'
+      enterpriseProjectId: '#enterprise_project_id'
+      status: '#status'
+      publicIpAddress: '#public_ip_address'
+      id: '#id'
+      tenantId: '#tenant_id'
+      bandwidthId: '#bandwidth_id'
+      portId: '#port_id'
+      bandwidthSize: '#bandwidth_size'
+      createTime: '#create_time'
+      masterOrderId: '#masterOrderId'
+      workOrderResourceId: '#workOrderResourceId'
+      expireTime: '#expireTime'
+      isFreeze: '#isFreeze'
+      name: '#bandwidth_name'
+      orderId: '#profile?.order_id'
+      regionId: '#regionId'
+      userId: '#profile?.user_id'
+      productId: '#profile?.product_id'
 uninstall:
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+  method: getCtyunResponse
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
   argTypes:
   - org.prophetech.hyperone.vegaops.ctyun.model.DeleteIPRequest
-  output:
-    deleteProviderId: '#publicIpId'
-    success: '#result.statusCode.equals(800)'
+  argNames:
+  - request
   request:
     publicIpId: '#publicIpId'
     regionId: '#regionId'
+  output:
+    success: '#result.statusCode.equals(800)'
+    deleteProviderId: '#publicIpId'
+update:
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+  method: getCtyunResponse
   classProperties:
     ctyunAccount: '#ctyunAccount'
-  method: getCtyunResponse
-  argNames:
-  - request
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
-update:
   argTypes:
   - org.prophetech.hyperone.vegaops.ctyun.model.UpgradeNetworkRequest
+  argNames:
+  - request
+  request:
+    publicIpId: '#publicIpId'
+    regionId: '#regionId'
+    name: '#name'
+    size: '#size'
   output:
     success: '#result.statusCode.equals(800)'
     after:
+      action: query
+      input:
+        publicIpId: '#publicIpId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#bandwidthSize eq #size'
         mergeKeys: '*'
-      input:
-        publicIpId: '#publicIpId'
-      action: query
-      waitInterval: '3000'
-  request:
-    publicIpId: '#publicIpId'
-    size: '#size'
-    regionId: '#regionId'
-    name: '#name'
+bind:
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+  method: getCtyunResponse
   classProperties:
     ctyunAccount: '#ctyunAccount'
-  method: getCtyunResponse
-  argNames:
-  - request
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
-bind:
   argTypes:
   - org.prophetech.hyperone.vegaops.ctyun.model.BindIPRequest
-  output:
-    success: '#result.statusCode.equals(800)'
-    after:
-      retryTimes: '10'
-      output:
-        success: '#thowable eq null'
-        mergeKeys: '*'
-      input:
-        instanceId: '#instanceId'
-        publicIpId: '#publicIpId'
-      action: queryBind
-      waitInterval: '3000'
+  argNames:
+  - request
   request:
-    payType: '#payType'
     publicIpId: '#publicIpId'
     regionId: '#regionId'
     privateIp: '#privateIp'
     networkCardId: '#networkCardId'
-  classProperties:
-    ctyunAccount: '#ctyunAccount'
-  method: getCtyunResponse
-  argNames:
-  - request
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
-unbind:
-  argTypes:
-  - org.prophetech.hyperone.vegaops.ctyun.model.UnbindIPRequest
+    payType: '#payType'
   output:
     success: '#result.statusCode.equals(800)'
     after:
+      action: queryBind
+      input:
+        publicIpId: '#publicIpId'
+        instanceId: '#instanceId'
+      waitInterval: '3000'
       retryTimes: '10'
       output:
         success: '#thowable eq null'
         mergeKeys: '*'
-      input:
-        instanceId: '#instanceId'
-        publicIpId: '#publicIpId'
-      action: queryUnBind
-      waitInterval: '3000'
+unbind:
+  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+  method: getCtyunResponse
+  classProperties:
+    ctyunAccount: '#ctyunAccount'
+  argTypes:
+  - org.prophetech.hyperone.vegaops.ctyun.model.UnbindIPRequest
+  argNames:
+  - request
   request:
-    payType: '#payType'
     publicIpId: '#publicIpId'
     regionId: '#regionId'
     privateIp: '#privateIp'
-  classProperties:
-    ctyunAccount: '#ctyunAccount'
-  method: getCtyunResponse
-  argNames:
-  - request
-  client: org.prophetech.hyperone.vegaops.ctyun.client.CtyunJsoupClient
+    payType: '#payType'
+  output:
+    success: '#result.statusCode.equals(800)'
+    after:
+      action: queryUnBind
+      input:
+        publicIpId: '#publicIpId'
+        instanceId: '#instanceId'
+      waitInterval: '3000'
+      retryTimes: '10'
+      output:
+        success: '#thowable eq null'
+        mergeKeys: '*'
