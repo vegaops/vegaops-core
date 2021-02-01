@@ -15,7 +15,7 @@ if [[ $au =~ $macos ]];then
     ost=macos
     oscode=601994
 fi
-packcode=606852
+packcode=606904
 baseurl=https://gitee.com/openproclouder/vegaops-core/attach_files
 
 if [ "$long_bit" != "64" ]; then
@@ -37,13 +37,13 @@ if [ -d $vegahome/vegaops-$version-$ost ]; then
     echo "$vegahome/vegaops-$version-$ost already exists!"
     exit 1
 fi
-sudo tar -xvf vegaops-${version} -C $vegahome/
+sudo tar -xvf vegaops-${version}.tar.gz -C $vegahome/
 
 if [ -d $vegahome/vegaops ]; then
     echo "$vegahome/vegaops already exists!"
 fi
 
-sudo mv vegaops-${version} $vegahome/vegaops
+sudo mv $vegahome/vegaops-${version} $vegahome/vegaops
 sudo tar -xvf $rel -C $vegahome/vegaops/
 sudo chmod a+x $vegahome/vegaops/bin/vegaops
 sudo ln -s $vegahome/vegaops/bin/vegaops /usr/local/bin/vegaops
