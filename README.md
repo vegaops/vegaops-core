@@ -13,7 +13,7 @@
 <a href="./README.zh-cn.md">中文</a>
 </p>
 
-## introduction
+## 简介
 
 VegaOps是基于API的高效调度编排工具。VegaOps旨在提供
 
@@ -63,13 +63,13 @@ curl -L -o - https://gitee.com/openproclouder/vegaops-core/raw/master/quick_inst
 
 
 
-### Contribution
+# Contribution
 
 Thank you to all the people who already contributed to VegaOps!
 
 
 
-### License
+# License
 [Mozilla](./LICENSE)
 
 Copyright (c) 2013-present, OneProCloud(WUHAN) Co.,Ltd
