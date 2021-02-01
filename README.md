@@ -50,6 +50,12 @@ curl -L -o - https://gitee.com/openproclouder/vegaops-core/raw/master/quick_inst
 
 ### Windows
 
+- 下载VegaOps Relase包：``https://gitee.com/openproclouder/vegaops-core/attach_files/606982/download/vegaops-v0.1-rc.tar.gz``
+- 解压至C:\目录下，并重命名为C:\vegaops
+- 下载windows jre包：``https://gitee.com/openproclouder/vegaops-core/attach_files/606981/download/jre1.8-win-x64.tar.gz``
+- 解压至C:\vegaops\目录下
+- 将``C:\vegaops\bin\vegaops.cmd``注册成命令服务至path中即可通过``vegaops``进行编排体验！
+
 ## 运行样例
 
 1. 通过``vegaops help``查看vegaops使用方法；
