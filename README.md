@@ -13,33 +13,25 @@
 <a href="./README.zh-cn.md">中文</a>
 </p>
 
+## introduction
 
-## Sponsors
+VegaOps是基于API的高效调度编排工具。VegaOps旨在提供
 
-
-
-### introduction
-
-VegaOps是基于API的高效调度编排工具。
-
-
-
-### characteristic
-1. 灵活的编排采集能力：
+1. 灵活的编排采集能力: 
   - 对标OpenStack heat、terraform等，通过解析资源模版，可快速批量构建云资源；
   - 可通过资源模版，获取多云资源，提供格式化输出数据到用户CMDB；
   - 可通过metric模版，获取多云监控指标，并提供格式化输出数据到用户监控平台；
-2. 灵活的Provider拓展能力：
-  - 无需编码，通过编写provider提供的各资源的json解析文件，实现Provider拓展；
-  - 灵活生效，无需重新进行复杂的打包流程，provider的解析json保存即生效；
+2. 灵活的Provider拓展能力: 
+  - 无需编译打包，通过编写provider提供的各资源的json解析文件，实现Provider拓展；
+  - 灵活生效，无需重新进行复杂的打包流程，provider的解析json保存即生效，可灵活应对云厂商接口变化；
+3. 资源标准化能力（企业版）:
+  - 提供provider中资源建模及资源对象继承能力。
+  - 提供各类API Base产品（尤其是云产品）资源能力标准化资源接口及编排能力；
 
-### Preparation
 
+# Quick Start
 
-
-### How to use
-
-#### Quick Start
+## 安装VegaOps
 
 针对Linux及MacOS，执行以下命令快速安装VegaOps
 
@@ -49,18 +41,26 @@ curl -L -o - https://gitee.com/openproclouder/vegaops-core/raw/master/quick_inst
 
 安装完成后，提供``vegaops``命令，通过``vegaops``进行编排体验！
 
-#### Provider list
-* [阿里云](./vegaops-provider/vegaops-provider-aliyun)
-* [腾讯云](./vegaops-provider/vegaops-provider-tencent)
-* [AWS](./vegaops-provider/vegaops-provider-aws)
-* [天翼云](./vegaops-provider/vegaops-provider-ctyun)
+## 运行样例
 
-#### Example list
+## Example list
 
 * [阿里云样例](https://github.com/vegaops/vegaops-example-aliyun)
 * 云资源编排
 * 多云资源采集
 * 多云监控采集
+
+# VegaOps设计
+
+## 
+
+## Provider list
+
+* [阿里云](./vegaops-provider/vegaops-provider-aliyun)
+* [腾讯云](./vegaops-provider/vegaops-provider-tencent)
+* [AWS](./vegaops-provider/vegaops-provider-aws)
+* [天翼云](./vegaops-provider/vegaops-provider-ctyun)
+
 
 
 ### Contribution
