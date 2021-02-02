@@ -112,7 +112,7 @@ credentials:
 
 加入微信交流群：
 
-![微信交流群](./weixin.jpeg)
+<img src="./weixin.jpeg" width = "200" height = "300" alt="微信交流群" align=center /> 
 
 ## 贡献
 
