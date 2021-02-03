@@ -2,7 +2,7 @@ package org.prophetech.hyperone.vegaops.engine.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hswebframework.web.bean.FastBeanCopier;
+import org.prophetech.hyperone.vegaops.engine.utils.FastBeanCopier;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

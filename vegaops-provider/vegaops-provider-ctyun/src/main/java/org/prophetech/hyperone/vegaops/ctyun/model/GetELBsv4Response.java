@@ -2,8 +2,6 @@ package org.prophetech.hyperone.vegaops.ctyun.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.prophetech.hyperone.vegaops.ctyun.model.CreateELBv4Response;
-import org.prophetech.hyperone.vegaops.ctyun.model.CtyunResponse;
 
 import java.util.List;
 

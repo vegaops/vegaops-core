@@ -2,8 +2,8 @@ package org.prophetech.hyperone.vegaops.engine.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hswebframework.web.bean.FastBeanCopier;
 import org.prophetech.hyperone.vegaops.engine.parser.MapVariablesParser;
+import org.prophetech.hyperone.vegaops.engine.utils.FastBeanCopier;
 import org.prophetech.hyperone.vegaops.engine.utils.SecretMaskJsonSerializer;
 
 import java.util.LinkedHashMap;

@@ -9,7 +9,6 @@
   <artifactId>vegaops-starter</artifactId>
   <properties>
     <java.version>1.8</java.version>
-    <hsweb.expands.version>3.0.2</hsweb.expands.version>
     <project.build.jdk>${java.version}</project.build.jdk>
     <spring.boot.version>1.5.13.RELEASE</spring.boot.version>
     <project.build.locales>zh_CN</project.build.locales>

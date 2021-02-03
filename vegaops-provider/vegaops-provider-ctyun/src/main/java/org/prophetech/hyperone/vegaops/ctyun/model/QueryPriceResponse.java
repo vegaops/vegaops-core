@@ -3,7 +3,6 @@ package org.prophetech.hyperone.vegaops.ctyun.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.prophetech.hyperone.vegaops.ctyun.model.CtyunResponse;
 
 import java.math.BigDecimal;
 import java.util.List;

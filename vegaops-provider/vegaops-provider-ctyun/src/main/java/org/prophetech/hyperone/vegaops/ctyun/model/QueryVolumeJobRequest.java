@@ -2,10 +2,6 @@ package org.prophetech.hyperone.vegaops.ctyun.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.prophetech.hyperone.vegaops.ctyun.model.BodyType;
-import org.prophetech.hyperone.vegaops.ctyun.model.CtyunRequest;
-import org.prophetech.hyperone.vegaops.ctyun.model.Method;
-import org.prophetech.hyperone.vegaops.ctyun.model.QueryVolumeJobResponse;
 
 /**
  * 轮询资源状态

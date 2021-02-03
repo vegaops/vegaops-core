@@ -2,7 +2,6 @@ package aws;
 
 import com.alibaba.fastjson.JSON;
 import lombok.SneakyThrows;
-import org.jsoup.Connection;
 import org.junit.Test;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;

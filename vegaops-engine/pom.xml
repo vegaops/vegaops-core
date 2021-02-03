@@ -8,9 +8,6 @@
         <version>1.0</version>
     </parent>
     <artifactId>vegaops-engine</artifactId>
-    <properties>
-        <hyperone.framework.version>1.1.20201230</hyperone.framework.version>
-    </properties>
     <dependencies>
 
 
@@ -35,24 +32,39 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.hswebframework.web</groupId>
-            <version>3.0.5-h-SNAPSHOT</version>
-            <artifactId>hsweb-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.dubbo</groupId>
-                    <artifactId>dubbo</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId> com.github.pagehelper</groupId>
-                    <artifactId>pagehelper</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.el</artifactId>
             <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>5.2.4.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>5.2.12.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>5.2.12.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.2.12.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.4</version>
         </dependency>
     </dependencies>
 </project>

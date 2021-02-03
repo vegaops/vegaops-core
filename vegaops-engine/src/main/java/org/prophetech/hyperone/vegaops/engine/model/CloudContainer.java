@@ -6,8 +6,8 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
-import org.hswebframework.web.bean.FastBeanCopier;
 import org.prophetech.hyperone.vegaops.engine.parser.MapVariablesParser;
+import org.prophetech.hyperone.vegaops.engine.utils.FastBeanCopier;
 import org.prophetech.hyperone.vegaops.engine.utils.RuntimeContext;
 
 import javax.validation.constraints.NotNull;

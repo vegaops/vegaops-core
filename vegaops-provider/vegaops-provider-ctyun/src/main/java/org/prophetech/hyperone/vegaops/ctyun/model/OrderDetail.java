@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSON;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.prophetech.hyperone.vegaops.ctyun.model.CreateVMRequest;
-import org.prophetech.hyperone.vegaops.ctyun.model.CustomInfo;
 
 import java.util.List;
 import java.util.TreeMap;

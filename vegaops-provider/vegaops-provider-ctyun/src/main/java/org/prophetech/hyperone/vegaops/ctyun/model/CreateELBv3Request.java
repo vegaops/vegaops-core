@@ -4,10 +4,6 @@ import com.alibaba.fastjson.JSON;
 import lombok.Getter;
 import lombok.Setter;
 import org.prophetech.hyperone.vegaops.ctyun.annotation.IgnoreParam;
-import org.prophetech.hyperone.vegaops.ctyun.model.BodyType;
-import org.prophetech.hyperone.vegaops.ctyun.model.CtyunRequest;
-import org.prophetech.hyperone.vegaops.ctyun.model.GetJobIdResponse;
-import org.prophetech.hyperone.vegaops.ctyun.model.Method;
 
 /**
  * !!! 天翼云经典型负载均衡已不支持购买 !!!

@@ -14,7 +14,6 @@ import com.tencentcloudapi.sts.v20180813.models.AssumeRoleRequest;
 import com.tencentcloudapi.sts.v20180813.models.AssumeRoleResponse;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
-import org.jsoup.Connection;
 import org.junit.Test;
 
 import javax.crypto.Mac;

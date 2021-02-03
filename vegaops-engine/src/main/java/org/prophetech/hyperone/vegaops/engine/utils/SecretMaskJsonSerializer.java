@@ -5,7 +5,6 @@ import com.alibaba.fastjson.serializer.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hswebframework.web.bean.FastBeanCopier;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -113,7 +112,7 @@ public class SecretMaskJsonSerializer extends MapSerializer {
                 && !(object instanceof Number)
                 && Modifier.isPublic(object.getClass().getModifiers())
         ) {
-            return FastBeanCopier.copy(object, HashMap::new);
+            return FastBeanCopier.copy(object, HashMap.class);
         }
         return object;
     }

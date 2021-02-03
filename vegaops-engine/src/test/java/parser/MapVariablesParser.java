@@ -2,8 +2,8 @@ package parser;
 
 import com.alibaba.fastjson.JSON;
 import lombok.SneakyThrows;
-import org.hswebframework.utils.file.FileUtils;
 import org.junit.Test;
+import org.prophetech.hyperone.vegaops.engine.utils.FileUtils;
 import org.springframework.util.FileCopyUtils;
 
 import java.io.InputStream;

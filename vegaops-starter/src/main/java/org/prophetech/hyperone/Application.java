@@ -8,6 +8,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.prophetech.hyperone.vegaops.engine.core.CloudTemplateFactory;
 import org.prophetech.hyperone.vegaops.engine.model.CloudContainer;
@@ -67,7 +68,12 @@ public class Application {
                 FileCopyUtils.copy(dump.getBytes(), outputFile);
             }
         } catch (Throwable e) {
-            LogFactory.getLog(Application.class).error(ExceptionUtils.getRootCause(e).getLocalizedMessage());
+            Log log = LogFactory.getLog(Application.class);
+            if(log.isDebugEnabled()){
+                log.error(ExceptionUtils.getRootCause(e).getLocalizedMessage(),e);
+            }else {
+                log.error(ExceptionUtils.getRootCause(e).getLocalizedMessage());
+            }
             System.exit(-1);
         }
     }

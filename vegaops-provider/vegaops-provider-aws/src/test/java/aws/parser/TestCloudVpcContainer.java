@@ -3,7 +3,7 @@ package aws.parser;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.Feature;
 import lombok.SneakyThrows;
-import org.hswebframework.utils.file.FileUtils;
+import org.prophetech.hyperone.vegaops.engine.utils.FileUtils;
 import org.junit.Test;
 import org.prophetech.hyperone.vegaops.engine.model.CloudContainer;
 import org.prophetech.hyperone.vegaops.engine.parser.ContainerParser;

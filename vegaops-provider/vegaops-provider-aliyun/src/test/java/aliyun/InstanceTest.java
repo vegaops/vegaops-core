@@ -11,13 +11,9 @@ import com.aliyuncs.ram.model.v20150501.CreateRoleRequest;
 import com.aliyuncs.ram.model.v20150501.CreateRoleResponse;
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
-import org.jsoup.Connection;
 import org.junit.Test;
 
-import java.net.URLEncoder;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class InstanceTest {
 

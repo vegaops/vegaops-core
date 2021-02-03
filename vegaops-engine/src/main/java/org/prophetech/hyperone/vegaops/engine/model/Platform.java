@@ -1,7 +1,6 @@
 package org.prophetech.hyperone.vegaops.engine.model;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hswebframework.web.BusinessException;
 
 public enum Platform {
 
@@ -44,10 +43,10 @@ public enum Platform {
 
     public static void checkPlatform(String vendor) {
         if (StringUtils.isEmpty(vendor)) {
-            throw new BusinessException("vendor.not.null");
+            throw new RuntimeException("vendor.not.null");
         }
         if (getPlatform(vendor) == null) {
-            throw new BusinessException("vendor.invalid");
+            throw new RuntimeException("vendor.invalid");
         }
     }
 

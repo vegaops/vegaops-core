@@ -12,7 +12,6 @@ import org.prophetech.hyperone.vegaops.engine.utils.ELUtils;
 import org.prophetech.hyperone.vegaops.engine.utils.RuntimeContext;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 @Slf4j(topic = "vegaops")
 public class ContainerParser {

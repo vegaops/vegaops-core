@@ -1,13 +1,13 @@
 package org.prophetech.hyperone.vegaops.engine.parser;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hswebframework.web.bean.FastBeanCopier;
-import org.prophetech.hyperone.vegaops.engine.utils.*;
 import org.prophetech.hyperone.vegaops.engine.core.CloudTemplateFactory;
 import org.prophetech.hyperone.vegaops.engine.exception.TimeoutException;
 import org.prophetech.hyperone.vegaops.engine.model.*;
+import org.prophetech.hyperone.vegaops.engine.utils.*;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j(topic = "vegaops")
 public class ActionParser {
-    private static final FastBeanCopier.DefaultConverter converter = new FastBeanCopier.DefaultConverter();
     private static final Map<String, Method> clientMethodCache = new ConcurrentHashMap<>();
 
     public static ActionResult parse(CloudAction action) {
@@ -389,7 +388,7 @@ public class ActionParser {
                 Class targetType = argTypes == null ? parameterTypes[i] : ClassUtils.getClass(argTypes[i]);
                 if (objects[i] != null) {
                     if (!targetType.isAssignableFrom(objects[i].getClass())) {
-                        objects[i] = converter.convert(objects[i], targetType, null);
+                        objects[i] = ConvertUtils.convert(objects[i], targetType);
                     }
                 }
             }
@@ -412,7 +411,7 @@ public class ActionParser {
                     if (exp instanceof String && (ELUtils.isSpelExpression((String) exp))) {
                         objects[i] = ELUtils.getSpelValue((String) exp, variables);
                     } else {
-                        objects[i] = converter.convert(exp, targetType, null);
+                        objects[i] = ConvertUtils.convert(exp, targetType);
                     }
                 }
             }
