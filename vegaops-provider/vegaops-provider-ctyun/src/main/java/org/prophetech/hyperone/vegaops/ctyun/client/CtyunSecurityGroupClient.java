@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.prophetech.hyperone.vegaops.ctyun.exception.ClientException;
 import org.prophetech.hyperone.vegaops.ctyun.exception.ServerException;
 import org.prophetech.hyperone.vegaops.ctyun.model.*;
-import org.prophetech.hyperone.vegaops.engine.utils.FastBeanCopier;
+import org.prophetech.hyperone.vegaops.engine.bean.FastBeanCopier;
 
 import java.util.ArrayList;
 import java.util.Collections;

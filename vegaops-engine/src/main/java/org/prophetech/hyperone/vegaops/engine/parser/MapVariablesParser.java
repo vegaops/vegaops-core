@@ -3,8 +3,8 @@ package org.prophetech.hyperone.vegaops.engine.parser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.prophetech.hyperone.vegaops.engine.bean.FastBeanCopier;
 import org.prophetech.hyperone.vegaops.engine.utils.ELUtils;
-import org.prophetech.hyperone.vegaops.engine.utils.FastBeanCopier;
 import org.prophetech.hyperone.vegaops.engine.utils.SecretMaskJsonSerializer;
 
 import java.util.ArrayList;

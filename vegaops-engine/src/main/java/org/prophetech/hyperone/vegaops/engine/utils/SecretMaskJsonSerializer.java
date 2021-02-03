@@ -5,6 +5,7 @@ import com.alibaba.fastjson.serializer.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.prophetech.hyperone.vegaops.engine.bean.FastBeanCopier;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;

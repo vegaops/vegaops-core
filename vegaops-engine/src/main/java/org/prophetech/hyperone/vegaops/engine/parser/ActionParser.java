@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.prophetech.hyperone.vegaops.engine.bean.FastBeanCopier;
 import org.prophetech.hyperone.vegaops.engine.core.CloudTemplateFactory;
 import org.prophetech.hyperone.vegaops.engine.exception.TimeoutException;
 import org.prophetech.hyperone.vegaops.engine.model.*;
