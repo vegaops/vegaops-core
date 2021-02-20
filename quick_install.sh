@@ -15,7 +15,7 @@ if [[ $au =~ $macos ]];then
     ost=macos
     oscode=601994
 fi
-packcode=606982
+packcode=616299
 baseurl=https://gitee.com/openproclouder/vegaops-core/attach_files
 
 if [ "$long_bit" != "64" ]; then
