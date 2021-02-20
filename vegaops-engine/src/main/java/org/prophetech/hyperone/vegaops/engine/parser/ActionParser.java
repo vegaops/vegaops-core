@@ -1,5 +1,7 @@
 package org.prophetech.hyperone.vegaops.engine.parser;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.parser.Feature;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.ClassUtils;
@@ -128,9 +130,11 @@ public class ActionParser {
         ActionResult actionResult = new ActionResult();
         if (action.getOutput() != null) {
             String successExp = action.getOutput().get("success") + "";
+            //是否用json格式去解析输出对象，采用这个方式对象会直接转换成map，便于取值
+            boolean parseUseJson =  "true".equalsIgnoreCase((String)action.getOutput().remove("parseUseJson"));
             Assert.notNull(successExp, "output must have success expression");
             Map resultMap = new LinkedHashMap(action.getVariables());
-            resultMap.put("result", result.getResult());
+            resultMap.put("result", parseUseJson? JSON.parseObject(JSON.toJSONString(result.getResult()),LinkedHashMap.class, Feature.OrderedField):result.getResult());
             resultMap.put("throwable", result.getThrowable());
             boolean success = "true".equalsIgnoreCase(PlaceHolderUtils.getPlaceHolder(successExp, resultMap) + "");
             actionResult.setInvokeSuccess(success);
